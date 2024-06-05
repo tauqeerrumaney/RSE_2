@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: RSE2024-project-2
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Harshini
+    family-names: Eggoni
+    email: harshini.eggoni@uni-potsdam.de
+  - given-names: Philipp
+    family-names: Freiherr von Entreß-Fürsteneck
+    email: philipp.entress-fuersteneck@uni-potsdam.de
+  - given-names: Max
+    family-names: Nowaczyk
+    email: max.nowaczyk@uni-potsdam.de
+  - given-names: Tauqeer Kasam
+    family-names: Rumaney
+    email: tauqeer.kasam.rumaney@uni-potsdam.de
+  - given-names: Tim
+    family-names: Werner
+    email: tim.werner@uni-potsdam.de
+repository-code: 'https://gitup.uni-potsdam.de/werner10/rse24_project-two/'
+abstract: >-
+  In your second project you will develop a data-analysis
+  workflow for a research question of your choice.
+license: MIT
