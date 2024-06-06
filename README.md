@@ -9,9 +9,8 @@ Harshini Eggoni, Philipp Freiherr von Entreß-Fürsteneck, Max Nowaczyk, Tauqeer
 ## Contents
 1. [Description](#description)
 2. [Usage](#usage)
-3. [Contribution](#contribution)
-4. [Conduct](#conduct)
-5. [License](#license)
+3. [Contributing Guidelines](#contributing-guidelines)
+4. [License](#license)
 
 
 ## Description
