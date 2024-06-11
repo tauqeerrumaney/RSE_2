@@ -8,9 +8,12 @@ Harshini Eggoni, Philipp Freiherr von Entreß-Fürsteneck, Max Nowaczyk, Tauqeer
 
 ## Contents
 1. [Description](#description)
-2. [Usage](#usage)
-3. [Contributing Guidelines](#contributing-guidelines)
-4. [License](#license)
+1. [Usage](#usage)
+1. [Data](#data-source-and-license)
+1. [Contributing Guidelines](#contributing-guidelines)
+1. [Contact](#contact-information)
+1. [Citation](#citation)
+1. [License](#license)
 
 
 ## Description
@@ -21,6 +24,11 @@ This is the second project in the 2024 course "Research Software Engineering" at
 
 How the project pipeline is expected to be used
 
+## Data Source and License
+
+- Where the data is from
+- How the data is licensed
+
 ## Contributing Guidelines 
 
 If you want to contribute to the project, be sure to review the [contribution guidelines](CONTRIBUTING.md) and the [code of conduct](CONDUCT.md). By participating, you are expected to uphold this code.
@@ -30,7 +38,20 @@ tracking features and bugs.
 
 The project strives to abide by generally accepted best practices in software development.
 
+## Contact Information
+
+Please reach out to us via the following:
+- [eggoni@uni-potsdam.de](mailto:eggoni@uni-potsdam.de)
+- [nowaczyk@uni-potsdam.de](mailto:nowaczyk@uni-potsdam.de)
+- [entressfue@uni-potsdam.de](mailto:entressfue@uni-potsdam.de)
+- [rumaney@uni-potsdam.de](mailto:rumaney@uni-potsdam.de)
+- [werner10@uni-potsdam.de](mailto:werner10@uni-potsdam.de)
+
+## Citation
+
+For information on citing this projectm please refer to the [citation](CITATION.cff).
+
 ## License
-[MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE).
 
 
