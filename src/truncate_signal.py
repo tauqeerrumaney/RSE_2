@@ -10,14 +10,16 @@ try:
     logger.info("Raw data loaded")
 
     # Determine the minimum size
-    target_length = df['size'].min()
+    target_length = df["size"].min()
     logger.info(f"Minimum size determined: {target_length}")
 
     # Truncate all signals to the minimum size
-    truncated_signals = df['signal'].apply(lambda signal: signal[:target_length])
-    df['signal'] = truncated_signals
+    truncated_signals = df["signal"].apply(lambda signal: signal[:target_length])
+    df["signal"] = truncated_signals
     logger.info("All signals truncated to the minimum size")
 
+    df["size"] = target_length
+    logger.info(f"Size adjusted to {target_length}")
     # Save the truncated data to a new file
     output_file_path = set_path("truncated_data.feather")
     df.to_feather(output_file_path)
