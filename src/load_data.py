@@ -1,13 +1,9 @@
 import pandas as pd
+import numpy as np
 import os
-import logging
 import traceback
+from utils import logger
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 # let these be specified by argparse in the main file
 file_name = "raw_data_EPOC.txt"
@@ -37,6 +33,12 @@ with open(file_path, "r") as file:
         rows.append(row_dict)
 
 df = pd.DataFrame(rows, columns=columns)
+df.drop(columns=["device"], inplace=True)
+
+# this corresponds to the LSB of the resolution of the EEG device
+conversion_factor = 0.1275  
+df['signal'] = df['signal'].apply(lambda x: np.array(x) * conversion_factor)
+
 logger.info("Finished reading data")
 
 try:
@@ -46,6 +48,7 @@ try:
         df_mock.to_feather(out_path)
         logger.info("Mock file saved")
     else:
+        # save data in feather format -> smaller
         out_path = os.path.join(current_dir, "../data/raw_data_EPOC.feather")
         df.to_feather(out_path)
         logger.info("Raw file saved")
