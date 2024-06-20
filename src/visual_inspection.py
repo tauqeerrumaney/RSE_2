@@ -1,18 +1,17 @@
-from utils import logger
+from utils import logger, set_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
 # File loading
-file_name = "raw_data_MOCK.feather"
+file_name = "filtered_data.feather"
 # Event to inspect (set to None to plot all data)
 # from 67635 to 68349 -> 714 unique events
 event_id = 67637
 # Electrode to inspect (set to None to plot all channels)
 electrode = None
 
-current_dir = os.path.dirname(__file__)
-file_path = os.path.join(current_dir, f"../data/{file_name}")
+file_path = set_path(file_name)
 
 df = pd.read_feather(file_path)
 logger.info("Raw data loaded")
