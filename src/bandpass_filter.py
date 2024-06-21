@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import os
 from utils import apply_filter_to_signal, logger, set_path
 
 try:
@@ -10,16 +9,15 @@ try:
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-    # Ensure there's a column 'size' indicating the sampling rate for each event
-    if 'size' not in df.columns:
-        raise ValueError("The DataFrame must contain a 'size' column representing the sampling rate.")
+    if "size" not in df.columns:
+        raise ValueError(
+            "The DataFrame must contain a 'size' column representing the sampling rate."
+        )
 
-    # Apply the filter to each signal in the dataframe using its corresponding sampling rate
-    df['filtered_signal'] = df.apply(
-        lambda row: apply_filter_to_signal(np.array(row['signal']), row['size']), axis=1
+    df["signal"] = df.apply(
+        lambda row: apply_filter_to_signal(np.array(row["signal"]), row["size"],lowcut=1), axis=1
     )
 
-    # Save the filtered data to a new file
     output_file_path = set_path("filtered_data.feather")
     df.to_feather(output_file_path)
 

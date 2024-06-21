@@ -2,25 +2,26 @@ import pandas as pd
 from utils import logger, set_path
 
 try:
-    # Load your dataset
-    file_name = "raw_data_MOCK.feather"
+    file_name = "filtered_data.feather"
     file_path = set_path(file_name)
 
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-    # Determine the minimum size
-    target_length = df["size"].min()
-    logger.info(f"Minimum size determined: {target_length}")
+    target_length = min(df["size"])
 
-    # Truncate all signals to the minimum size
+    # Truncate all signals to the target length
     truncated_signals = df["signal"].apply(lambda signal: signal[:target_length])
     df["signal"] = truncated_signals
-    logger.info("All signals truncated to the minimum size")
+    logger.info("All signals truncated to the target length")
+
+    # Validate that all signals are of length 248 -> can also be implemented in a test file
+    if not all(df["signal"].apply(len) == target_length):
+        raise ValueError("Not all signals are of length 248")
 
     df["size"] = target_length
     logger.info(f"Size adjusted to {target_length}")
-    # Save the truncated data to a new file
+
     output_file_path = set_path("truncated_data.feather")
     df.to_feather(output_file_path)
 
