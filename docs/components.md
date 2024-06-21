@@ -9,8 +9,7 @@
 | De-Noising (Re-referencing) | cleaned_data.csv | denoised_data.csv | Re-reference signals to reduce noise |
 | Feature Extraction | denoised_data.csv | features.csv | Extract features (e.g., power spectral density, wavelet coefficients) |
 | Normalization | features.csv | normalized_features.csv | Normalize extracted features |
-| Dimensionality Reduction | normalized_features.csv | reduced_features.csv | Apply PCA or other dimensionality reduction methods |
-| Preprocessed Data | reduced_features.csv | preprocessed_data.csv | Final cleaned data for analysis |
+| Dimensionality Reduction | normalized_features.csv | preprocessed_data.csv | Apply PCA or other dimensionality reduction methods |
 
 ### Analysis Workflow Steps
 
