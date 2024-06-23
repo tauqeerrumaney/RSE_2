@@ -11,11 +11,15 @@ try:
 
     if "size" not in df.columns:
         raise ValueError(
-            "The DataFrame must contain a 'size' column representing the sampling rate."
+            "The DataFrame must contain a 'size' column "
+            "representing the sampling rate."
         )
 
     df["signal"] = df.apply(
-        lambda row: apply_filter_to_signal(np.array(row["signal"]), row["size"],lowcut=1), axis=1
+        lambda row: apply_filter_to_signal(
+            np.array(row["signal"]), row["size"], lowcut=1
+        ),
+        axis=1,
     )
 
     output_file_path = set_path("filtered_data.feather")
