@@ -3,13 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+# TODO: calculate mean and sd. If amplitude >2*sd, plot the signal
+
 # File loading
-file_name = "filtered_data.feather"
+file_name = "filtered_data.feather"  # TODO: argparse, default "filtered_data.feather"
 # Event to inspect (set to None to plot all data)
 # from 67635 to 68349 -> 714 unique events
-event_id = 67637
+event_id = 67637  # TODO: argparse:
 # Electrode to inspect (set to None to plot all channels)
-electrode = None
+electrode = None  # TODO: argparse, default None
 
 file_path = set_path(file_name)
 
