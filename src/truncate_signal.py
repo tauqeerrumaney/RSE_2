@@ -11,7 +11,9 @@ try:
     target_length = min(df["size"])
 
     # Truncate all signals to the target length
-    truncated_signals = df["signal"].apply(lambda signal: signal[:target_length])
+    truncated_signals = df["signal"].apply(
+        lambda signal: signal[:target_length]
+    )
     df["signal"] = truncated_signals
     logger.info("All signals truncated to the target length")
 

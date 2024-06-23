@@ -24,7 +24,9 @@ try:
     if electrode is not None:
         # Check if the electrode is within the range of values in the dataframe
         if electrode not in df["channel"].unique():
-            raise ValueError(f"Electrode {electrode} not found in the dataframe")
+            raise ValueError(
+                f"Electrode {electrode} not found in the dataframe"
+            )
 
         # Filter data for the specified electrode across all events
         electrode_data = df[df["channel"] == electrode]
@@ -33,7 +35,9 @@ try:
         if event_id is not None:
             # Check if the event_id is within the range of values in the dataframe
             if event_id not in df["event"].unique():
-                raise ValueError(f"Event ID {event_id} not found in the dataframe")
+                raise ValueError(
+                    f"Event ID {event_id} not found in the dataframe"
+                )
 
             # Filter data for the specified event
             electrode_data = df[df["event"] == event_id]
@@ -50,7 +54,8 @@ try:
         # Plot for the specific electrode across all events
         for idx, row in electrode_data.iterrows():
             plt.plot(
-                row["signal"], label=f"Electrode {electrode} - Event {row['event']}"
+                row["signal"],
+                label=f"Electrode {electrode} - Event {row['event']}",
             )
         plt.title(f"EEG Signal for Electrode {electrode} Across All Events")
     else:

@@ -34,8 +34,8 @@ df = pd.DataFrame(rows, columns=columns)
 df.drop(columns=["device"], inplace=True)
 
 # this corresponds to the LSB of the resolution of the EEG device
-conversion_factor = 0.1275  
-df['signal'] = df['signal'].apply(lambda x: np.array(x) * conversion_factor)
+conversion_factor = 0.1275
+df["signal"] = df["signal"].apply(lambda x: np.array(x) * conversion_factor)
 
 logger.info("Finished reading data")
 
