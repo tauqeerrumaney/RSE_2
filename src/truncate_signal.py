@@ -20,7 +20,8 @@ def main(args):
         df["signal"] = truncated_signals
         logger.info("All signals truncated to the target length")
 
-        # Validate that all signals are of length 248 -> can also be implemented in a test file
+        # Validate that all signals are of length 248
+        # -> can also be implemented in a test file
         if not all(df["signal"].apply(len) == target_length):
             raise ValueError("Not all signals are of length 248")
 
