@@ -46,10 +46,11 @@ if __name__ == "__main__":
     USAGE = "bandpass filter the data"
     parser = argparse.ArgumentParser(description=USAGE)
     parser.add_argument(
-        "--infile", "-i",
+        "--infile",
+        "-i",
         type=str,
         help="name of the file to load",
-        default="raw_data_EPOC.txt",
+        default="raw_data_MOCK.feather",
     )
 
     args = parser.parse_args()
