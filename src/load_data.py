@@ -1,13 +1,12 @@
 import pandas as pd
 import numpy as np
-import os
 import traceback
 import argparse
 from utils import logger, set_path
 
 
 def main(args):
-    file_path = set_path(args.file_name)
+    file_path = set_path(args.infile)
 
     # format of MindBigData data set
     columns = ["id", "event", "device", "channel", "code", "size", "signal"]
@@ -60,13 +59,16 @@ if __name__ == "__main__":
     USAGE = "loading the data"  # TODO: make more precise
     parser = argparse.ArgumentParser(description=USAGE)
     parser.add_argument(
-        "--mock",
+        "--infile", "-i",
+        type=str,
+        help="name of the file to load",
+        default="raw_data_EPOC.txt",
+    )
+    parser.add_argument(
+        "--mock", "-m",
         type=bool,
         help="use only a subset of the data",
         default=True,
-    )
-    parser.add_argument(
-        "--file_name", "-f", type=str, help="name of the file to load", default="raw_data_EPOC.txt",
     )
 
     args = parser.parse_args()
