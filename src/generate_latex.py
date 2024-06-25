@@ -1,28 +1,37 @@
 from pylatex import Document, Section, Subsection, Command
+from pylatex.utils import italic, NoEscape
 
-# Create a basic document
-doc = Document("dummy")
 
-# Add a title
-doc.preamble.append(Command("title", "Dummy Document"))
-doc.preamble.append(Command("author", "Your Name"))
-doc.preamble.append(Command("date", "2022"))
+def fill_document(doc):
+    """Add a section, a subsection and some text to the document.
 
-doc.append(Section("Section 1"))
-doc.append("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+    Args:
+        doc (object): The document object to which the section, subsection, and text will be added.
 
-doc.append(Section("Section 2"))
-doc.append(Subsection("Subsection 2.1"))
-doc.append(
-    "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-)
+    Returns:
+        None
+    """
+    with doc.create(Section("Dataset")):
+        doc.append("Some regular text and some ")
+        doc.append(italic("italic text. "))
 
-doc.append(Subsection("Subsection 2.2"))
-doc.append(
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
-)
+        with doc.create(Subsection("A subsection")):
+            doc.append("Also some crazy characters: $&#{}")
 
-# Compile the document to PDF
-doc.generate_pdf("results/dummy", clean_tex=False, compiler="pdflatex")
 
-print("Dummy PDF created successfully!")
+if __name__ == "__main__":
+    # Basic document
+    doc = Document("basic")
+    fill_document(doc)
+
+    doc = Document()
+
+    doc.preamble.append(Command("title", "Dummy title"))
+    doc.preamble.append(Command("author", "RSE 2024 Group L"))
+    doc.preamble.append(Command("date", NoEscape(r"\today")))
+    doc.append(NoEscape(r"\maketitle"))
+
+    fill_document(doc)
+
+    doc.generate_pdf("results/dummy", clean_tex=False, compiler="pdflatex")
+    doc.generate_tex("results/dummy")
