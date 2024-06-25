@@ -6,9 +6,7 @@ import argparse
 # TODO: calculate mean and sd. If amplitude >2*sd, plot the signal
 
 # File loading
-infile = (
-    "filtered_data.feather"
-)
+infile = "filtered_data.feather"
 # Event to inspect (set to None to plot all data)
 # from 67635 to 68349 -> 714 unique events
 event_id = 67637
@@ -51,7 +49,7 @@ def main(args):
                 electrode_data = df[df["event"] == args.event_id]
                 logger.info(f"Data for event ID {args.event_id} loaded")
             else:
-                # Use all data if event_id is None 
+                # Use all data if event_id is None
                 # and no electrode is specified
                 electrode_data = df
                 logger.info("All data loaded for plotting")
