@@ -6,7 +6,7 @@ def fill_document(doc):
     """Add a section, a subsection and some text to the document.
 
     Args:
-        doc (object): The document object to which the section, subsection, and text will be added.
+        doc (object): The document object to which the content will be added.
 
     Returns:
         None
@@ -20,18 +20,18 @@ def fill_document(doc):
 
 
 if __name__ == "__main__":
-    # Basic document
+    # Create basic document
     doc = Document("basic")
-    fill_document(doc)
 
-    doc = Document()
-
+    # Create preamble and generate title
     doc.preamble.append(Command("title", "Dummy title"))
     doc.preamble.append(Command("author", "RSE 2024 Group L"))
     doc.preamble.append(Command("date", NoEscape(r"\today")))
     doc.append(NoEscape(r"\maketitle"))
 
+    # add contents to document
     fill_document(doc)
 
+    # generate output documents
     doc.generate_pdf("results/dummy", clean_tex=False, compiler="pdflatex")
     doc.generate_tex("results/dummy")
