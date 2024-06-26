@@ -25,7 +25,8 @@ def main(args):
             axis=1,
         )
 
-        output_file_path = set_path("filtered_data.feather")
+        # output_file_path = set_path("filtered_data.feather")
+        output_file_path = set_path(args.outfile)
         df.to_feather(output_file_path)
 
         print(f"Filtered data saved to {output_file_path}")
@@ -51,6 +52,13 @@ if __name__ == "__main__":
         type=str,
         help="name of the file to load",
         default="raw_data_MOCK.feather",
+    )
+    parser.add_argument(
+        "--outfile",
+        "-o",
+        type=str,
+        help="name of the file to save the filtered data",
+        default="filtered_data.feather",
     )
 
     args = parser.parse_args()
