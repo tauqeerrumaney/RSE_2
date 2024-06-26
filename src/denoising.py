@@ -15,8 +15,8 @@ def main(args):
     epochs.set_eeg_reference("average", projection=True)
     epochs.apply_proj()
 
-    output_file = "denoised_data-epo.fif"
-    output_path = set_path(output_file)
+    # output_file = "denoised_data-epo.fif"
+    output_path = set_path(args.outfile)
 
     epochs.save(output_path, overwrite=True)
 
@@ -33,6 +33,13 @@ if __name__ == "__main__":
         type=str,
         help="name of the file to load",
         default="cleaned_data-epo.fif",
+    )
+    parser.add_argument(
+        "--outfile",
+        "-o",
+        type=str,
+        help="name of the file to save the denoised data",
+        default="denoised_data-epo.fif",
     )
 
     args = parser.parse_args()
