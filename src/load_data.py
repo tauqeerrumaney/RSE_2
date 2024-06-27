@@ -40,14 +40,15 @@ def main(args):
     logger.info("Finished reading data")
 
     try:
+        file_name = (args.outfile).split(".")[0]
         if args.mock:
-            out_path = set_path("raw_data_MOCK.feather")
+            out_path = set_path(file_name & "_MOCK.feather")
             df_mock = df.head(10000)
             df_mock.to_feather(out_path)
             logger.info(f"Mock file saved to {out_path}")
         else:
             # save data in feather format -> smaller
-            out_path = set_path("raw_data_EPOC.feather")
+            out_path = set_path(file_name & "_EPOC.feather")
             df.to_feather(out_path)
             logger.info(f"Raw file saved to {out_path}")
     # TODO: handle different error types independently
@@ -63,6 +64,12 @@ if __name__ == "__main__":
         type=str,
         help="name of the file to load",
         default="raw_data_EPOC.txt",
+    )
+    parser.add_argument(
+        "--outfile", "-o",
+        type=str,
+        help="name of the file to save the data in feather format",
+        default="raw_data.feather",
     )
     parser.add_argument(
         "--mock", "-m",
