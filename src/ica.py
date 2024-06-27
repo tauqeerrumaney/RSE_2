@@ -13,7 +13,7 @@ def main(args):
     file_path = set_path(args.infile)
 
     df = pd.read_feather(file_path)
-    logger.info("MindBigData EPOC data loaded")
+    logger.info("Truncated data loaded")
 
     sfreq = df["size"].iloc[0] / 2
     events = df["event"].unique()

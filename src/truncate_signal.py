@@ -9,7 +9,7 @@ def main(args):
         file_path = set_path(args.infile)
 
         df = pd.read_feather(file_path)
-        logger.info("Raw data loaded")
+        logger.info("Bandpass filtered data loaded")
 
         target_length = min(df["size"])
 
