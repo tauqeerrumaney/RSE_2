@@ -105,20 +105,18 @@ def main(args):
 
 if __name__ == "__main__":
     USAGE = "Extract features from denoised data"
-    parser = argparse.ArgumentParser(description=USAGE)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="denoised_data-epo.fif",
+        # default="denoised_data-epo.fif",
     )
     parser.add_argument(
-        "--outfile",
-        "-o",
+        "outfile",
         type=str,
         help="name of the file to save extracted features",
-        default="extracted_features.npy",
+        # default="extracted_features.npy",
     )
     parser.add_argument(
         "--features",

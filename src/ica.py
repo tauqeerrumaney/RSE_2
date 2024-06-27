@@ -115,19 +115,18 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "Perform ICA on the data and remove artifacts"
-    parser = argparse.ArgumentParser(description=USAGE)
+    # USAGE = "Perform ICA on the data and remove artifacts"
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="truncated_data.feather",
+        # default="truncated_data.feather",
     )
     parser.add_argument(
         "--inspec",
         type=bool,
-        help="name of the file to load",
+        help="inspect individual components for artifacts",
         default=False,
     )
 

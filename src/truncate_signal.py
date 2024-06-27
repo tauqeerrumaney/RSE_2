@@ -28,7 +28,8 @@ def main(args):
         df["size"] = target_length
         logger.info(f"Size adjusted to {target_length}")
 
-        output_file_path = set_path("truncated_data.feather")
+        # output_file = "truncated_data.feather"
+        output_file_path = set_path(args.outfile)
         df.to_feather(output_file_path)
 
         print(f"Truncated data saved to {output_file_path}")
@@ -46,14 +47,19 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "truncating the signals to the target length"
-    parser = argparse.ArgumentParser(description=USAGE)
+    # USAGE = "truncating the signals to the target length"
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="filtered_data.feather",
+        # default="filtered_data.feather",
+    )
+    parser.add_argument(
+        "outfile",
+        type=str,
+        help="name of the file to load",
+        # default="truncated_data.feather",
     )
 
     args = parser.parse_args()

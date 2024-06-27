@@ -25,21 +25,18 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "Denoise the data"
-    parser = argparse.ArgumentParser(description=USAGE)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="cleaned_data-epo.fif",
+        # default="cleaned_data-epo.fif",
     )
     parser.add_argument(
-        "--outfile",
-        "-o",
+        "outfile",
         type=str,
         help="name of the file to save the denoised data",
-        default="denoised_data-epo.fif",
+        # default="denoised_data-epo.fif",
     )
 
     args = parser.parse_args()

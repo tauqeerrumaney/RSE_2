@@ -44,21 +44,18 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "bandpass filter the data"
-    parser = argparse.ArgumentParser(description=USAGE)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="raw_data_MOCK.feather",
+        # default="raw_data_MOCK.feather",
     )
     parser.add_argument(
-        "--outfile",
-        "-o",
+        "outfile",
         type=str,
         help="name of the file to save the filtered data",
-        default="filtered_data.feather",
+        # default="filtered_data.feather",
     )
 
     args = parser.parse_args()

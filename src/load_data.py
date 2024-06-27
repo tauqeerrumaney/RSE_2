@@ -57,19 +57,19 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "loading the data"  # TODO: make more precise
-    parser = argparse.ArgumentParser(description=USAGE)
+    # USAGE = "loading the data"  # TODO: make more precise
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile", "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="raw_data_EPOC.txt",
+        # default="raw_data_EPOC.txt",
     )
     parser.add_argument(
-        "--outfile", "-o",
+        "outfile",
         type=str,
         help="name of the file to save the data in feather format",
-        default="raw_data.feather",
+        # default="raw_data.feather",
     )
     parser.add_argument(
         "--mock", "-m",

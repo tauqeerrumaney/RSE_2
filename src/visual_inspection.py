@@ -97,14 +97,13 @@ def main(args):
 
 
 if __name__ == "__main__":
-    USAGE = "visually inspecting the data"  # TODO: make more precise
-    parser = argparse.ArgumentParser(description=USAGE)
+    # USAGE = "visually inspecting the data"  # TODO: make more precise
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--infile",
-        "-i",
+        "infile",
         type=str,
         help="name of the file to load",
-        default="filtered_data.feather",
+        # default="filtered_data.feather",
     )
     parser.add_argument(
         "--event_id",
