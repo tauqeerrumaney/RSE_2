@@ -1,12 +1,12 @@
 import mne
 import argparse
-from utils import logger, set_path
+from utils import logger, get_path
 
 
 def main(args):
     # Load the cleaned dataset
     # input_file = "cleaned_data-epo.fif"
-    input_path = set_path(args.infile)
+    input_path = get_path(args.infile)
 
     epochs = mne.read_epochs(input_path, preload=True)
     logger.info("Artifact filtered data loaded")
@@ -16,7 +16,7 @@ def main(args):
     epochs.apply_proj()
 
     # output_file = "denoised_data-epo.fif"
-    output_path = set_path(args.outfile)
+    output_path = get_path(args.outfile)
 
     epochs.save(output_path, overwrite=True)
 

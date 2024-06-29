@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
 import argparse
-from utils import apply_filter_to_signal, logger, set_path
+from utils import apply_filter_to_signal, logger, get_path
 
 
 def main(args):
     try:
         # file_name = "raw_data_MOCK.feather"
-        file_path = set_path(args.infile)
+        file_path = get_path(args.infile)
 
         df = pd.read_feather(file_path)
         logger.info("Raw data loaded")
@@ -26,7 +26,7 @@ def main(args):
         )
 
         # output_file_path = set_path("filtered_data.feather")
-        output_file_path = set_path(args.outfile)
+        output_file_path = get_path(args.outfile)
         df.to_feather(output_file_path)
 
         print(f"Filtered data saved to {output_file_path}")

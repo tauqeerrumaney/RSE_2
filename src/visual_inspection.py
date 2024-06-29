@@ -1,4 +1,4 @@
-from utils import logger, set_path
+from utils import logger, get_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
@@ -15,7 +15,7 @@ electrode = None
 
 
 def main(args):
-    file_path = set_path(args.infile)
+    file_path = get_path(args.infile)
 
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")

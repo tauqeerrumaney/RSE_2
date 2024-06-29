@@ -2,11 +2,11 @@ import pandas as pd
 import numpy as np
 import traceback
 import argparse
-from utils import logger, set_path
+from utils import logger, get_path
 
 
 def main(args):
-    file_path = set_path(args.infile)
+    file_path = get_path(args.infile)
 
     # format of MindBigData data set
     columns = ["id", "event", "device", "channel", "code", "size", "signal"]
@@ -42,13 +42,13 @@ def main(args):
     try:
         file_name = (args.outfile).split(".")[0]
         if args.mock:
-            out_path = set_path(file_name & "_MOCK.feather")
+            out_path = get_path(file_name & "_MOCK.feather")
             df_mock = df.head(10000)
             df_mock.to_feather(out_path)
             logger.info(f"Mock file saved to {out_path}")
         else:
             # save data in feather format -> smaller
-            out_path = set_path(file_name & "_EPOC.feather")
+            out_path = get_path(file_name & "_EPOC.feather")
             df.to_feather(out_path)
             logger.info(f"Raw file saved to {out_path}")
     # TODO: handle different error types independently

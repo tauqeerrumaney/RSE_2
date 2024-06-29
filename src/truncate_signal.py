@@ -1,12 +1,12 @@
 import pandas as pd
 import argparse
-from utils import logger, set_path
+from utils import logger, get_path
 
 
 def main(args):
     try:
         # file_name = "filtered_data.feather"
-        file_path = set_path(args.infile)
+        file_path = get_path(args.infile)
 
         df = pd.read_feather(file_path)
         logger.info("Bandpass filtered data loaded")
@@ -29,7 +29,7 @@ def main(args):
         logger.info(f"Size adjusted to {target_length}")
 
         # output_file = "truncated_data.feather"
-        output_file_path = set_path(args.outfile)
+        output_file_path = get_path(args.outfile)
         df.to_feather(output_file_path)
 
         print(f"Truncated data saved to {output_file_path}")

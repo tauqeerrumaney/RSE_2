@@ -3,14 +3,14 @@ import numpy as np
 import mne
 import argparse
 from mne.preprocessing import ICA
-from utils import logger, set_path
+from utils import logger, get_path
 
 
 def main(args):
     INSPEC = args.inspec
 
     # file_name = "truncated_data.feather"
-    file_path = set_path(args.infile)
+    file_path = get_path(args.infile)
 
     df = pd.read_feather(file_path)
     logger.info("Truncated data loaded")
@@ -108,7 +108,7 @@ def main(args):
     ica.apply(epochs_clean)
 
     # svae cleaned epoched data in fif format for further use with mne
-    output_path = set_path("cleaned_data-epo.fif")
+    output_path = get_path("cleaned_data-epo.fif")
     epochs_clean.save(output_path, overwrite=True)
 
     logger.info(f"Cleaned data saved to {output_path}")

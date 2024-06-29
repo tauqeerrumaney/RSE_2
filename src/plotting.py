@@ -1,8 +1,8 @@
 import mne
-from utils import set_path
+from utils import get_path
 
 input_file = "denoised_data-epo.fif"  # Path to the denoised file
-input_path = set_path(input_file)
+input_path = get_path(input_file)
 
 epochs = mne.read_epochs(input_path, preload=True)
 
