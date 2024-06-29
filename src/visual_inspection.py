@@ -1,43 +1,78 @@
+"""
+Script for loading, filtering, and plotting EEG data.
+
+This script loads EEG data from a feather file, allows filtering by
+specific electrode or event, and plots the EEG signal.
+
+Usage:
+    python script.py infile [--event EVENT] [--electrode ELECTRODE]
+
+Positional Arguments:
+    infile          Name of the file to load.
+
+Optional Arguments:
+    --event         Event to inspect (set to None to plot all data).
+    --electrode     Electrode to inspect (set to None to plot all channels).
+
+Description:
+    The script performs the following steps:
+    1. Loads the EEG data from the specified input file.
+    2. Filters the data based on the specified electrode or event.
+    3. Plots the EEG signal for the filtered data or all data if no filter is applied.
+
+Modules Required:
+    - pandas
+    - matplotlib.pyplot
+    - argparse
+    - utils (providing logger and get_path functions)
+
+Functions:
+    main(args): Main function to execute the script logic.
+
+Example:
+    python script.py data.feather --event 1 --electrode Fz
+"""
+
 from utils import logger, get_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-
 def main(args):
+    """
+    Main function to load, filter, and plot EEG data.
+
+    Args:
+        args: Command-line arguments parsed by argparse.
+
+    Returns:
+        None
+    """
     file_path = get_path(args.infile)
     event = args.event
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-
     try:
         if args.electrode is not None:
-            # Check if the electrode is within
-            # the range of values in the dataframe
+            # Check if the electrode is within the range of values in the dataframe
             if args.electrode not in df["channel"].unique():
-                raise ValueError(
-                    f"Electrode {args.electrode} not found in the dataframe"
-                )
+                raise ValueError(f"Electrode {args.electrode} not found in the dataframe")
 
             # Filter data for the specified electrode across all events
             electrode_data = df[df["channel"] == args.electrode]
             logger.info(f"Data for electrode {args.electrode} loaded")
         else:
-            if args.event_id is not None:
-                # Check if the event_id is within
-                # the range of values in the dataframe
-                if args.event_id not in df["event"].unique():
-                    raise ValueError(
-                        f"Event ID {args.event_id} not found in the dataframe"
-                    )
+            if args.event is not None:
+                # Check if the event_id is within the range of values in the dataframe
+                if args.event not in df["event"].unique():
+                    raise ValueError(f"Event ID {args.event} not found in the dataframe")
 
                 # Filter data for the specified event
-                electrode_data = df[df["event"] == args.event_id]
-                logger.info(f"Data for event ID {args.event_id} loaded")
+                electrode_data = df[df["event"] == args.event]
+                logger.info(f"Data for event ID {args.event} loaded")
             else:
-                # Use all data if event_id is None
-                # and no electrode is specified
+                # Use all data if event_id is None and no electrode is specified
                 electrode_data = df
                 logger.info("All data loaded for plotting")
 
@@ -47,10 +82,7 @@ def main(args):
         if args.electrode is not None:
             # Plot for the specific electrode across all events
             for idx, row in electrode_data.iterrows():
-                plt.plot(
-                    row["signal"],
-                    label=f"Electrode {args.electrode} - Event {row['event']}",
-                )
+                plt.plot(row["signal"], label=f"Electrode {args.electrode} - Event {row['event']}")
             plt.title(f"EEG Signal for Electrode {args.electrode} Across All Events")
         else:
             # Plot for all channels for the specified event or all data
@@ -73,30 +105,26 @@ def main(args):
 
     except ValueError as ve:
         logger.error(ve)
-
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
 
-
-
 if __name__ == "__main__":
-    # USAGE = "visually inspecting the data"  # TODO: make more precise
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load",
+        help="name of the file to load"
     )
     parser.add_argument(
         "--event",
         type=int,
-        help="Event to inspect (set to None to plot all data)",
+        help="Event to inspect (set to None to plot all data)"
     )
     parser.add_argument(
         "--electrode",
         type=str,
         help="Electrode to inspect (set to None to plot all channels)",
-        default=None,
+        default=None
     )
 
     args = parser.parse_args()
