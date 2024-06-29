@@ -81,7 +81,6 @@ def extract_features(epochs, feature_types):
             )
             features[f"{channel}_sample_entropy"] = samp_entropy
             features[f"{channel}_approx_entropy"] = app_entropy
-    print(features)
     return features
 
 
@@ -100,7 +99,6 @@ def main(args):
     features_output_path = get_path(features_output_file)
     np.save(features_output_path, features)
     logger.info(f"Extracted features saved to {features_output_path}")
-    print(f"Extracted features saved to {features_output_path}")
 
 
 if __name__ == "__main__":

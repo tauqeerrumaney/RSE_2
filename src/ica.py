@@ -7,7 +7,7 @@ from utils import logger, get_path
 
 
 def main(args):
-    INSPEC = args.inspec
+    inspection = args.inspec
 
     # file_name = "truncated_data.feather"
     file_path = get_path(args.infile)
@@ -84,7 +84,7 @@ def main(args):
     # if specified
     identified_artifacts = []
 
-    if INSPEC:
+    if inspection:
         for i in range(ica.n_components_):
             ica.plot_properties(epochs, picks=[i])
             response = input(f"Mark component {i} as an artifact? (y/n): ")

@@ -3,20 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 
-# TODO: calculate mean and sd. If amplitude >2*sd, plot the signal
-
-# File loading
-infile = "filtered_data.feather"
-# Event to inspect (set to None to plot all data)
-# from 67635 to 68349 -> 714 unique events
-event_id = 67637
-# Electrode to inspect (set to None to plot all channels)
-electrode = None
-
 
 def main(args):
     file_path = get_path(args.infile)
-
+    event = args.event
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
@@ -64,21 +54,17 @@ def main(args):
                     row["signal"],
                     label=f"Electrode {args.electrode} - Event {row['event']}",
                 )
-            plt.title(
-                f"EEG Signal for Electrode {args.electrode} Across All Events"
-            )
+            plt.title(f"EEG Signal for Electrode {args.electrode} Across All Events")
         else:
             # Plot for all channels for the specified event or all data
             unique_channels = electrode_data["channel"].unique()
             for channel in unique_channels:
-                channel_data = electrode_data[
-                    electrode_data["channel"] == channel
-                ]
+                channel_data = electrode_data[electrode_data["channel"] == channel]
                 for idx, row in channel_data.iterrows():
                     plt.plot(row["signal"], label=f"Channel {channel}")
             title = (
-                f"EEG Signal for Each Channel (Event {event_id})"
-                if event_id is not None
+                f"EEG Signal for Each Channel (Event {event})"
+                if event is not None
                 else "EEG Signal for Each Channel (All Data)"
             )
             plt.title(title)
@@ -106,7 +92,7 @@ if __name__ == "__main__":
         # default="filtered_data.feather",
     )
     parser.add_argument(
-        "--event_id",
+        "--event",
         type=int,
         help="Event to inspect (set to None to plot all data)",
         default=67637,
