@@ -100,13 +100,13 @@ def main(args):
         try:
             file_name = args.outfile.split(".")[0]
             if args.verbose:
-                out_path = get_path(f"{file_name}_MOCK.feather")
+                out_path = get_path(f"{file_name}.feather")
                 df_mock = df.head(10000)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
                 # save data in feather format -> smaller
-                out_path = get_path(f"{file_name}_EPOC.feather")
+                out_path = get_path(f"{file_name}.feather")
                 df.to_feather(out_path)
                 logger.info(f"Raw file saved to {out_path}")
         # TODO: handle different error types independently
