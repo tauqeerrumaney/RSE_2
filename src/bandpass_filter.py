@@ -1,7 +1,21 @@
 import numpy as np
 import pandas as pd
 import argparse
+from scipy.signal import butter, filtfilt
 from utils import apply_filter_to_signal, logger, get_path
+
+
+def bandpass_filter(data, lowcut, highcut, fs, order=5):
+    nyquist = 0.5 * fs
+    low = lowcut / nyquist
+    high = highcut / nyquist
+    b, a = butter(order, [low, high], btype="band")
+    y = filtfilt(b, a, data)
+    return y
+
+
+def apply_filter_to_signal(signal, fs, lowcut=0.1, highcut=60.0, order=5):
+    return bandpass_filter(signal, lowcut, highcut, fs, order)
 
 
 def main(args):
