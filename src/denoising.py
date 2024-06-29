@@ -6,23 +6,28 @@ from utils import logger, get_path
 def main(args):
     # Load the cleaned dataset
     # input_file = "cleaned_data-epo.fif"
-    input_path = get_path(args.infile)
+    try:
+        input_path = get_path(args.infile)
 
-    epochs = mne.read_epochs(input_path, preload=True)
-    logger.info("Artifact filtered data loaded")
+        epochs = mne.read_epochs(input_path, preload=True)
+        logger.info("Artifact filtered data loaded")
 
-    # re-reference to the average of all channels
-    epochs.set_eeg_reference("average", projection=True)
-    epochs.apply_proj()
+        # re-reference to the average of all channels
+        epochs.set_eeg_reference("average", projection=True)
+        epochs.apply_proj()
 
-    # output_file = "denoised_data-epo.fif"
-    output_path = get_path(args.outfile)
+        # output_file = "denoised_data-epo.fif"
+        output_path = get_path(args.outfile)
 
-    epochs.save(output_path, overwrite=True)
+        epochs.save(output_path, overwrite=True)
 
-    logger.info(f"Denoised data saved to {output_path}")
-    print(f"Denoised data saved to {output_path}")
-
+        logger.info(f"Denoised data saved to {output_path}")
+    except ValueError as ve:
+        logger.error(f"ValueError: {ve}")
+    except FileNotFoundError as fnf_error:
+        logger.error(f"FileNotFoundError: {fnf_error}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
