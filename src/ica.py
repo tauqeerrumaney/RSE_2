@@ -7,9 +7,7 @@ from utils import logger, get_path
 
 
 def main(args):
-    inspection = args.inspec
-
-    # file_name = "truncated_data.feather"
+    inspection = args.verbose
     file_path = get_path(args.infile)
 
     df = pd.read_feather(file_path)
@@ -28,9 +26,7 @@ def main(args):
         event_df = df[df["event"] == event]
         epoch_signals = []
         for channel in channels:
-            channel_signal = event_df[event_df["channel"] == channel][
-                "signal"
-            ].values
+            channel_signal = event_df[event_df["channel"] == channel]["signal"].values
             if len(channel_signal) > 0:
                 signal = channel_signal[0]
 
@@ -46,9 +42,7 @@ def main(args):
     epochs_data = np.array(epochs_list)
 
     # create mne object
-    info = mne.create_info(
-        ch_names=list(channels), sfreq=sfreq, ch_types="eeg"
-    )
+    info = mne.create_info(ch_names=list(channels), sfreq=sfreq, ch_types="eeg")
 
     # set montage, MDB uses 10-20
     montage = mne.channels.make_standard_montage("standard_1020")
@@ -56,9 +50,7 @@ def main(args):
 
     # Create an events array for MNE,
     # each event starts at the next multiple of the epoch length
-    event_ids = {
-        str(code): idx for idx, code in enumerate(event_codes.values())
-    }
+    event_ids = {str(code): idx for idx, code in enumerate(event_codes.values())}
     events_array = np.array(
         [
             [idx * target_length, 0, event_ids[str(event_codes[event])]]
@@ -74,9 +66,7 @@ def main(args):
         epochs_data, info, events_array, tmin=0, event_id=event_ids
     )
     print(epochs)
-    ica = ICA(
-        n_components=min(len(channels), 20), random_state=97, max_iter=800
-    )
+    ica = ICA(n_components=min(len(channels), 20), random_state=97, max_iter=800)
     ica.fit(epochs)
     ica.plot_components()
 
@@ -95,9 +85,7 @@ def main(args):
             "Enter suspected artifact components (comma-separated): "
         )
         if additional_artifacts:
-            additional_artifacts = list(
-                map(int, additional_artifacts.split(","))
-            )
+            additional_artifacts = list(map(int, additional_artifacts.split(",")))
         else:
             additional_artifacts = []
 
@@ -108,7 +96,7 @@ def main(args):
     ica.apply(epochs_clean)
 
     # svae cleaned epoched data in fif format for further use with mne
-    output_path = get_path("cleaned_data-epo.fif")
+    output_path = args.outfile
     epochs_clean.save(output_path, overwrite=True)
 
     logger.info(f"Cleaned data saved to {output_path}")
@@ -121,13 +109,17 @@ if __name__ == "__main__":
         "infile",
         type=str,
         help="name of the file to load",
-        # default="truncated_data.feather",
     )
     parser.add_argument(
-        "--inspec",
-        type=bool,
+        "outfile",
+        type=str,
+        help="name of the file to save the denoised data"
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
         help="inspect individual components for artifacts",
-        default=False,
+        action="store_true",
     )
 
     args = parser.parse_args()
