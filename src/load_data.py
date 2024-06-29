@@ -72,10 +72,9 @@ if __name__ == "__main__":
         # default="raw_data.feather",
     )
     parser.add_argument(
-        "--mock", "-m",
-        type=bool,
+        "--verbose", "-v",
         help="use only a subset of the data",
-        default=True,
+        action="store_true",
     )
 
     args = parser.parse_args()
