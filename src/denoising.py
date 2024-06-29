@@ -4,8 +4,7 @@ from utils import logger, get_path
 
 
 def main(args):
-    # Load the cleaned dataset
-    # input_file = "cleaned_data-epo.fif"
+
     try:
         input_path = get_path(args.infile)
 
@@ -16,7 +15,6 @@ def main(args):
         epochs.set_eeg_reference("average", projection=True)
         epochs.apply_proj()
 
-        # output_file = "denoised_data-epo.fif"
         output_path = get_path(args.outfile)
 
         epochs.save(output_path, overwrite=True)
@@ -35,13 +33,11 @@ if __name__ == "__main__":
         "infile",
         type=str,
         help="name of the file to load",
-        # default="cleaned_data-epo.fif",
     )
     parser.add_argument(
         "outfile",
         type=str,
         help="name of the file to save the denoised data",
-        # default="denoised_data-epo.fif",
     )
 
     args = parser.parse_args()

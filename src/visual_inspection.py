@@ -10,9 +10,6 @@ def main(args):
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-    # min_event_id = df["event"].min()
-    # max_event_id = df["event"].max()
-    # print(max_event_id - min_event_id)
 
     try:
         if args.electrode is not None:
@@ -76,10 +73,10 @@ def main(args):
 
     except ValueError as ve:
         logger.error(ve)
-        print(ve)
+
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
-        print(f"An unexpected error occurred: {e}")
+
 
 
 if __name__ == "__main__":
@@ -89,13 +86,11 @@ if __name__ == "__main__":
         "infile",
         type=str,
         help="name of the file to load",
-        # default="filtered_data.feather",
     )
     parser.add_argument(
         "--event",
         type=int,
         help="Event to inspect (set to None to plot all data)",
-        default=67637,
     )
     parser.add_argument(
         "--electrode",
