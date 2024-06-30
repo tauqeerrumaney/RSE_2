@@ -1,13 +1,53 @@
+"""
+Script for truncating EEG signal data to a uniform length.
+
+This script loads bandpass filtered EEG data from a feather file,
+truncates all signals to the length of the shortest signal, and saves
+the truncated data back to a new feather file.
+
+Usage:
+    python script.py infile outfile
+
+Positional Arguments:
+    infile      Name of the file to load.
+    outfile     Name of the file to save the truncated data.
+
+Modules Required:
+    - pandas
+    - argparse
+    - utils (providing get_path function)
+    - logger (providing configure_logger function)
+
+Functions:
+    main(args): Main function to execute the script logic.
+
+Example:
+    python script.py filtered_data.feather truncated_data.feather
+"""
+
 import pandas as pd
 import argparse
 from utils import get_path
 from logger import configure_logger
 
-
 def main(args):
+    """
+    Main function to load, truncate, and save EEG signal data.
+
+    This function performs the following steps:
+    1. Loads the bandpass filtered EEG data from the specified input file.
+    2. Truncates all signals to the length of the shortest signal.
+    3. Validates that all signals are truncated to the target length.
+    4. Saves the truncated data to the specified output file.
+
+    Args:
+        args: Command-line arguments parsed by argparse.
+
+    Returns:
+        None
+    """
     try:
         logger = configure_logger(__name__)
-        # file_name = "filtered_data.feather"
         file_path = get_path(args.infile)
 
         df = pd.read_feather(file_path)
@@ -22,15 +62,13 @@ def main(args):
         df["signal"] = truncated_signals
         logger.info("All signals truncated to the target length")
 
-        # Validate that all signals are of length 248
-        # -> can also be implemented in a test file
+        # Validate that all signals are of the target length
         if not all(df["signal"].apply(len) == target_length):
-            raise ValueError("Not all signals are of length 248")
+            raise ValueError(f"Not all signals are of length {target_length}")
 
         df["size"] = target_length
         logger.info(f"Size adjusted to {target_length}")
 
-        # output_file = "truncated_data.feather"
         output_file_path = get_path(args.outfile)
         df.to_feather(output_file_path)
 
@@ -47,21 +85,17 @@ def main(args):
         logger.error(f"An unexpected error occurred: {e}")
         print(f"An unexpected error occurred: {e}")
 
-
 if __name__ == "__main__":
-    # USAGE = "truncating the signals to the target length"
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load",
-        # default="filtered_data.feather",
+        help="name of the file to load"
     )
     parser.add_argument(
         "outfile",
         type=str,
-        help="name of the file to load",
-        # default="truncated_data.feather",
+        help="name of the file to save the truncated data"
     )
 
     args = parser.parse_args()
