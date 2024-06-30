@@ -33,6 +33,7 @@ import mne
 import argparse
 from utils import logger, get_path
 
+
 def main(args):
     """
     Main function to load, process, and save EEG data.
@@ -63,6 +64,7 @@ def main(args):
         logger.error(f"FileNotFoundError: {fnf_error}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)

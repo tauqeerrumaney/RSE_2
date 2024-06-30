@@ -24,14 +24,14 @@ Description:
     - channel: A string representing the EEG channel.
     - code: An integer code for the data type.
     - size: An integer representing the size of the data.
-    - signal: A comma-separated list of float values representing the EEG signal.
+    - signal: A comma-separated list of float values representing EEG signal.
 
     The script performs the following steps:
     1. Reads the data from the input file.
-    2. Converts the signal values from raw units to micro Volts using a specified
-       conversion factor.
+    2. Converts the signal values from raw units to micro Volts
+       using a specified conversion factor.
     3. Optionally saves a subset of the data if the --verbose flag is provided.
-    4. Saves the processed data into a feather format file for efficient storage.
+    4. Saves processed data into a feather format file for efficient storage.
 
 Modules Required:
     - pandas
@@ -53,6 +53,7 @@ import traceback
 import argparse
 from utils import logger, get_path
 
+
 def main(args):
     """
     Main function to load, process, and save EEG data.
@@ -67,7 +68,15 @@ def main(args):
         file_path = get_path(args.infile)
 
         # format of MindBigData data set
-        columns = ["id", "event", "device", "channel", "code", "size", "signal"]
+        columns = [
+            "id",
+            "event",
+            "device",
+            "channel",
+            "code",
+            "size",
+            "signal",
+        ]
         rows = []
 
         logger.info("Reading data")
@@ -112,13 +121,15 @@ def main(args):
         # TODO: handle different error types independently
         except Exception:
             logger.error("An error occurred: %s", traceback.format_exc())
-    
+
     except ValueError as ve:
         logger.error(f"ValueError: {ve}")
     except FileNotFoundError as fnf_error:
         logger.error(f"FileNotFoundError: {fnf_error}")
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -132,7 +143,8 @@ if __name__ == "__main__":
         help="name of the file to save the data in feather format",
     )
     parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         help="use only a subset of the data",
         action="store_true",
     )

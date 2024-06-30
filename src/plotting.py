@@ -18,7 +18,6 @@ try:
     epochs.plot(n_epochs=10, n_channels=10, scalings="auto")
     epochs.plot_psd(fmin=0.1, fmax=60)
 
-
     evoked = epochs.average()
     evoked.plot()
 
