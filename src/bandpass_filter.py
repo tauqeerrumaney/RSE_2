@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import argparse
 from scipy.signal import butter, filtfilt
-from utils import apply_filter_to_signal, logger, get_path
-
+from utils import apply_filter_to_signal, get_path
+from logger import configure_logger
 
 def bandpass_filter(data, lowcut, highcut, fs, order=5):
     nyquist = 0.5 * fs
@@ -20,10 +20,12 @@ def apply_filter_to_signal(signal, fs, lowcut=0.1, highcut=60.0, order=5):
 
 def main(args):
     try:
+        logger = configure_logger(__name__)
         # file_name = "raw_data_MOCK.feather"
         file_path = get_path(args.infile)
 
         df = pd.read_feather(file_path)
+
         logger.info("Raw data loaded")
 
         if "size" not in df.columns:

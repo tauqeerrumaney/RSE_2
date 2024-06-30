@@ -33,10 +33,11 @@ Example:
     python script.py data.feather --event 1 --electrode Fz
 """
 
-from utils import logger, get_path
+from utils import get_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
+from logger import configure_logger
 
 
 def main(args):
@@ -49,6 +50,7 @@ def main(args):
     Returns:
         None
     """
+    logger = configure_logger(__name__)
     file_path = get_path(args.infile)
     event = args.event
     df = pd.read_feather(file_path)

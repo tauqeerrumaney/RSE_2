@@ -4,8 +4,9 @@ import numpy as np
 import pywt
 from scipy.stats import kurtosis, skew
 from scipy.signal import welch
-from utils import logger, get_path
+from utils import get_path
 from antropy import entropy as ent
+from logger import configure_logger
 
 
 # TODO let nperseg be the min of channel size
@@ -85,6 +86,7 @@ def extract_features(epochs, feature_types):
 
 
 def main(args):
+    logger = configure_logger(__name__)
     # Load the denoised dataset
     input_path = get_path(args.infile)
 

@@ -1,10 +1,12 @@
 import pandas as pd
 import argparse
-from utils import logger, get_path
+from utils import get_path
+from logger import configure_logger
 
 
 def main(args):
     try:
+        logger = configure_logger(__name__)
         # file_name = "filtered_data.feather"
         file_path = get_path(args.infile)
 

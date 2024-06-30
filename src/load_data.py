@@ -51,7 +51,8 @@ import pandas as pd
 import numpy as np
 import traceback
 import argparse
-from utils import logger, get_path
+from utils import get_path
+from logger import configure_logger
 
 
 def main(args):
@@ -65,6 +66,7 @@ def main(args):
         None
     """
     try:
+        logger = configure_logger(__name__)
         file_path = get_path(args.infile)
 
         # format of MindBigData data set

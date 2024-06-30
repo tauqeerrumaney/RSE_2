@@ -3,10 +3,12 @@ import numpy as np
 import mne
 import argparse
 from mne.preprocessing import ICA
-from utils import logger, get_path
+from utils import get_path
+from logger import configure_logger
 
 
 def main(args):
+    logger = configure_logger(__name__)
     inspection = args.verbose
     file_path = get_path(args.infile)
 

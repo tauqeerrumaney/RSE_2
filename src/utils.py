@@ -4,17 +4,7 @@ This module provides utility functions for file handling.
 It includes functions for configuring logging, getting file paths, and more.
 """
 
-import logging
 import os
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
-# TODO change to actual filename
-logger = logging.getLogger(__name__)
-
 
 def get_path(file_name, folder="data"):
     """

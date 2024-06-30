@@ -31,7 +31,8 @@ Example:
 
 import mne
 import argparse
-from utils import logger, get_path
+from utils import get_path
+from logger import configure_logger
 
 
 def main(args):
@@ -45,6 +46,7 @@ def main(args):
         None
     """
     try:
+        logger = configure_logger(__name__)
         # Load the cleaned dataset
         input_path = get_path(args.infile)
         epochs = mne.read_epochs(input_path, preload=True)
