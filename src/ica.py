@@ -1,8 +1,9 @@
 """
 Script for performing ICA on EEG data and removing artifacts.
 
-This script loads EEG data from a feather file, performs Independent Component Analysis (ICA) 
-to identify and remove artifacts, and saves the cleaned data to a new file in FIF format.
+This script loads EEG data from a feather file, performs
+Independent Component Analysis (ICA) to identify and remove artifacts,
+and saves the cleaned data to a new file in FIF format.
 
 Usage:
     python script.py infile outfile [--verbose]
@@ -38,7 +39,8 @@ from mne.preprocessing import ICA
 from utils import get_path
 from logger import configure_logger
 
-def main(args):
+
+def main(infile, outfile, verbose=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
@@ -57,8 +59,8 @@ def main(args):
         None
     """
     logger = configure_logger(__name__)
-    inspection = args.verbose
-    file_path = get_path(args.infile)
+    inspection = verbose
+    file_path = get_path(infile, folder="data")
 
     df = pd.read_feather(file_path)
     logger.info("Truncated data loaded")
@@ -75,11 +77,15 @@ def main(args):
         event_df = df[df["event"] == event]
         epoch_signals = []
         for channel in channels:
-            channel_signal = event_df[event_df["channel"] == channel]["signal"].values
+            channel_signal = event_df[event_df["channel"] == channel][
+                "signal"
+            ].values
             if len(channel_signal) > 0:
                 signal = channel_signal[0]
             else:
-                signal = np.zeros(target_length)  # Handle missing channel data by padding with zeros
+                signal = np.zeros(
+                    target_length
+                )  # Handle missing channel data by padding with zeros
             epoch_signals.append(signal)
         epoch_data[event] = epoch_signals
         event_codes[event] = event_df["code"].iloc[0]
@@ -88,30 +94,43 @@ def main(args):
     epochs_data = np.array(epochs_list)
 
     # create mne object
-    info = mne.create_info(ch_names=list(channels), sfreq=sfreq, ch_types="eeg")
+    info = mne.create_info(
+        ch_names=list(channels), sfreq=sfreq, ch_types="eeg"
+    )
 
     # set montage, MDB uses 10-20
     montage = mne.channels.make_standard_montage("standard_1020")
     info.set_montage(montage)
 
-    # Create an events array for MNE, each event starts at the next multiple of the epoch length
-    event_ids = {str(code): idx for idx, code in enumerate(event_codes.values())}
+    # Create an events array for MNE,
+    # each event starts at the next multiple of the epoch length
+    event_ids = {
+        str(code): idx for idx, code in enumerate(event_codes.values())
+    }
     events_array = np.array(
-        [[idx * target_length, 0, event_ids[str(event_codes[event])]] for idx, event in enumerate(events)]
+        [
+            [idx * target_length, 0, event_ids[str(event_codes[event])]]
+            for idx, event in enumerate(events)
+        ]
     )
 
     # Check the shape of epochs_data
     logger.info(f"Shape of epochs_data: {epochs_data.shape}")
 
     # create epochs
-    epochs = mne.EpochsArray(epochs_data, info, events_array, tmin=0, event_id=event_ids)
+    epochs = mne.EpochsArray(
+        epochs_data, info, events_array, tmin=0, event_id=event_ids
+    )
     print(epochs)
-    
-    ica = ICA(n_components=min(len(channels), 20), random_state=97, max_iter=800)
+
+    ica = ICA(
+        n_components=min(len(channels), 20), random_state=97, max_iter=800
+    )
     ica.fit(epochs)
     ica.plot_components()
 
-    # Inspect individual components and get user input for artifacts, if specified
+    # Inspect individual components and
+    # get user input for artifacts, if specified
     identified_artifacts = []
 
     if inspection:
@@ -121,34 +140,41 @@ def main(args):
             if response.lower() == "y":
                 identified_artifacts.append(i)
     else:
-        additional_artifacts = input("Enter suspected artifact components (comma-separated): ")
+        additional_artifacts = input(
+            "Enter suspected artifact components (comma-separated): "
+        )
         if additional_artifacts:
-            additional_artifacts = list(map(int, additional_artifacts.split(",")))
+            additional_artifacts = list(
+                map(int, additional_artifacts.split(","))
+            )
         else:
             additional_artifacts = []
 
     logger.info(f"Identified artifact components: {additional_artifacts}")
     ica.exclude = additional_artifacts
-    
+
     # Apply the ICA solution to remove the identified artifacts
     epochs_clean = epochs.copy()
     ica.apply(epochs_clean)
 
     # Save cleaned epoched data in FIF format for further use with MNE
-    output_path = args.outfile
+    output_path = outfile
     epochs_clean.save(output_path, overwrite=True)
 
     logger.info(f"Cleaned data saved to {output_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load"
+        help="name of the file to load",
     )
     parser.add_argument(
-        "outfile", type=str, help="name of the file to save the denoised data"
+        "outfile",
+        type=str,
+        help="name of the file to save the denoised data",
     )
     parser.add_argument(
         "--verbose",
@@ -158,4 +184,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args)
+    main(infile=args.infile, outfile=args.outfile, verbose=args.verbose)

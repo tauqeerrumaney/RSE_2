@@ -55,7 +55,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def main(args):
+def main(infile, outfile, verbose=False):
     """
     Main function to load, process, and save EEG data.
 
@@ -67,7 +67,7 @@ def main(args):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(args.infile)
+        file_path = get_path(infile, folder="data")
 
         # format of MindBigData data set
         columns = [
@@ -109,15 +109,15 @@ def main(args):
         logger.info("Finished reading data")
 
         try:
-            file_name = args.outfile.split(".")[0]
-            if args.verbose:
-                out_path = get_path(f"{file_name}.feather")
+            file_name = outfile.split(".")[0]
+            if verbose:
+                out_path = get_path(f"{file_name}.feather", folder="data")
                 df_mock = df.head(10000)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
                 # save data in feather format -> smaller
-                out_path = get_path(f"{file_name}.feather")
+                out_path = get_path(f"{file_name}.feather", folder="data")
                 df.to_feather(out_path)
                 logger.info(f"Raw file saved to {out_path}")
         # TODO: handle different error types independently
@@ -152,4 +152,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args)
+    main(infile=args.infile, outfile=args.outfile, verbose=args.verbose)

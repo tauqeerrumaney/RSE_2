@@ -2,7 +2,7 @@
 Module for configuring logging.
 
 This module provides a function to configure a logger with a specified name.
-The logging configuration includes the timestamp, logger name, log level, and the message.
+The logging configuration includes  timestamp, logger name, log level, message.
 
 Example usage:
     from logger import configure_logger
@@ -13,12 +13,13 @@ Example usage:
 
 import logging
 
+
 def configure_logger(name):
     """
     Configures and returns a logger with the specified name.
 
-    This function sets up the logging configuration with a specific format and log level.
-    The logger is configured to include the timestamp, logger name, log level, and the message.
+    This sets up the logging config with specific format and log level.
+    It is configured to include timestamp, logger name, log level, message
 
     Args:
         name (str): The name to be used for the logger.

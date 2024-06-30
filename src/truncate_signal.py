@@ -30,7 +30,8 @@ import argparse
 from utils import get_path
 from logger import configure_logger
 
-def main(args):
+
+def main(infile, outfile):
     """
     Main function to load, truncate, and save EEG signal data.
 
@@ -48,7 +49,7 @@ def main(args):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(args.infile)
+        file_path = get_path(infile, folder="data")
 
         df = pd.read_feather(file_path)
         logger.info("Bandpass filtered data loaded")
@@ -69,7 +70,7 @@ def main(args):
         df["size"] = target_length
         logger.info(f"Size adjusted to {target_length}")
 
-        output_file_path = get_path(args.outfile)
+        output_file_path = get_path(outfile, folder="data")
         df.to_feather(output_file_path)
 
         print(f"Truncated data saved to {output_file_path}")
@@ -85,6 +86,7 @@ def main(args):
         logger.error(f"An unexpected error occurred: {e}")
         print(f"An unexpected error occurred: {e}")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -99,4 +101,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args)
+    main(infile=args.infile, outfile=args.outfile)

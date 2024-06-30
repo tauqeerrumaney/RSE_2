@@ -2,6 +2,7 @@ import mne
 from utils import get_path
 from logger import configure_logger
 
+
 try:
     logger = configure_logger(__name__)
     input_file = "denoised_data-epo.fif"  # Path to the denoised file

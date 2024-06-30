@@ -40,7 +40,7 @@ import argparse
 from logger import configure_logger
 
 
-def main(args):
+def main(infile, event, electrode):
     """
     Main function to load, filter, and plot EEG data.
 
@@ -51,33 +51,32 @@ def main(args):
         None
     """
     logger = configure_logger(__name__)
-    file_path = get_path(args.infile)
-    event = args.event
+    file_path = get_path(infile, folder="data")
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
     try:
-        if args.electrode is not None:
+        if electrode is not None:
             # Check if the electrode is within the range of values in the df
-            if args.electrode not in df["channel"].unique():
+            if electrode not in df["channel"].unique():
                 raise ValueError(
-                    f"Electrode {args.electrode} not found in the dataframe"
+                    f"Electrode {electrode} not found in the dataframe"
                 )
 
             # Filter data for the specified electrode across all events
-            electrode_data = df[df["channel"] == args.electrode]
-            logger.info(f"Data for electrode {args.electrode} loaded")
+            electrode_data = df[df["channel"] == electrode]
+            logger.info(f"Data for electrode {electrode} loaded")
         else:
-            if args.event is not None:
+            if event is not None:
                 # Check if the event_id is within the range of values in the df
-                if args.event not in df["event"].unique():
+                if event not in df["event"].unique():
                     raise ValueError(
-                        f"Event ID {args.event} not found in the dataframe"
+                        f"Event ID {event} not found in the dataframe"
                     )
 
                 # Filter data for the specified event
-                electrode_data = df[df["event"] == args.event]
-                logger.info(f"Data for event ID {args.event} loaded")
+                electrode_data = df[df["event"] == event]
+                logger.info(f"Data for event ID {event} loaded")
             else:
                 # Use all data if event_id is None and no electrode specified
                 electrode_data = df
@@ -86,15 +85,15 @@ def main(args):
         # Plot the signals
         plt.figure(figsize=(12, 8))
 
-        if args.electrode is not None:
+        if electrode is not None:
             # Plot for the specific electrode across all events
             for idx, row in electrode_data.iterrows():
                 plt.plot(
                     row["signal"],
-                    label=f"Electrode {args.electrode} - Event {row['event']}",
+                    label=f"Electrode {electrode} - Event {row['event']}",
                 )
             plt.title(
-                f"EEG Signal for Electrode {args.electrode} Across All Events"
+                f"EEG Signal for Electrode {electrode} Across All Events"
             )
         else:
             # Plot for all channels for the specified event or all data
@@ -139,4 +138,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(args)
+    main(infile=args.infile, event=args.event, electrode=args.electrode)

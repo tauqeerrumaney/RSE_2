@@ -6,6 +6,7 @@ It includes functions for configuring logging, getting file paths, and more.
 
 import os
 
+
 def get_path(file_name, folder="data"):
     """
     Returns the file path for a given file name and folder.
