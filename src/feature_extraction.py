@@ -45,7 +45,7 @@ import numpy as np
 import pywt
 from scipy.stats import kurtosis, skew
 from scipy.signal import welch
-from utils import get_path
+from utils import get_path, BASE
 from antropy import entropy as ent
 from logger import configure_logger
 
@@ -154,7 +154,7 @@ def main(infile, outfile, features):
         None
     """
     logger = configure_logger(__name__)
-    input_path = get_path(infile, folder="data")
+    input_path = get_path(infile, folder=BASE)
 
     epochs = mne.read_epochs(input_path, preload=True)
     logger.info("Denoised data loaded")
@@ -162,7 +162,7 @@ def main(infile, outfile, features):
     features = extract_features(epochs, features)
 
     features_output_file = outfile
-    features_output_path = get_path(features_output_file, folder="data")
+    features_output_path = get_path(features_output_file, folder=BASE)
     np.save(features_output_path, features)
     logger.info(f"Extracted features saved to {features_output_path}")
 

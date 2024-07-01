@@ -33,7 +33,7 @@ Example:
     python script.py data.feather --event 1 --electrode Fz
 """
 
-from utils import get_path
+from utils import get_path, BASE
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
@@ -51,7 +51,7 @@ def main(infile, event, electrode):
         None
     """
     logger = configure_logger(__name__)
-    file_path = get_path(infile, folder="data")
+    file_path = get_path(infile, folder=BASE)
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 

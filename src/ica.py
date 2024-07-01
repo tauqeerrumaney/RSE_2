@@ -36,7 +36,7 @@ import numpy as np
 import mne
 import argparse
 from mne.preprocessing import ICA
-from utils import get_path
+from utils import get_path, BASE
 from logger import configure_logger
 
 
@@ -60,7 +60,7 @@ def main(infile, outfile, verbose=False):
     """
     logger = configure_logger(__name__)
     inspection = verbose
-    file_path = get_path(infile, folder="data")
+    file_path = get_path(infile, folder=BASE)
 
     df = pd.read_feather(file_path)
     logger.info("Truncated data loaded")

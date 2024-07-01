@@ -27,7 +27,7 @@ Example:
 
 import pandas as pd
 import argparse
-from utils import get_path
+from utils import get_path, BASE
 from logger import configure_logger
 
 
@@ -49,7 +49,7 @@ def main(infile, outfile):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder="data")
+        file_path = get_path(infile, folder=BASE)
 
         df = pd.read_feather(file_path)
         logger.info("Bandpass filtered data loaded")
@@ -70,7 +70,7 @@ def main(infile, outfile):
         df["size"] = target_length
         logger.info(f"Size adjusted to {target_length}")
 
-        output_file_path = get_path(outfile, folder="data")
+        output_file_path = get_path(outfile, folder=BASE)
         df.to_feather(output_file_path)
 
         print(f"Truncated data saved to {output_file_path}")
