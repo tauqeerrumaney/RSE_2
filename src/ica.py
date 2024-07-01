@@ -60,7 +60,7 @@ def main(infile, outfile, verbose=False):
     """
     logger = configure_logger(__name__)
     inspection = verbose
-    file_path = get_path(infile, folder=BASE)
+    file_path = get_path(infile)
 
     df = pd.read_feather(file_path)
     logger.info("Truncated data loaded")

@@ -70,7 +70,7 @@ def main(infile, outfile):
         df["size"] = target_length
         logger.info(f"Size adjusted to {target_length}")
 
-        output_file_path = get_path(outfile, folder=BASE)
+        output_file_path = get_path(outfile)
         df.to_feather(output_file_path)
 
         print(f"Truncated data saved to {output_file_path}")

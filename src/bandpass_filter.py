@@ -95,7 +95,7 @@ def main(infile, outfile):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder=BASE)
+        file_path = get_path(infile)
 
         df = pd.read_feather(file_path)
         logger.info("Raw data loaded")
@@ -112,7 +112,7 @@ def main(infile, outfile):
             axis=1,
         )
 
-        output_file_path = get_path(outfile, folder=BASE)
+        output_file_path = get_path(outfile)
         df.to_feather(output_file_path)
 
         logger.info(f"Filtered data saved to {output_file_path}")

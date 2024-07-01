@@ -67,7 +67,7 @@ def main(infile, outfile, verbose=False):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder=BASE)
+        file_path = get_path(infile)
 
         # format of MindBigData data set
         columns = [
@@ -111,13 +111,13 @@ def main(infile, outfile, verbose=False):
         try:
             file_name = outfile.split(".")[0]
             if verbose:
-                out_path = get_path(f"{file_name}.feather", folder=BASE)
+                out_path = get_path(f"{file_name}.feather")
                 df_mock = df.head(10000)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
                 # save data in feather format -> smaller
-                out_path = get_path(f"{file_name}.feather", folder=BASE)
+                out_path = get_path(f"{file_name}.feather")
                 df.to_feather(out_path)
                 logger.info(f"Raw file saved to {out_path}")
         # TODO: handle different error types independently

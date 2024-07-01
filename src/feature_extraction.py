@@ -154,7 +154,7 @@ def main(infile, outfile, features):
         None
     """
     logger = configure_logger(__name__)
-    input_path = get_path(infile, folder=BASE)
+    input_path = get_path(infile)
 
     epochs = mne.read_epochs(input_path, preload=True)
     logger.info("Denoised data loaded")
@@ -162,7 +162,7 @@ def main(infile, outfile, features):
     features = extract_features(epochs, features)
 
     features_output_file = outfile
-    features_output_path = get_path(features_output_file, folder=BASE)
+    features_output_path = get_path(features_output_file)
     np.save(features_output_path, features)
     logger.info(f"Extracted features saved to {features_output_path}")
 
