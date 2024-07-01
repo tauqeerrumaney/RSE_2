@@ -104,11 +104,10 @@ def main(infile, event, electrode):
                 ]
                 for idx, row in channel_data.iterrows():
                     plt.plot(row["signal"], label=f"Channel {channel}")
-            title = (
-                f"EEG Signal for Each Channel (Event {event})"
-                if event is not None
-                else "EEG Signal for Each Channel (All Data)"
-            )
+            if event is not None:
+                title = f"EEG Signal for Each Channel (Event {event})"
+            else:
+                title = "EEG Signal for Each Channel (All Data)"
             plt.title(title)
 
         plt.xlabel("Sample")
