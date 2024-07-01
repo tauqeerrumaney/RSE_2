@@ -40,7 +40,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def main(infile, outfile, verbose=False):
+def main(infile, outfile, artifacts=None, verbose=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
@@ -139,16 +139,8 @@ def main(infile, outfile, verbose=False):
             response = input(f"Mark component {i} as an artifact? (y/n): ")
             if response.lower() == "y":
                 identified_artifacts.append(i)
-    else:
-        additional_artifacts = input(
-            "Enter suspected artifact components (comma-separated): "
-        )
-        if additional_artifacts:
-            additional_artifacts = list(
-                map(int, additional_artifacts.split(","))
-            )
-        else:
-            additional_artifacts = []
+    elif artifacts is not None:
+            additional_artifacts = [int(x) for x in artifacts.split(",")]
 
     logger.info(f"Identified artifact components: {additional_artifacts}")
     ica.exclude = additional_artifacts
@@ -177,6 +169,13 @@ if __name__ == "__main__":
         help="name of the file to save the denoised data",
     )
     parser.add_argument(
+        "--artifacts",
+        "-a", 
+        type=str, 
+        help="comma-separated list of artifact components", 
+        default="")
+    
+    parser.add_argument(
         "--verbose",
         "-v",
         help="inspect individual components for artifacts",
@@ -184,4 +183,4 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, verbose=args.verbose)
+    main(infile=args.infile, outfile=args.outfile, artifacts=args.artifacts, verbose=args.verbose)
