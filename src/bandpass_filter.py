@@ -34,7 +34,7 @@ import numpy as np
 import pandas as pd
 import argparse
 from scipy.signal import butter, filtfilt
-from utils import get_path
+from utils import get_path, BASE
 from logger import configure_logger
 
 
@@ -95,7 +95,7 @@ def main(infile, outfile):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder="data")
+        file_path = get_path(infile, folder=BASE)
 
         df = pd.read_feather(file_path)
         logger.info("Raw data loaded")
@@ -112,7 +112,7 @@ def main(infile, outfile):
             axis=1,
         )
 
-        output_file_path = get_path(outfile, folder="data")
+        output_file_path = get_path(outfile, folder=BASE)
         df.to_feather(output_file_path)
 
         logger.info(f"Filtered data saved to {output_file_path}")
