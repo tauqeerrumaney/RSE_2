@@ -6,14 +6,15 @@ Independent Component Analysis (ICA) to identify and remove artifacts,
 and saves the cleaned data to a new file in FIF format.
 
 Usage:
-    python script.py infile outfile [--verbose]
+    python script.py infile outfile [--verbose] [--artifacts artifact_list]
 
 Positional Arguments:
     infile      Name of the file to load.
     outfile     Name of the file to save the denoised data.
 
 Optional Arguments:
-    --verbose, -v  Inspect individual components for artifacts interactively.
+    --verbose, -v           Inspect individual components for artifacts interactively.
+    --artifacts, -a         Comma-separated list of artifact components.
 
 Modules Required:
     - pandas
@@ -25,10 +26,10 @@ Modules Required:
     - logger (providing configure_logger function)
 
 Functions:
-    main(args): Main function to execute the script logic.
+    main(infile, outfile, artifacts=None, verbose=False): Main function to execute the script logic.
 
 Example:
-    python script.py truncated_data.feather cleaned_data.fif --verbose
+    python script.py truncated_data.feather cleaned_data.fif --verbose -a "$(cat config/artifacts.txt)"
 """
 
 import pandas as pd
@@ -54,7 +55,10 @@ def main(infile, outfile, artifacts=None, verbose=False):
     6. Saves the cleaned data to the specified output file in FIF format.
 
     Args:
-        args: Command-line arguments parsed by argparse.
+        infile (str): Name of the file to load.
+        outfile (str): Name of the file to save the denoised data.
+        artifacts (str, optional): Comma-separated list of artifact components. Defaults to None.
+        verbose (bool, optional): If True, inspect individual components for artifacts interactively. Defaults to False.
 
     Returns:
         None
@@ -78,9 +82,7 @@ def main(infile, outfile, artifacts=None, verbose=False):
         event_df = df[df["event"] == event]
         epoch_signals = []
         for channel in channels:
-            channel_signal = event_df[event_df["channel"] == channel][
-                "signal"
-            ].values
+            channel_signal = event_df[event_df["channel"] == channel]["signal"].values
             if len(channel_signal) > 0:
                 signal = channel_signal[0]
             else:
@@ -95,9 +97,7 @@ def main(infile, outfile, artifacts=None, verbose=False):
     epochs_data = np.array(epochs_list)
 
     # create mne object
-    info = mne.create_info(
-        ch_names=list(channels), sfreq=sfreq, ch_types="eeg"
-    )
+    info = mne.create_info(ch_names=list(channels), sfreq=sfreq, ch_types="eeg")
 
     # set montage, MDB uses 10-20
     montage = mne.channels.make_standard_montage("standard_1020")
@@ -105,9 +105,7 @@ def main(infile, outfile, artifacts=None, verbose=False):
 
     # Create an events array for MNE,
     # each event starts at the next multiple of the epoch length
-    event_ids = {
-        str(code): idx for idx, code in enumerate(event_codes.values())
-    }
+    event_ids = {str(code): idx for idx, code in enumerate(event_codes.values())}
     events_array = np.array(
         [
             [idx * target_length, 0, event_ids[str(event_codes[event])]]
@@ -124,13 +122,11 @@ def main(infile, outfile, artifacts=None, verbose=False):
     )
     print(epochs)
 
-    ica = ICA(
-        n_components=min(len(channels), 20), random_state=97, max_iter=800
-    )
+    ica = ICA(n_components=min(len(channels), 20), random_state=97, max_iter=800)
     ica.fit(epochs)
     # Save the ICA component plots as PNG files - only show them
     # for manual inspection
-    png_path = get_path('results/ica_components.png')
+    png_path = get_path("results/ica_components.png")
     fig = ica.plot_components(show=False)
     fig.savefig(png_path)
     plt.close(fig)
@@ -146,7 +142,7 @@ def main(infile, outfile, artifacts=None, verbose=False):
             if response.lower() == "y":
                 identified_artifacts.append(i)
     elif artifacts is not None:
-            additional_artifacts = [int(x) for x in artifacts.split(",")]
+        additional_artifacts = [int(x) for x in artifacts.split(",")]
 
     logger.info(f"Identified artifact components: {additional_artifacts}")
     ica.exclude = additional_artifacts
@@ -176,11 +172,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--artifacts",
-        "-a", 
-        type=str, 
-        help="comma-separated list of artifact components", 
-        default="")
-    
+        "-a",
+        type=str,
+        help="comma-separated list of artifact components",
+        default="",
+    )
+
     parser.add_argument(
         "--verbose",
         "-v",
@@ -189,4 +186,9 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, artifacts=args.artifacts, verbose=args.verbose)
+    main(
+        infile=args.infile,
+        outfile=args.outfile,
+        artifacts=args.artifacts,
+        verbose=args.verbose,
+    )
