@@ -45,7 +45,7 @@ import numpy as np
 import pywt
 from scipy.stats import kurtosis, skew
 from scipy.signal import welch
-from utils import get_path, BASE
+from utils import get_path
 from antropy import entropy as ent
 from logger import configure_logger
 

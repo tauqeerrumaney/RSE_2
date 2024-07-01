@@ -34,7 +34,7 @@ import numpy as np
 import pandas as pd
 import argparse
 from scipy.signal import butter, filtfilt
-from utils import get_path, BASE
+from utils import get_path
 from logger import configure_logger
 
 

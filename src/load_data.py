@@ -51,7 +51,7 @@ import pandas as pd
 import numpy as np
 import traceback
 import argparse
-from utils import get_path, BASE
+from utils import get_path
 from logger import configure_logger
 
 

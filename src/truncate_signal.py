@@ -27,7 +27,7 @@ Example:
 
 import pandas as pd
 import argparse
-from utils import get_path, BASE
+from utils import get_path
 from logger import configure_logger
 
 
@@ -49,7 +49,7 @@ def main(infile, outfile):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder=BASE)
+        file_path = get_path(infile)
 
         df = pd.read_feather(file_path)
         logger.info("Bandpass filtered data loaded")
