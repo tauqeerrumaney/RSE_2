@@ -6,10 +6,7 @@ It includes functions for configuring logging, getting file paths, and more.
 
 import os
 
-# standard folder for writing intermediary files to
-BASE = "temp"
-
-def get_path(file_name, folder=BASE):
+def get_path(file_name):
     """
     Returns the file path for a given file name and folder.
 
@@ -23,5 +20,5 @@ def get_path(file_name, folder=BASE):
 
     """
     current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, f"../{folder}/{file_name}")
+    file_path = os.path.join(current_dir, f"../{file_name}")
     return file_path

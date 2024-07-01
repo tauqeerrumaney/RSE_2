@@ -33,7 +33,7 @@ Example:
     python script.py data.feather --event 1 --electrode Fz
 """
 
-from utils import get_path, BASE
+from utils import get_path
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
@@ -51,74 +51,69 @@ def main(infile, event, electrode):
         None
     """
     logger = configure_logger(__name__)
-    file_path = get_path(infile, folder=BASE)
+    file_path = get_path(infile)
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-    try:
-        if electrode is not None:
-            # Check if the electrode is within the range of values in the df
-            if electrode not in df["channel"].unique():
-                raise ValueError(
-                    f"Electrode {electrode} not found in the dataframe"
-                )
 
-            # Filter data for the specified electrode across all events
-            electrode_data = df[df["channel"] == electrode]
-            logger.info(f"Data for electrode {electrode} loaded")
-        else:
-            if event is not None:
-                # Check if the event_id is within the range of values in the df
-                if event not in df["event"].unique():
-                    raise ValueError(
-                        f"Event ID {event} not found in the dataframe"
-                    )
-
-                # Filter data for the specified event
-                electrode_data = df[df["event"] == event]
-                logger.info(f"Data for event ID {event} loaded")
-            else:
-                # Use all data if event_id is None and no electrode specified
-                electrode_data = df
-                logger.info("All data loaded for plotting")
-
-        # Plot the signals
-        plt.figure(figsize=(12, 8))
-
-        if electrode is not None:
-            # Plot for the specific electrode across all events
-            for idx, row in electrode_data.iterrows():
-                plt.plot(
-                    row["signal"],
-                    label=f"Electrode {electrode} - Event {row['event']}",
-                )
-            plt.title(
-                f"EEG Signal for Electrode {electrode} Across All Events"
+    if electrode is not None:
+        # Check if the electrode is within the range of values in the df
+        if electrode not in df["channel"].unique():
+            raise ValueError(
+                f"Electrode {electrode} not found in the dataframe"
             )
+
+        # Filter data for the specified electrode across all events
+        electrode_data = df[df["channel"] == electrode]
+        logger.info(f"Data for electrode {electrode} loaded")
+    else:
+        if event is not None:
+            # Check if the event_id is within the range of values in the df
+            if event not in df["event"].unique():
+                raise ValueError(
+                    f"Event ID {event} not found in the dataframe"
+                )
+
+            # Filter data for the specified event
+            electrode_data = df[df["event"] == event]
+            logger.info(f"Data for event ID {event} loaded")
         else:
-            # Plot for all channels for the specified event or all data
-            unique_channels = electrode_data["channel"].unique()
-            for channel in unique_channels:
-                channel_data = electrode_data[
-                    electrode_data["channel"] == channel
-                ]
-                for idx, row in channel_data.iterrows():
-                    plt.plot(row["signal"], label=f"Channel {channel}")
-            if event is not None:
-                title = f"EEG Signal for Each Channel (Event {event})"
-            else:
-                title = "EEG Signal for Each Channel (All Data)"
-            plt.title(title)
+            # Use all data if event_id is None and no electrode specified
+            electrode_data = df
+            logger.info("All data loaded for plotting")
 
-        plt.xlabel("Sample")
-        plt.ylabel("Signal Amplitude (µV)")
-        plt.legend()
-        plt.show()
+    # Plot the signals
+    plt.figure(figsize=(12, 8))
 
-    except ValueError as ve:
-        logger.error(ve)
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+    if electrode is not None:
+        # Plot for the specific electrode across all events
+        for idx, row in electrode_data.iterrows():
+            plt.plot(
+                row["signal"],
+                label=f"Electrode {electrode} - Event {row['event']}",
+            )
+        plt.title(
+            f"EEG Signal for Electrode {electrode} Across All Events"
+        )
+    else:
+        # Plot for all channels for the specified event or all data
+        unique_channels = electrode_data["channel"].unique()
+        for channel in unique_channels:
+            channel_data = electrode_data[
+                electrode_data["channel"] == channel
+            ]
+            for idx, row in channel_data.iterrows():
+                plt.plot(row["signal"], label=f"Channel {channel}")
+        if event is not None:
+            title = f"EEG Signal for Each Channel (Event {event})"
+        else:
+            title = "EEG Signal for Each Channel (All Data)"
+        plt.title(title)
+
+    plt.xlabel("Sample")
+    plt.ylabel("Signal Amplitude (µV)")
+    plt.legend()
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -137,4 +132,10 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, event=args.event, electrode=args.electrode)
+    logger = configure_logger(__name__)
+    try:
+        main(infile=args.infile, event=args.event, electrode=args.electrode)
+    except ValueError as ve:
+        logger.error(ve)
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")

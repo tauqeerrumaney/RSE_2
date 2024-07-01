@@ -31,7 +31,7 @@ Example:
 
 import mne
 import argparse
-from utils import get_path, BASE
+from utils import get_path
 from logger import configure_logger
 
 
@@ -48,7 +48,7 @@ def main(infile, outfile):
     try:
         logger = configure_logger(__name__)
         # Load the cleaned dataset
-        input_path = get_path(infile, folder=BASE)
+        input_path = get_path(infile)
         epochs = mne.read_epochs(input_path, preload=True)
         logger.info("Artifact filtered data loaded")
 
@@ -57,7 +57,7 @@ def main(infile, outfile):
         epochs.apply_proj()
 
         # Save the denoised data
-        output_path = get_path(outfile, folder=BASE)
+        output_path = get_path(outfile)
         epochs.save(output_path, overwrite=True)
         logger.info(f"Denoised data saved to {output_path}")
     except ValueError as ve:

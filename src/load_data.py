@@ -51,7 +51,7 @@ import pandas as pd
 import numpy as np
 import traceback
 import argparse
-from utils import get_path, BASE
+from utils import get_path
 from logger import configure_logger
 
 
@@ -67,8 +67,10 @@ def main(infile, outfile, verbose=False):
     """
     try:
         logger = configure_logger(__name__)
-        file_path = get_path(infile, folder=BASE)
-
+        file_path = get_path(infile)
+        mock_size = 10000
+        if verbose:
+            logger.info(f"Verbose enabled - {mock_size} rows will be used")
         # format of MindBigData data set
         columns = [
             "id",
@@ -111,13 +113,13 @@ def main(infile, outfile, verbose=False):
         try:
             file_name = outfile.split(".")[0]
             if verbose:
-                out_path = get_path(f"{file_name}.feather", folder=BASE)
-                df_mock = df.head(10000)
+                out_path = get_path(f"{file_name}.feather")
+                df_mock = df.head(mock_size)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
                 # save data in feather format -> smaller
-                out_path = get_path(f"{file_name}.feather", folder=BASE)
+                out_path = get_path(f"{file_name}.feather")
                 df.to_feather(out_path)
                 logger.info(f"Raw file saved to {out_path}")
         # TODO: handle different error types independently
