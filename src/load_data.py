@@ -68,7 +68,9 @@ def main(infile, outfile, verbose=False):
     try:
         logger = configure_logger(__name__)
         file_path = get_path(infile)
-
+        mock_size = 10000
+        if verbose:
+            logger.info(f"Verbose enabled - {mock_size} rows will be used")
         # format of MindBigData data set
         columns = [
             "id",
@@ -112,7 +114,7 @@ def main(infile, outfile, verbose=False):
             file_name = outfile.split(".")[0]
             if verbose:
                 out_path = get_path(f"{file_name}.feather")
-                df_mock = df.head(10000)
+                df_mock = df.head(mock_size)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
