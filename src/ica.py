@@ -35,6 +35,7 @@ import pandas as pd
 import numpy as np
 import mne
 import argparse
+import matplotlib.pyplot as plt
 from mne.preprocessing import ICA
 from utils import get_path
 from logger import configure_logger
@@ -127,7 +128,12 @@ def main(infile, outfile, artifacts=None, verbose=False):
         n_components=min(len(channels), 20), random_state=97, max_iter=800
     )
     ica.fit(epochs)
-    ica.plot_components()
+    # Save the ICA component plots as PNG files - only show them
+    # for manual inspection
+    png_path = get_path('results/ica_components.png')
+    fig = ica.plot_components(show=False)
+    fig.savefig(png_path)
+    plt.close(fig)
 
     # Inspect individual components and
     # get user input for artifacts, if specified
