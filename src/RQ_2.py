@@ -1,22 +1,12 @@
-"""How do the EEG signals from channels O1 and O2 differ during
-various cognitive tasks, and what do these differences reveal about
-lateralized brain activity in the occipital lobe?
-
+"""
 This script performs analysis on EEG signals from channels O1 and O2.
-It loads the epochs data from an input file, computes the average across epochs
-for each channel, and plots the comparison between O1 and O2.
-
-Usage:
-    python RQ_2.py infile outfile [--show]
-
-Arguments:
-    infile (str): Path to the input file containing the epochs data.
-    outfile (str): Path to save the output plot.
-
-Options:
-    --show (bool): Whether to display the plot. Defaults to False.
+Date: 2024-07-02
+License: MIT
 """
 
+# How do the EEG signals from channels O1 and O2 differ during
+# various cognitive tasks, and what do these differences reveal about
+# lateralized brain activity in the occipital lobe?
 
 import mne
 import numpy as np
@@ -31,10 +21,10 @@ def main(infile, outfile, show=False):
     """
     Perform analysis on EEG signals from channels O1 and O2.
 
-    Args:
-        infile (str): Path to the input file containing the epochs data.
-        outfile (str): Path to save the output plot.
-        show (bool, optional): Whether to display the plot. Defaults to False.
+    Parameters:
+    - infile (str): Path to the input file containing the epochs data.
+    - outfile (str): Path to save the output plot.
+    - show (bool, optional): Whether to display the plot. Defaults to False.
     """
 
     # Configure logger
@@ -45,8 +35,8 @@ def main(infile, outfile, show=False):
     epochs = mne.read_epochs(infile_path, preload=True)
 
     # Get data for channels O1 and O2
-    O1_data = epochs.get_data()[:, epochs.ch_names.index('O1'), :]
-    O2_data = epochs.get_data()[:, epochs.ch_names.index('O2'), :]
+    O1_data = epochs.get_data()[:, epochs.ch_names.index("O1"), :]
+    O2_data = epochs.get_data()[:, epochs.ch_names.index("O2"), :]
 
     # Compute the average across epochs for comparison
     O1_avg = np.mean(O1_data, axis=0)
@@ -54,11 +44,11 @@ def main(infile, outfile, show=False):
 
     # Plot the comparison between O1 and O2
     plt.figure(figsize=(12, 6))
-    plt.plot(O1_avg, label='O1')
-    plt.plot(O2_avg, label='O2')
-    plt.xlabel('Time (samples)')
-    plt.ylabel('Amplitude')
-    plt.title('Comparison of EEG Signals from Channels O1 and O2')
+    plt.plot(O1_avg, label="O1")
+    plt.plot(O2_avg, label="O2")
+    plt.xlabel("Time (samples)")
+    plt.ylabel("Amplitude")
+    plt.title("Comparison of EEG Signals from Channels O1 and O2")
     plt.legend()
 
     if show:
@@ -87,10 +77,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--show",
-        type=bool,
-        default=False,
+        action="store_true",
         help="whether to display the plot",
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, show=args.show)
+    main(
+        infile=args.infile,
+        outfile=args.outfile,
+        show=args.show,
+    )
