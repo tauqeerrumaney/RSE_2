@@ -55,7 +55,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def main(infile, outfile, verbose=False):
+def main(infile, outfile, mock=False):
     """
     Main function to load, process, and save EEG data.
 
@@ -69,7 +69,7 @@ def main(infile, outfile, verbose=False):
         logger = configure_logger(__name__)
         file_path = get_path(infile)
         mock_size = 10000
-        if verbose:
+        if mock:
             logger.info(f"Verbose enabled - {mock_size} rows will be used")
         # format of MindBigData data set
         columns = [
@@ -112,7 +112,7 @@ def main(infile, outfile, verbose=False):
 
         try:
             file_name = outfile.split(".")[0]
-            if verbose:
+            if mock:
                 out_path = get_path(f"{file_name}.feather")
                 df_mock = df.head(mock_size)
                 df_mock.to_feather(out_path)
@@ -147,11 +147,11 @@ if __name__ == "__main__":
         help="name of the file to save the data in feather format",
     )
     parser.add_argument(
-        "--verbose",
-        "-v",
+        "--mock",
+        "-m",
         help="use only a subset of the data",
         action="store_true",
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, verbose=args.verbose)
+    main(infile=args.infile, outfile=args.outfile, mock=args.mock)

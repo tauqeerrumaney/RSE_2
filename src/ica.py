@@ -42,7 +42,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def main(infile, outfile, artifacts=None, verbose=False):
+def main(infile, outfile, artifacts=None, inspection=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
@@ -64,7 +64,6 @@ def main(infile, outfile, artifacts=None, verbose=False):
         None
     """
     logger = configure_logger(__name__)
-    inspection = verbose
     file_path = get_path(infile)
 
     df = pd.read_feather(file_path)
@@ -179,8 +178,8 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--verbose",
-        "-v",
+        "--inspect",
+        "-i",
         help="inspect individual components for artifacts",
         action="store_true",
     )
@@ -190,5 +189,5 @@ if __name__ == "__main__":
         infile=args.infile,
         outfile=args.outfile,
         artifacts=args.artifacts,
-        verbose=args.verbose,
+        verbose=args.inspect,
     )

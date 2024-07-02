@@ -26,7 +26,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def main(infile):
+def main(infile, directory):
     """
     Main function to load and plot EEG data.
 
@@ -56,23 +56,23 @@ def main(infile):
 
         # Plot raw data and save
         fig = raw.plot(n_channels=len(raw.ch_names), scalings="auto", show=False)
-        fig.savefig(get_path("results/raw_data.png"))
+        fig.savefig(get_path(f"{directory}/raw_data.png"))
         plt.close(fig)
 
         # Plot epochs and save
         fig = epochs.plot(n_epochs=10, n_channels=10, scalings="auto", show=False)
-        fig.savefig(get_path("results/epochs_data.png"))
+        fig.savefig(get_path(f"{directory}/epochs_data.png"))
         plt.close(fig)
 
         # Plot PSD and save
         fig = epochs.plot_psd(fmin=0.1, fmax=60, show=False)
-        fig.savefig(get_path("results/epochs_psd.png"))
+        fig.savefig(get_path(f"{directory}/epochs_psd.png"))
         plt.close(fig)
 
         # Plot evoked response and save
         evoked = epochs.average()
         fig = evoked.plot(show=False)
-        fig.savefig(get_path("results/evoked_response.png"))
+        fig.savefig(get_path(f"{directory}/evoked_response.png"))
         plt.close(fig)
 
     except ValueError as ve:
@@ -91,5 +91,11 @@ if __name__ == "__main__":
         help="Name of the file to load.",
     )
 
+    parser.add_argument(
+        "directory",
+        type=str,
+        help="Name of the directory to save plots to.",
+    )
+
     args = parser.parse_args()
-    main(infile=args.infile)
+    main(infile=args.infile, directory=args.directory)
