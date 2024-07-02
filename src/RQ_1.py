@@ -119,12 +119,12 @@ def compute_psd(data, sfreq, band):
     using Welch's method.
 
     Parameters:
-    data (array-like): The input data.
-    sfreq (float): The sampling frequency of the data.
-    band (tuple): The frequency band of interest.
+    - data (array-like): The input data.
+    - sfreq (float): The sampling frequency of the data.
+    - band (tuple): The frequency band of interest.
 
     Returns:
-    array-like: The mean PSD values within the specified frequency band.
+    - array-like: The mean PSD values within the specified frequency band.
     """
     freqs, psd = welch(data, sfreq, nperseg=248)
     band_freqs = (freqs >= band[0]) & (freqs <= band[1])
