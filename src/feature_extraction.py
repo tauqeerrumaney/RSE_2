@@ -50,23 +50,6 @@ from antropy import entropy as ent
 from logger import configure_logger
 
 
-def compute_psd(data, sfreq, nperseg=248):
-    """
-    Computes the power spectral density (PSD) of the given data.
-
-    Args:
-        data (array-like): The input signal data to compute PSD for.
-        sfreq (float): The sampling frequency of the data.
-        nperseg (int, optional): Length of each segment for Welch's method.
-            Default is 248.
-
-    Returns:
-        tuple: Frequencies and PSD values.
-    """
-    freqs, psd = welch(data, sfreq, nperseg=nperseg)
-    return freqs, psd
-
-
 def extract_features(epochs, feature_types):
     """
     Extracts specified features from the EEG epochs.
@@ -118,7 +101,7 @@ def extract_features(epochs, feature_types):
                 features[f"{channel}_wavelet_{j}_std"] = np.std(coeff, axis=1)
 
         if "psd" in feature_types:
-            freqs, psd = compute_psd(channel_data, sfreq)
+            freqs, psd = welch(data, sfreq)
             for band, (low, high) in bands.items():
                 band_power = np.sum(
                     psd[:, (freqs >= low) & (freqs <= high)], axis=1
@@ -153,7 +136,7 @@ def main(infile, outfile, features):
     Returns:
         None
     """
-    logger = configure_logger(__name__)
+    logger = configure_logger()
     input_path = get_path(infile)
 
     epochs = mne.read_epochs(input_path, preload=True)
@@ -161,10 +144,9 @@ def main(infile, outfile, features):
 
     features = extract_features(epochs, features)
 
-    features_output_file = outfile
-    features_output_path = get_path(features_output_file)
-    np.save(features_output_path, features)
-    logger.info(f"Extracted features saved to {features_output_path}")
+    out_path = get_path(outfile)
+    np.save(out_path, features)
+    logger.info(f"Extracted features saved to {out_path}")
 
 
 if __name__ == "__main__":
