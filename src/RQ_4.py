@@ -1,19 +1,6 @@
 """
-This script analyzes the spectrograms of channels F3 and FC6 during
-cognitive tasks to understand the brain's response in the frontal
-and frontal-central regions.
-
-Usage:
-    python RQ_4.py infile outfile [--channels CHANNELS] [--show SHOW]
-
-Arguments:
-    infile (str): Name of the file to load the epochs data from.
-    outfile (str): Name of the file to save the plot.
-
-Options:
-    --channels (list): List of channels to compare ERP across.
-        Default: ["F3", "FC6"]
-    --show (bool): Whether to display the plot. Default: False
+This script generates spectrograms for the specified channels
+and saves the plot to an output file.
 """
 
 import mne
@@ -28,7 +15,8 @@ from logger import configure_logger
 
 def main(infile, outfile, channels, show=False):
     """
-    Generate spectrograms for the specified channels and save the plot to an output file.
+    Generate spectrograms for the specified channels
+    and save the plot to an output file.
 
     Parameters:
     - infile (str): Path to the input file containing epochs data.
@@ -39,7 +27,7 @@ def main(infile, outfile, channels, show=False):
     Returns:
     None
     """
-    
+
     # Configure logger
     logger = configure_logger(__name__)
 
@@ -76,8 +64,23 @@ def main(infile, outfile, channels, show=False):
 
 
 def plot_spectrogram(data, sfreq, channel_name, ax):
-    """Function to plot spectrogram for a given channel"""
-    f, t, Sxx = spectrogram(data, fs=sfreq)
+    """
+    Plot a spectrogram of the given data.
+
+    Parameters:
+    - data numpy.ndarray: The input data array.
+    - sfreq (int): The sampling frequency of the data.
+    - channel_name (str): The name of the channel.
+    - ax (matplotlib.axes.Axes): The axes object to plot the spectrogram on.
+
+    Returns:
+    - cax (matplotlib.collections.QuadMesh)
+        The QuadMesh object representing the spectrogram plot.
+    """
+
+    f, t, Sxx = spectrogram(data, fs=sfreq)  # Compute the spectrogram
+
+    # Graph the spectrogram
     cax = ax.pcolormesh(t, f, 10 * np.log10(Sxx), shading='gouraud')
     ax.set_ylabel('Frequency [Hz]')
     ax.set_xlabel('Time [s]')
