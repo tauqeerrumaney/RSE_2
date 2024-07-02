@@ -65,7 +65,7 @@ def extract_features(epochs, feature_types):
                 features[f"{channel}_wavelet_{j}_std"] = np.std(coeff, axis=1)
 
         if "psd" in feature_types:
-            freqs, psd = welch(data, sfreq)
+            freqs, psd = welch(channel_data, sfreq)
             for band, (low, high) in bands.items():
                 band_power = np.sum(psd[:, (freqs >= low) & (freqs <= high)], axis=1)
                 features[f"{channel}_{band}_power"] = band_power
@@ -77,6 +77,7 @@ def extract_features(epochs, feature_types):
             features[f"{channel}_approx_entropy"] = app_entropy
 
     return features
+
 
 
 def main(infile, outfile, features):
