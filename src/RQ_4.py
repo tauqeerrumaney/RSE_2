@@ -36,7 +36,7 @@ def main(infile, outfile, channels, show=False):
     epochs = mne.read_epochs(infile_path, preload=True)
     logger.info(f"Loaded epochs data from {infile_path}")
 
-    sfreq = epochs.info['sfreq']
+    sfreq = epochs.info["sfreq"]
 
     # Plot spectrograms for the two important channels in one plot
     fig, axs = plt.subplots(1, 2, figsize=(20, 6))
@@ -46,10 +46,20 @@ def main(infile, outfile, channels, show=False):
         # Ensure copy is explicitly set
         channel_data = epochs.get_data(copy=True)[:, channel_index, :]
         flattened_data = channel_data.flatten()
-        cax = plot_spectrogram(flattened_data, sfreq, channel_name, axs[i])
+        cax = plot_spectrogram(
+            flattened_data,
+            sfreq,
+            channel_name,
+            axs[i],
+        )
         logger.info(f"Plotted spectrogram for {channel_name}")
 
-    fig.colorbar(cax, ax=axs, orientation='vertical', label='Power/Frequency (dB/Hz)',)
+    fig.colorbar(
+        cax,
+        ax=axs,
+        orientation="vertical",
+        label="Power/Frequency (dB/Hz)",
+    )
 
     if show:
         plt.show()
@@ -81,10 +91,10 @@ def plot_spectrogram(data, sfreq, channel_name, ax):
     f, t, Sxx = spectrogram(data, fs=sfreq)  # Compute the spectrogram
 
     # Graph the spectrogram
-    cax = ax.pcolormesh(t, f, 10 * np.log10(Sxx), shading='gouraud')
-    ax.set_ylabel('Frequency [Hz]')
-    ax.set_xlabel('Time [s]')
-    ax.set_title(f'Spectrogram for {channel_name}')
+    cax = ax.pcolormesh(t, f, 10 * np.log10(Sxx), shading="gouraud")
+    ax.set_ylabel("Frequency [Hz]")
+    ax.set_xlabel("Time [s]")
+    ax.set_title(f"Spectrogram for {channel_name}")
     return cax
 
 
@@ -125,10 +135,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--show",
-        type=bool,
-        default=False,
+        action="store_true",
         help="whether to display the plot",
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, channels=args.channels, show=args.show)
+    main(
+        infile=args.infile,
+        outfile=args.outfile,
+        channels=args.channels,
+        show=args.show,
+    )
