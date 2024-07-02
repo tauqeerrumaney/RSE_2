@@ -47,12 +47,13 @@ Example:
     python script.py input.txt output.feather
 """
 
-import pandas as pd
-import numpy as np
-import traceback
 import argparse
-from utils import get_path
+import traceback
+
+import numpy as np
+import pandas as pd
 from logger import configure_logger
+from utils import get_path
 
 
 def main(infile, outfile, mock=False):
@@ -109,7 +110,6 @@ def main(infile, outfile, mock=False):
         logger.info("Finished reading data")
 
         try:
-
             if mock:
                 out_path = get_path(f"{outfile}")
                 df_mock = df.head(mock_size)

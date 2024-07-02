@@ -29,10 +29,11 @@ Example:
     python script.py cleaned_data-epo.fif denoised_data-epo.fif
 """
 
-import mne
 import argparse
-from utils import get_path
+
+import mne
 from logger import configure_logger
+from utils import get_path
 
 
 def main(infile, outfile):

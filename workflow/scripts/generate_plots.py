@@ -19,11 +19,12 @@ Example:
     python script.py denoised_data-epo.fif
 """
 
-import mne
-import matplotlib.pyplot as plt
 import argparse
-from utils import get_path
+
+import matplotlib.pyplot as plt
+import mne
 from logger import configure_logger
+from utils import get_path
 
 
 def main(infile, directory):

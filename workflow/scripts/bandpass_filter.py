@@ -30,12 +30,13 @@ Example:
     python script.py raw_data_MOCK.feather filtered_data.feather
 """
 
+import argparse
+
 import numpy as np
 import pandas as pd
-import argparse
+from logger import configure_logger
 from scipy.signal import butter, filtfilt
 from utils import get_path
-from logger import configure_logger
 
 
 def bandpass_filter(data, fs, lowcut=0.1, highcut=60.0, order=5):

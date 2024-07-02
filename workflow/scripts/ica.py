@@ -32,15 +32,16 @@ Example:
     python script.py truncated_data.feather cleaned_data.fif --verbose -a config/artifacts.txt
 """
 
-import pandas as pd
-import numpy as np
-import mne
 import argparse
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import mne
+import numpy as np
+import pandas as pd
+from logger import configure_logger
 from mne.preprocessing import ICA
 from utils import get_path
-from logger import configure_logger
-from pathlib import Path
 
 
 def main(infile, outfile, artifacts, inspection=False):

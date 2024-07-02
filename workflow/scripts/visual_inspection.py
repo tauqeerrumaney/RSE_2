@@ -33,11 +33,12 @@ Example:
     python script.py data.feather --event 1 --electrode Fz
 """
 
-from utils import get_path
-import pandas as pd
-import matplotlib.pyplot as plt
 import argparse
+
+import matplotlib.pyplot as plt
+import pandas as pd
 from logger import configure_logger
+from utils import get_path
 
 
 def main(infile, event, electrode):

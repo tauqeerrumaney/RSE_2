@@ -25,10 +25,11 @@ Example:
     python script.py filtered_data.feather truncated_data.feather
 """
 
-import pandas as pd
 import argparse
-from utils import get_path
+
+import pandas as pd
 from logger import configure_logger
+from utils import get_path
 
 
 def main(infile, outfile):

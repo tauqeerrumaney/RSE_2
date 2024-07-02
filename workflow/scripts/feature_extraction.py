@@ -39,15 +39,16 @@ Example:
     py script.py denoised_data-epo.fif extracted_features.npy -f entropy psd
 """
 
-import mne
 import argparse
+
+import mne
 import numpy as np
 import pywt
-from scipy.stats import kurtosis, skew
-from scipy.signal import welch
-from utils import get_path
 from antropy import entropy as ent
 from logger import configure_logger
+from scipy.signal import welch
+from scipy.stats import kurtosis, skew
+from utils import get_path
 
 
 def extract_features(epochs, feature_types):
