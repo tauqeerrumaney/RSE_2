@@ -77,36 +77,28 @@ def main(infile, outfile):
     Returns:
         None
     """
-    try:
-        logger = configure_logger(__name__)
-        file_path = get_path(infile)
+    logger = configure_logger(__name__)
+    file_path = get_path(infile)
 
-        df = pd.read_feather(file_path)
-        logger.info("Raw data loaded")
+    df = pd.read_feather(file_path)
+    logger.info("Raw data loaded")
 
-        if "size" not in df.columns:
-            raise ValueError(
-                "DF must contain a 'size' column representing sampling rate."
-            )
-
-        df["signal"] = df.apply(
-            lambda row: bandpass_filter(
-                np.array(row["signal"]), row["size"], lowcut=1
-            ),
-            axis=1,
+    if "size" not in df.columns:
+        raise ValueError(
+            "DF must contain a 'size' column representing sampling rate."
         )
 
-        output_file_path = get_path(outfile)
-        df.to_feather(output_file_path)
+    df["signal"] = df.apply(
+        lambda row: bandpass_filter(
+            np.array(row["signal"]), row["size"], lowcut=1
+        ),
+        axis=1,
+    )
 
-        logger.info(f"Filtered data saved to {output_file_path}")
+    output_file_path = get_path(outfile)
+    df.to_feather(output_file_path)
 
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+    logger.info(f"Filtered data saved to {output_file_path}")
 
 
 if __name__ == "__main__":
@@ -121,6 +113,14 @@ if __name__ == "__main__":
         type=str,
         help="name of the file to save the filtered data"
     )
-
+    logger = configure_logger()
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile)
+    
+    try:
+        main(infile=args.infile, outfile=args.outfile)
+    except ValueError as ve:
+        logger.error(f"ValueError: {ve}")
+    except FileNotFoundError as fnf_error:
+        logger.error(f"FileNotFoundError: {fnf_error}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
