@@ -1,4 +1,35 @@
-"""Generate a basic LaTeX document based on the research results"""
+"""
+This script generates a basic LaTeX document based on research results
+and outputs it as a PDF or LaTeX file.
+
+Usage:
+    Run the script from the command line with optional arguments
+    for the output file names, title, and author:
+    ```
+    python generate_document.py --pdf output.pdf --latex output.tex
+    --title "Document Title" --author "Author Name"
+    ```
+
+Functions:
+    create_document(pdf, latex, title, author)
+        Creates a LaTeX document with the specified title and author
+        and generates output documents in PDF and LaTeX formats.
+
+    get_text(keyword)
+        Retrieves the text associated with a given keyword from a text file.
+
+Constants:
+    FILE_NAMES: A dictionary mapping image names to their file paths.
+
+Command-Line Arguments:
+    --pdf (str): The filename for the generated PDF document. Default: None
+    --latex (str): The filename for the generated LaTeX document. Default: None
+    --title (str): The title of the document.
+        Default: "Analysis Results of EEG Dataset"
+    --author (str): The author of the document.
+        Default: "University of Potsdam, RSE 2024"
+
+"""
 
 from pylatex import Document, Section, Command, Figure, Package
 from pylatex.utils import NoEscape
@@ -105,6 +136,20 @@ def create_document(pdf, latex, title, author):
 
 
 def get_text(keyword):
+    """
+    Retrieves the text content associated with the given keyword.
+
+    Args:
+        keyword (str): The keyword used to identify the text content.
+
+    Returns:
+        str: The text content associated with the keyword,
+            or None if the file is not found.
+
+    Raises:
+        FileNotFoundError: If the keyword file is not found.
+        Exception: If an unexpected error occurs while reading the file.
+    """
     # Configure logger
     logger = configure_logger()
 
@@ -120,7 +165,8 @@ def get_text(keyword):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    USAGE = "Generate a basic LaTeX document based on the research results"
+    parser = argparse.ArgumentParser(description=USAGE)
     parser.add_argument(
         "--pdf",
         type=str,
