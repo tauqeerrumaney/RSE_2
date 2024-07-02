@@ -43,7 +43,7 @@ from logger import configure_logger
 from pathlib import Path
 
 
-def main(infile, outfile, artifacts=None, inspection=False):
+def main(infile, outfile, artifacts, inspection=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
@@ -145,11 +145,12 @@ def main(infile, outfile, artifacts=None, inspection=False):
             with open(get_path(artifacts), "r") as file:
                 contents = file.read()
             additional_artifacts = [int(x) for x in contents.split(",")]
+            logger.info(f"Identified artifact components: {additional_artifacts}")
+            ica.exclude = additional_artifacts
         else:
-            artifact_path = Path(get_path("config/artifacts.txt"))
+            artifact_path = Path(get_path("data/artifacts.txt"))
             artifact_path.touch(exist_ok=True)
-        logger.info(f"Identified artifact components: {additional_artifacts}")
-        ica.exclude = additional_artifacts
+
 
         # Apply the ICA solution to remove the identified artifacts
         epochs_clean = epochs.copy()
@@ -185,7 +186,7 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="name of config file containing comma-separated artifacts",
-        default="",
+        default=None,
     )
 
     parser.add_argument(
@@ -200,5 +201,5 @@ if __name__ == "__main__":
         infile=args.infile,
         outfile=args.outfile,
         artifacts=args.artifacts,
-        verbose=args.inspect,
+        inspection=args.inspect,
     )
