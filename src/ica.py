@@ -120,7 +120,7 @@ def main(infile, outfile, artifacts=None, verbose=False):
     epochs = mne.EpochsArray(
         epochs_data, info, events_array, tmin=0, event_id=event_ids
     )
-    print(epochs)
+
 
     ica = ICA(n_components=min(len(channels), 20), random_state=97, max_iter=800)
     ica.fit(epochs)
