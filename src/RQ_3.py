@@ -2,6 +2,8 @@
 This script loads epochs data from a file, selects a single event type for
 comparison, and plots the event-related potential (ERP) for the selected
 channels.
+Date: 2024-07-02
+License: MIT
 """
 
 # How does the event-related potential (ERP) differ across channels such as

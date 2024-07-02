@@ -1,6 +1,8 @@
 """
 This script calculates the variability of power spectral density (PSD)
 across different frequency bands and events.
+Date: 2024-07-02
+License: MIT
 """
 
 # Question 1: Which frequency bands show the highest variability across

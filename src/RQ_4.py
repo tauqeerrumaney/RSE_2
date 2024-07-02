@@ -1,6 +1,8 @@
 """
 This script generates spectrograms for the specified channels
 and saves the plot to an output file.
+Date: 2024-07-02
+License: MIT
 """
 
 import mne

@@ -44,9 +44,9 @@ def main(infile, outfile, channels, show=False):
         key = f"{channel}_kurtosis"
         if key in features:
             plt.plot(features[key], label=channel)
-    plt.title('Kurtosis Values')
-    plt.xlabel('Epochs')
-    plt.ylabel('Kurtosis')
+    plt.title("Kurtosis Values")
+    plt.xlabel("Epochs")
+    plt.ylabel("Kurtosis")
     plt.legend()
     plt.tight_layout()
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             "F8",
             "AF4",
         ],
-        default=['FC6', 'F4', 'F8'],
+        default=["FC6", "F4", "F8"],
         help="list of channels to compare ERP across",
     )
     parser.add_argument(
@@ -104,4 +104,9 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, channels=args.channels, show=args.show,)
+    main(
+        infile=args.infile,
+        outfile=args.outfile,
+        channels=args.channels,
+        show=args.show,
+    )
