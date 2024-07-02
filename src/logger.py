@@ -14,7 +14,7 @@ Example usage:
 import logging
 
 
-def configure_logger(name):
+def configure_logger():
     """
     Configures and returns a logger with the specified name.
 
