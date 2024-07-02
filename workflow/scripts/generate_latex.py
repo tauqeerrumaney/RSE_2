@@ -50,7 +50,7 @@ def create_document(pdf, latex, title, author):
     create_preamble(doc, title, author)
     logger.info("Preamble created successfully!")
 
-    doc.append(get_text("introduction")
+    doc.append(get_text("introduction"))
 
     for image in FILE_NAMES.keys():
         # check if image was created
