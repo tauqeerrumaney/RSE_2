@@ -47,43 +47,34 @@ def main(infile, outfile):
     Returns:
         None
     """
-    try:
-        logger = configure_logger(__name__)
-        file_path = get_path(infile)
 
-        df = pd.read_feather(file_path)
-        logger.info("Bandpass filtered data loaded")
+    logger = configure_logger(__name__)
+    file_path = get_path(infile)
 
-        target_length = min(df["size"])
+    df = pd.read_feather(file_path)
+    logger.info("Bandpass filtered data loaded")
 
-        # Truncate all signals to the target length
-        truncated_signals = df["signal"].apply(
-            lambda signal: signal[:target_length]
-        )
-        df["signal"] = truncated_signals
-        logger.info("All signals truncated to the target length")
+    target_length = min(df["size"])
 
-        # Validate that all signals are of the target length
-        if not all(df["signal"].apply(len) == target_length):
-            raise ValueError(f"Not all signals are of length {target_length}")
+    # Truncate all signals to the target length
+    truncated_signals = df["signal"].apply(
+        lambda signal: signal[:target_length]
+    )
+    df["signal"] = truncated_signals
+    logger.info("All signals truncated to the target length")
 
-        df["size"] = target_length
-        logger.info(f"Size adjusted to {target_length}")
+    # Validate that all signals are of the target length
+    if not all(df["signal"].apply(len) == target_length):
+        raise ValueError(f"Not all signals are of length {target_length}")
 
-        output_file_path = get_path(outfile)
-        df.to_feather(output_file_path)
+    df["size"] = target_length
+    logger.info(f"Size adjusted to {target_length}")
+
+    output_file_path = get_path(outfile)
+    df.to_feather(output_file_path)
 
 
-        logger.info(f"Truncated data saved to {output_file_path}")
-
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+    logger.info(f"Truncated data saved to {output_file_path}")
 
 
 
@@ -101,4 +92,15 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile)
+    logger = configure_logger()
+    try:
+        main(infile=args.infile, outfile=args.outfile)
+    except ValueError as ve:
+        logger.error(f"ValueError: {ve}")
+
+    except FileNotFoundError as fnf_error:
+        logger.error(f"FileNotFoundError: {fnf_error}")
+
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+
