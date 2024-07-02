@@ -1,24 +1,17 @@
-"""
-This module provides utility functions for file handling.
-
-It includes functions for configuring logging, getting file paths, and more.
-"""
-
 import os
 
-def get_path(file_name):
+
+def get_path(filepath):
     """
-    Returns the file path for a given file name and folder.
+    Returns the absolute file path for a given relative file.
 
     Parameters:
-    file_name (str): The name of the file.
-    folder (str, optional): The name of the folder where the file is located.
-        Defaults to "data".
+    filepath (str): The relative file path.
 
     Returns:
     str: The file path.
-
     """
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, f"../{file_name}")
-    return file_path
+    # Expand user (~) and resolve relative paths
+    user_defined_path = os.path.expanduser(filepath)
+    absolute_path = os.path.abspath(user_defined_path)
+    return absolute_path
