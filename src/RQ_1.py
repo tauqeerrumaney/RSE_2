@@ -14,6 +14,7 @@ import pandas as pd
 from scipy.signal import welch
 import matplotlib.pyplot as plt
 import argparse
+import json
 
 from utils import get_path
 from logger import configure_logger
@@ -29,7 +30,7 @@ BANDS = {
 }
 
 
-def main(infile, outfile, show=False):
+def main(infile, outimage, outtext, show=False):
     """
     Calculate the variability of power spectral density (PSD)
     across different frequency bands and events.
@@ -74,21 +75,17 @@ def main(infile, outfile, show=False):
     variability = {band: psd_df[band].std(axis=1) for band in psd_df.keys()}
 
     # Identify bands with highest variability
-    max_var = max(
-        variability, key=lambda band: variability[band].mean()
-    )
+    max_var = max(variability, key=lambda band: variability[band].mean())
 
     # save output to file
-    out_text_path = get_path(outfile.split(".")[0] + ".txt")
+    out_text_path = get_path(outtext)
 
-    output = f"The frequency band with the highest variability is {max_var}"
-    with open(out_text_path, 'a') as f:
-        f.write(output)
-
-    for band, var in variability.items():
-        output = f"Variability in {band} band: {var.mean()}"
-        with open(out_text_path, 'a') as f:
-            f.write(output)
+    output_data = {
+        "max_var_band": max_var,
+        "variability": {band: var.mean() for band, var in variability.items()},
+    }
+    with open(out_text_path, "w") as f:
+        json.dump(output_data, f, indent=4)
     logger.info("output saved to file")
 
     # Extracting bands and their corresponding variability values
@@ -107,7 +104,7 @@ def main(infile, outfile, show=False):
         plt.show()
 
     try:
-        plt.savefig(get_path(outfile))
+        plt.savefig(get_path(outimage))
         logger.info("plot saved")
     except FileNotFoundError as fnf_error:
         logger.error(f"FileNotFoundError: {fnf_error}")
@@ -141,9 +138,14 @@ if __name__ == "__main__":
         help="name of the file to load",
     )
     parser.add_argument(
-        "outfile",
+        "outimage",
         type=str,
-        help="name of the file to save the filtered data",
+        help="name of the file to save the image",
+    )
+    parser.add_argument(
+        "outtext",
+        type=str,
+        help="name of the file to save the output json",
     )
     parser.add_argument(
         "--show",
@@ -152,4 +154,9 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, show=args.show)
+    main(
+        infile=args.infile,
+        outimage=args.outimage,
+        outtext=args.outtext,
+        show=args.show,
+    )
