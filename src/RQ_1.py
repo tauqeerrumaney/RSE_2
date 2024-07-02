@@ -1,27 +1,10 @@
 """
-Question 1: Which frequency bands show the highest variability across
-different events, indicating event-related changes in brain activity?
-
 This script calculates the variability of power spectral density (PSD)
-across different frequency bands and events. It loads the epochs data,
-calculates the PSD for each band and event, converts the results to a
-DataFrame, calculates the variability (standard deviation) across events,
-identifies the bands with the highest variability, and plots the variability
-for each frequency band.
-
-Usage:
-    python RQ_1.py infile outfile [--show]
-
-Arguments:
-    infile (str): The input file path of the epochs data.
-    outfile (str): The output file path to save the plot.
-
-Options:
-    --show (bool): Whether to display the plot. Default is False.
-
-Returns:
-    None
+across different frequency bands and events.
 """
+
+# Question 1: Which frequency bands show the highest variability across
+# different events, indicating event-related changes in brain activity?
 
 import mne
 import numpy as np
@@ -162,8 +145,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--show",
-        type=bool,
-        default=False,
+        action="store_true",
         help="whether to display the plot",
     )
 
