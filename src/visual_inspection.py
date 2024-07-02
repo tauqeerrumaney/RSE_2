@@ -132,7 +132,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    logger = configure_logger(__name__)
+    logger = configure_logger()
     try:
         main(infile=args.infile, event=args.event, electrode=args.electrode)
     except ValueError as ve:

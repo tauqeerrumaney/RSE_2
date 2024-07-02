@@ -35,5 +35,5 @@ def configure_logger():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
-    logger = logging.getLogger(name)
+    logger = logging.getLogger()
     return logger
