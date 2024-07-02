@@ -1,20 +1,7 @@
 """
 This script loads epochs data from a file, selects a single event type for
 comparison, and plots the event-related potential (ERP) for the selected
-channels. The ERP is calculated as the average of the epochs for the selected
-event type. The script saves the plot to a file if specified.
-
-Usage:
-    python RQ_3.py infile outfile [--channels CHANNELS] [--show SHOW]
-
-Arguments:
-    infile (str): Name of the file to load the epochs data from.
-    outfile (str): Name of the file to save the plot.
-
-Options:
-    --channels (list): List of channels to compare ERP across.
-        Default: ["AF3", "P7", "O1"]
-    --show (bool): Whether to display the plot. Default: False
+channels.
 """
 
 # How does the event-related potential (ERP) differ across channels such as
@@ -41,7 +28,7 @@ def main(infile, outfile, channels, show=False):
     - show (bool, optional): Whether to display the plot. Default is False.
 
     Returns:
-    None
+    - None
     """
 
     # Configure logger
