@@ -111,15 +111,15 @@ def main(infile, outfile, mock=False):
         logger.info("Finished reading data")
 
         try:
-            file_name = outfile.split(".")[0]
+
             if mock:
-                out_path = get_path(f"{file_name}.feather")
+                out_path = get_path(f"{outfile}")
                 df_mock = df.head(mock_size)
                 df_mock.to_feather(out_path)
                 logger.info(f"Mock file saved to {out_path}")
             else:
                 # save data in feather format -> smaller
-                out_path = get_path(f"{file_name}.feather")
+                out_path = get_path(f"{outfile}")
                 df.to_feather(out_path)
                 logger.info(f"Raw file saved to {out_path}")
         # TODO: handle different error types independently
