@@ -1,33 +1,6 @@
 """
-Script for applying a bandpass filter to EEG signal data.
-
 This script loads EEG data from a feather file, applies a bandpass filter
 to the signals, and saves the filtered data to a new feather file.
-
-Usage:
-    python script.py infile outfile
-
-Positional Arguments:
-    infile      Name of the file to load.
-    outfile     Name of the file to save the filtered data.
-
-Modules Required:
-    - numpy
-    - pandas
-    - argparse
-    - scipy.signal (for butter and filtfilt functions)
-    - utils (providing apply_filter_to_signal and get_path functions)
-    - logger (providing configure_logger function)
-
-Functions:
-    bandpass_filter(data, lowcut, highcut, fs, order=5):
-        Applies a bandpass filter to the data.
-    apply_filter_to_signal(signal, fs, lowcut=0.1, highcut=60.0, order=5):
-        Wrapper to apply the bandpass filter.
-    main(args): Main function to execute the script logic.
-
-Example:
-    python script.py raw_data_MOCK.feather filtered_data.feather
 """
 
 import argparse
@@ -65,14 +38,9 @@ def main(infile, outfile):
     """
     Main function to load, filter, and save EEG signal data.
 
-    This function performs the following steps:
-    1. Loads the raw EEG data from the specified input file.
-    2. Applies a bandpass filter to each signal in the data.
-    3. Saves the filtered data to the specified output file.
-
     Args:
-        infile (str): The path to the input file containing the raw EEG data
-        outfile (str): The path to the output file where filtered data is saved
+        infile (str): The path to the input file containing the raw EEG data.
+        outfile (str): The path to the output file where filtered data is saved.
 
     Returns:
         None
@@ -98,9 +66,7 @@ def main(infile, outfile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for applying a bandpass filter to EEG signal data."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
         "outfile", type=str, help="name of the file to save the filtered data"

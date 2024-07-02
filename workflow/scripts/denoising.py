@@ -1,32 +1,6 @@
 """
-Script for loading, referencing, and saving EEG data.
-
 This script loads cleaned EEG data from a .fif file, re-references the data to
 the average of all channels, and saves the denoised data to a new .fif file.
-
-Usage:
-    python script.py infile outfile
-
-Positional Arguments:
-    infile      Name of the file to load.
-    outfile     Name of the file to save the denoised data.
-
-Description:
-    The script performs the following steps:
-    1. Loads the cleaned EEG data from the specified input file.
-    2. Re-references the EEG data to the average of all channels.
-    3. Saves the denoised data to the specified output file.
-
-Modules Required:
-    - mne
-    - argparse
-    - utils (providing logger and get_path functions)
-
-Functions:
-    main(args): Main function to execute the script logic.
-
-Example:
-    python script.py cleaned_data-epo.fif denoised_data-epo.fif
 """
 
 import argparse
@@ -41,7 +15,8 @@ def main(infile, outfile):
     Main function to load, process, and save EEG data.
 
     Args:
-        args: Command-line arguments parsed by argparse.
+        infile (str): Name of the file to load.
+        outfile (str): Name of the file to save the denoised data.
 
     Returns:
         None
@@ -70,9 +45,7 @@ def main(infile, outfile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for loading, referencing, and saving EEG data."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
         "outfile", type=str, help="name of the file to save the denoised data"

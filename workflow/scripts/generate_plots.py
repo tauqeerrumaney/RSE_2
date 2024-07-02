@@ -1,22 +1,5 @@
 """
-Script for loading and plotting EEG data.
-
 This script loads denoised EEG data from a FIF file, converts it to raw format for inspection, and saves various plots as PNG files.
-
-Usage:
-    python script.py infile
-
-Positional Arguments:
-    infile      Name of the file to load.
-
-Modules Required:
-    - mne
-    - matplotlib
-    - utils (providing get_path function)
-    - logger (providing configure_logger function)
-
-Example:
-    python script.py denoised_data-epo.fif
 """
 
 import argparse
@@ -31,13 +14,9 @@ def main(infile, directory):
     """
     Main function to load and plot EEG data.
 
-    This function performs the following steps:
-    1. Loads the denoised EEG data from the specified input file.
-    2. Converts epochs to raw data for inspection.
-    3. Saves various plots as PNG files.
-
     Args:
         infile (str): Name of the file to load.
+        directory (str): Name of the directory to save plots to.
 
     Returns:
         None
@@ -85,9 +64,7 @@ def main(infile, directory):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for loading and plotting EEG data."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,

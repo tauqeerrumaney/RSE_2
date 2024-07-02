@@ -1,28 +1,7 @@
 """
-Script for truncating EEG signal data to a uniform length.
-
 This script loads bandpass filtered EEG data from a feather file,
 truncates all signals to the length of the shortest signal, and saves
 the truncated data back to a new feather file.
-
-Usage:
-    python script.py infile outfile
-
-Positional Arguments:
-    infile      Name of the file to load.
-    outfile     Name of the file to save the truncated data.
-
-Modules Required:
-    - pandas
-    - argparse
-    - utils (providing get_path function)
-    - logger (providing configure_logger function)
-
-Functions:
-    main(args): Main function to execute the script logic.
-
-Example:
-    python script.py filtered_data.feather truncated_data.feather
 """
 
 import argparse
@@ -36,14 +15,9 @@ def main(infile, outfile):
     """
     Main function to load, truncate, and save EEG signal data.
 
-    This function performs the following steps:
-    1. Loads the bandpass filtered EEG data from the specified input file.
-    2. Truncates all signals to the length of the shortest signal.
-    3. Validates that all signals are truncated to the target length.
-    4. Saves the truncated data to the specified output file.
-
     Args:
-        args: Command-line arguments parsed by argparse.
+        infile (str): The path to the input file containing the bandpass filtered EEG data.
+        outfile (str): The path to the output file where truncated data is saved.
 
     Returns:
         None
@@ -76,9 +50,7 @@ def main(infile, outfile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for truncating EEG signal data to a uniform length."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
         "outfile", type=str, help="name of the file to save the truncated data"

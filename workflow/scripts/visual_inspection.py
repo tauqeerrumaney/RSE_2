@@ -1,36 +1,6 @@
 """
-Script for loading, filtering, and plotting EEG data.
-
 This script loads EEG data from a feather file, allows filtering by
 specific electrode or event, and plots the EEG signal.
-
-Usage:
-    python script.py infile [--event EVENT] [--electrode ELECTRODE]
-
-Positional Arguments:
-    infile          Name of the file to load.
-
-Optional Arguments:
-    --event         Event to inspect (set to None to plot all data).
-    --electrode     Electrode to inspect (set to None to plot all channels).
-
-Description:
-    The script performs the following steps:
-    1. Loads the EEG data from the specified input file.
-    2. Filters the data based on the specified electrode or event.
-    3. Plots the EEG signal for all data or filtered data if specified.
-
-Modules Required:
-    - pandas
-    - matplotlib.pyplot
-    - argparse
-    - utils (providing logger and get_path functions)
-
-Functions:
-    main(args): Main function to execute the script logic.
-
-Example:
-    python script.py data.feather --event 1 --electrode Fz
 """
 
 import argparse
@@ -46,7 +16,9 @@ def main(infile, event, electrode):
     Main function to load, filter, and plot EEG data.
 
     Args:
-        args: Command-line arguments parsed by argparse.
+        infile (str): The path to the input file containing the EEG data.
+        event (int): The event ID to filter by (set to None to plot all data).
+        electrode (str): The electrode to filter by (set to None to plot all data).
 
     Returns:
         None
@@ -109,9 +81,7 @@ def main(infile, event, electrode):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for performing visual inspection of the EEG data."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
         "--event",

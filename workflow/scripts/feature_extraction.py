@@ -1,42 +1,7 @@
 """
-Script for extracting features from denoised EEG data.
-
 This script loads denoised EEG data from a file, extracts various features
 (statistical, wavelet, PSD, and entropy) from the data, and saves the extracted
 features to a new file.
-
-Usage:
-    python script.py infile outfile [--features feature_types]
-
-Positional Arguments:
-    infile      Name of the file to load.
-    outfile     Name of the file to save extracted features.
-
-Optional Arguments:
-    --features, -f   Types of features to extract.
-                     Choices are "statistical", "wavelet", "psd", "entropy".
-                     Default is all four types.
-
-Modules Required:
-    - mne
-    - argparse
-    - numpy
-    - pywt
-    - scipy.stats (for kurtosis and skew)
-    - scipy.signal (for welch)
-    - utils (providing get_path function)
-    - antropy (providing entropy functions)
-    - logger (providing configure_logger function)
-
-Functions:
-    compute_psd(data, sfreq, nperseg=248):
-        Computes the power spectral density of the data.
-    extract_features(epochs, feature_types):
-        Extracts the specified features from the EEG epochs.
-    main(args): Main function to execute the script logic.
-
-Example:
-    py script.py denoised_data-epo.fif extracted_features.npy -f entropy psd
 """
 
 import argparse
@@ -143,9 +108,7 @@ def main(infile, outfile, features):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for extracting features from denoised EEG data."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,

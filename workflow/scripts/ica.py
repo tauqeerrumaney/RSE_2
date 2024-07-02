@@ -1,35 +1,7 @@
 """
-Script for performing ICA on EEG data and removing artifacts.
-
 This script loads EEG data from a feather file, performs
 Independent Component Analysis (ICA) to identify and remove artifacts,
 and saves the cleaned data to a new file in FIF format.
-
-Usage:
-    python script.py infile outfile [--verbose] [--artifacts artifact_list]
-
-Positional Arguments:
-    infile      Name of the file to load.
-    outfile     Name of the file to save the denoised data.
-
-Optional Arguments:
-    --verbose, -v           Inspect individual components for artifacts interactively.
-    --artifacts, -a         Comma-separated list of artifact components.
-
-Modules Required:
-    - pandas
-    - numpy
-    - mne
-    - argparse
-    - mne.preprocessing (for ICA)
-    - utils (providing get_path function)
-    - logger (providing configure_logger function)
-
-Functions:
-    main(infile, outfile, artifacts=None, verbose=False): Main function to execute the script logic.
-
-Example:
-    python script.py truncated_data.feather cleaned_data.fif --verbose -a config/artifacts.txt
 """
 
 import argparse
@@ -48,19 +20,11 @@ def main(infile, outfile, artifacts, inspection=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
-    This function performs the following steps:
-    1. Loads the truncated EEG data from the specified input file.
-    2. Organizes the data into epochs and creates an MNE Epochs object.
-    3. Fits an ICA model to the data to identify artifacts.
-    4. Optionally inspects individual components for artifacts interactively.
-    5. Removes identified artifact components from the data.
-    6. Saves the cleaned data to the specified output file in FIF format.
-
     Args:
         infile (str): Name of the file to load.
         outfile (str): Name of the file to save the denoised data.
-        artifacts (str, optional): Comma-separated list of artifact components. Defaults to None.
-        verbose (bool, optional): If True, inspect individual components for artifacts interactively. Defaults to False.
+        artifacts (str): Name of the file containing additional artifact components.
+        inspection (bool): Flag to inspect individual components for artifacts.
 
     Returns:
         None
@@ -173,9 +137,7 @@ def main(infile, outfile, artifacts, inspection=False):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for performing ICA on EEG data and removing artifacts."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "infile",
         type=str,
