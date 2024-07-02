@@ -77,7 +77,7 @@ def main(infile, outfile):
     Returns:
         None
     """
-    logger = configure_logger(__name__)
+    logger = configure_logger()
     file_path = get_path(infile)
 
     df = pd.read_feather(file_path)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     )
     logger = configure_logger()
     args = parser.parse_args()
-    
+
     try:
         main(infile=args.infile, outfile=args.outfile)
     except ValueError as ve:

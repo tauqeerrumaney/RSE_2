@@ -46,7 +46,7 @@ def main(infile, outfile):
         None
     """
     try:
-        logger = configure_logger(__name__)
+        logger = configure_logger()
         # Load the cleaned dataset
         input_path = get_path(infile)
         epochs = mne.read_epochs(input_path, preload=True)

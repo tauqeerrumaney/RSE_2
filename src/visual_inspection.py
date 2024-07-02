@@ -50,7 +50,7 @@ def main(infile, event, electrode):
     Returns:
         None
     """
-    logger = configure_logger(__name__)
+    logger = configure_logger()
     file_path = get_path(infile)
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")

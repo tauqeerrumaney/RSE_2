@@ -66,7 +66,7 @@ def main(infile, outfile, mock=False):
         None
     """
     try:
-        logger = configure_logger(__name__)
+        logger = configure_logger()
         file_path = get_path(infile)
         mock_size = 10000
         if mock:
