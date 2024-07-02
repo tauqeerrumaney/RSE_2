@@ -110,8 +110,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--show",
-        type=bool,
-        default=False,
+        action="store_true",
         help="whether to display the plot",
     )
 
