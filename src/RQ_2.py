@@ -1,5 +1,22 @@
-"""2. How do the EEG signals from channels O1 and O2 differ during various cognitive tasks,
- and what do these differences reveal about lateralized brain activity in the occipital lobe?"""
+"""How do the EEG signals from channels O1 and O2 differ during
+various cognitive tasks, and what do these differences reveal about
+lateralized brain activity in the occipital lobe?
+
+This script performs analysis on EEG signals from channels O1 and O2.
+It loads the epochs data from an input file, computes the average across epochs
+for each channel, and plots the comparison between O1 and O2.
+
+Usage:
+    python RQ_2.py infile outfile [--show]
+
+Arguments:
+    infile (str): Path to the input file containing the epochs data.
+    outfile (str): Path to save the output plot.
+
+Options:
+    --show (bool): Whether to display the plot. Defaults to False.
+"""
+
 
 import mne
 import numpy as np
