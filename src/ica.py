@@ -83,7 +83,9 @@ def main(infile, outfile, artifacts, inspection=False):
             event_df = df[df["event"] == event]
             epoch_signals = []
             for channel in channels:
-                channel_signal = event_df[event_df["channel"] == channel]["signal"].values
+                channel_signal = event_df[event_df["channel"] == channel][
+                    "signal"
+                ].values
                 if len(channel_signal) > 0:
                     signal = channel_signal[0]
                 else:
@@ -151,7 +153,6 @@ def main(infile, outfile, artifacts, inspection=False):
             artifact_path = Path(get_path("data/artifacts.txt"))
             artifact_path.touch(exist_ok=True)
 
-
         # Apply the ICA solution to remove the identified artifacts
         epochs_clean = epochs.copy()
         ica.apply(epochs_clean)
@@ -169,8 +170,11 @@ def main(infile, outfile, artifacts, inspection=False):
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Script for performing ICA on EEG data and removing artifacts."
+    )
     parser.add_argument(
         "infile",
         type=str,

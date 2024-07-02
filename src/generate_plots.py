@@ -84,7 +84,9 @@ def main(infile, directory):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Script for loading and plotting EEG data."
+    )
     parser.add_argument(
         "infile",
         type=str,

@@ -57,9 +57,7 @@ def main(infile, outfile):
     target_length = min(df["size"])
 
     # Truncate all signals to the target length
-    truncated_signals = df["signal"].apply(
-        lambda signal: signal[:target_length]
-    )
+    truncated_signals = df["signal"].apply(lambda signal: signal[:target_length])
     df["signal"] = truncated_signals
     logger.info("All signals truncated to the target length")
 
@@ -73,22 +71,16 @@ def main(infile, outfile):
     output_file_path = get_path(outfile)
     df.to_feather(output_file_path)
 
-
     logger.info(f"Truncated data saved to {output_file_path}")
 
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "infile",
-        type=str,
-        help="name of the file to load"
+    parser = argparse.ArgumentParser(
+        description="Script for truncating EEG signal data to a uniform length."
     )
+    parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
-        "outfile",
-        type=str,
-        help="name of the file to save the truncated data"
+        "outfile", type=str, help="name of the file to save the truncated data"
     )
 
     args = parser.parse_args()
@@ -103,4 +95,3 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
-

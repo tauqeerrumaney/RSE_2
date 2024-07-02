@@ -95,26 +95,18 @@ def extract_features(epochs, feature_types):
         if "wavelet" in feature_types:
             coeffs = pywt.wavedec(channel_data, "db4", level=5, axis=1)
             for j, coeff in enumerate(coeffs):
-                features[f"{channel}_wavelet_{j}_mean"] = np.mean(
-                    coeff, axis=1
-                )
+                features[f"{channel}_wavelet_{j}_mean"] = np.mean(coeff, axis=1)
                 features[f"{channel}_wavelet_{j}_std"] = np.std(coeff, axis=1)
 
         if "psd" in feature_types:
             freqs, psd = welch(data, sfreq)
             for band, (low, high) in bands.items():
-                band_power = np.sum(
-                    psd[:, (freqs >= low) & (freqs <= high)], axis=1
-                )
+                band_power = np.sum(psd[:, (freqs >= low) & (freqs <= high)], axis=1)
                 features[f"{channel}_{band}_power"] = band_power
 
         if "entropy" in feature_types:
-            samp_entropy = np.array(
-                [ent.sample_entropy(ch) for ch in channel_data]
-            )
-            app_entropy = np.array(
-                [ent.app_entropy(ch) for ch in channel_data]
-            )
+            samp_entropy = np.array([ent.sample_entropy(ch) for ch in channel_data])
+            app_entropy = np.array([ent.app_entropy(ch) for ch in channel_data])
             features[f"{channel}_sample_entropy"] = samp_entropy
             features[f"{channel}_approx_entropy"] = app_entropy
 
@@ -150,7 +142,9 @@ def main(infile, outfile, features):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Script for extracting features from denoised EEG data."
+    )
     parser.add_argument(
         "infile",
         type=str,

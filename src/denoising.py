@@ -69,16 +69,12 @@ def main(infile, outfile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "infile",
-        type=str,
-        help="name of the file to load"
+    parser = argparse.ArgumentParser(
+        description="Script for loading, referencing, and saving EEG data."
     )
+    parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
-        "outfile",
-        type=str,
-        help="name of the file to save the denoised data"
+        "outfile", type=str, help="name of the file to save the denoised data"
     )
 
     args = parser.parse_args()

@@ -104,9 +104,7 @@ def main(infile, outfile, mock=False):
         # this corresponds to the LSB of the resolution of the EEG device
         # emotiv.com/products/epoc-x
         conversion_factor = 0.125
-        df["signal"] = df["signal"].apply(
-            lambda x: np.array(x) * conversion_factor
-        )
+        df["signal"] = df["signal"].apply(lambda x: np.array(x) * conversion_factor)
 
         logger.info("Finished reading data")
 
@@ -135,7 +133,9 @@ def main(infile, outfile, mock=False):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Script for loading and converting EEG data."
+    )
     parser.add_argument(
         "infile",
         type=str,

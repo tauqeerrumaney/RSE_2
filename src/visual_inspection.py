@@ -55,13 +55,10 @@ def main(infile, event, electrode):
     df = pd.read_feather(file_path)
     logger.info("Raw data loaded")
 
-
     if electrode is not None:
         # Check if the electrode is within the range of values in the df
         if electrode not in df["channel"].unique():
-            raise ValueError(
-                f"Electrode {electrode} not found in the dataframe"
-            )
+            raise ValueError(f"Electrode {electrode} not found in the dataframe")
 
         # Filter data for the specified electrode across all events
         electrode_data = df[df["channel"] == electrode]
@@ -70,9 +67,7 @@ def main(infile, event, electrode):
         if event is not None:
             # Check if the event_id is within the range of values in the df
             if event not in df["event"].unique():
-                raise ValueError(
-                    f"Event ID {event} not found in the dataframe"
-                )
+                raise ValueError(f"Event ID {event} not found in the dataframe")
 
             # Filter data for the specified event
             electrode_data = df[df["event"] == event]
@@ -92,16 +87,12 @@ def main(infile, event, electrode):
                 row["signal"],
                 label=f"Electrode {electrode} - Event {row['event']}",
             )
-        plt.title(
-            f"EEG Signal for Electrode {electrode} Across All Events"
-        )
+        plt.title(f"EEG Signal for Electrode {electrode} Across All Events")
     else:
         # Plot for all channels for the specified event or all data
         unique_channels = electrode_data["channel"].unique()
         for channel in unique_channels:
-            channel_data = electrode_data[
-                electrode_data["channel"] == channel
-            ]
+            channel_data = electrode_data[electrode_data["channel"] == channel]
             for idx, row in channel_data.iterrows():
                 plt.plot(row["signal"], label=f"Channel {channel}")
         if event is not None:
@@ -117,7 +108,9 @@ def main(infile, event, electrode):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Script for performing visual inspection of the EEG data."
+    )
     parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
         "--event",

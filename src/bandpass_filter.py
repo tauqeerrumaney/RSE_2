@@ -60,7 +60,6 @@ def bandpass_filter(data, fs, lowcut=0.1, highcut=60.0, order=5):
     return y
 
 
-
 def main(infile, outfile):
     """
     Main function to load, filter, and save EEG signal data.
@@ -84,14 +83,10 @@ def main(infile, outfile):
     logger.info("Raw data loaded")
 
     if "size" not in df.columns:
-        raise ValueError(
-            "DF must contain a 'size' column representing sampling rate."
-        )
+        raise ValueError("DF must contain a 'size' column representing sampling rate.")
 
     df["signal"] = df.apply(
-        lambda row: bandpass_filter(
-            np.array(row["signal"]), row["size"], lowcut=1
-        ),
+        lambda row: bandpass_filter(np.array(row["signal"]), row["size"], lowcut=1),
         axis=1,
     )
 
@@ -102,16 +97,12 @@ def main(infile, outfile):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "infile",
-        type=str,
-        help="name of the file to load"
+    parser = argparse.ArgumentParser(
+        description="Script for applying a bandpass filter to EEG signal data."
     )
+    parser.add_argument("infile", type=str, help="name of the file to load")
     parser.add_argument(
-        "outfile",
-        type=str,
-        help="name of the file to save the filtered data"
+        "outfile", type=str, help="name of the file to save the filtered data"
     )
     logger = configure_logger()
     args = parser.parse_args()
