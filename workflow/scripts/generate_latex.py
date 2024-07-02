@@ -47,7 +47,10 @@ def create_document(pdf, latex, title, author):
     doc.packages.append(Package("float"))
 
     # Create preamble
-    create_preamble(doc, title, author)
+    doc.preamble.append(Command("title", title))
+    doc.preamble.append(Command("author", author))
+    doc.preamble.append(Command("date", NoEscape(r"\today")))
+    doc.append(NoEscape(r"\maketitle"))
     logger.info("Preamble created successfully!")
 
     doc.append(get_text("introduction"))
@@ -99,22 +102,6 @@ def create_document(pdf, latex, title, author):
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
     return
-
-
-def create_preamble(doc, title, author):
-    """
-    Create the preamble for the LaTeX document.
-
-    Args:
-        doc (Document): The LaTeX document object.
-        title (str): The title of the document.
-        author (str): The author of the document.
-    """
-    # Create preamble and generate title
-    doc.preamble.append(Command("title", title))
-    doc.preamble.append(Command("author", author))
-    doc.preamble.append(Command("date", NoEscape(r"\today")))
-    doc.append(NoEscape(r"\maketitle"))
 
 
 def get_text(keyword):
