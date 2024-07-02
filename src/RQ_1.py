@@ -89,13 +89,13 @@ def main(infile, outimage, outtext, show=False):
     logger.info("output saved to file")
 
     # Extracting bands and their corresponding variability values
-    BANDS = list(variability.keys())
+    freq_bands = list(variability.keys())
     variability_values = [var.mean() for var in variability.values()]
     logger.info("bands and variability values extracted")
 
     # Plotting the variability for each frequency band
     plt.figure(figsize=(10, 6))
-    plt.bar(BANDS, variability_values, color="skyblue")
+    plt.bar(freq_bands, variability_values, color="skyblue")
     plt.xlabel("Frequency Band")
     plt.ylabel("Variability (Standard Deviation)")
     plt.title("Variability in Frequency Bands Across Different Events")
