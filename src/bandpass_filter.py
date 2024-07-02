@@ -38,7 +38,7 @@ from utils import get_path
 from logger import configure_logger
 
 
-def bandpass_filter(data, lowcut, highcut, fs, order=5):
+def bandpass_filter(data, fs, lowcut=0.1, highcut=60.0, order=5):
     """
     Applies a bandpass filter to the given data.
 
@@ -59,22 +59,6 @@ def bandpass_filter(data, lowcut, highcut, fs, order=5):
     y = filtfilt(b, a, data)
     return y
 
-
-def apply_filter_to_signal(signal, fs, lowcut=0.1, highcut=60.0, order=5):
-    """
-    Applies a bandpass filter to the given signal.
-
-    Args:
-        signal (array-like): The input signal data to filter.
-        fs (float): The sampling frequency of the data.
-        lowcut (float, optional): The low cutoff frequency. Default 0.1.
-        highcut (float, optional): The high cutoff frequency. Default 60.0.
-        order (int, optional): The order of the filter. Default 5.
-
-    Returns:
-        array-like: The filtered signal.
-    """
-    return bandpass_filter(signal, lowcut, highcut, fs, order)
 
 
 def main(infile, outfile):
@@ -106,7 +90,7 @@ def main(infile, outfile):
             )
 
         df["signal"] = df.apply(
-            lambda row: apply_filter_to_signal(
+            lambda row: bandpass_filter(
                 np.array(row["signal"]), row["size"], lowcut=1
             ),
             axis=1,
