@@ -44,7 +44,7 @@ def main(infile, outimage, outtext, show=False):
     None
     """
     # Configure logger
-    logger = configure_logger(__name__)
+    logger = configure_logger()
 
     # Load the epochs data
     epochs_filepath = get_path(infile)

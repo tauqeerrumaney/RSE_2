@@ -28,7 +28,7 @@ def main(infile, outfile, show=False):
     """
 
     # Configure logger
-    logger = configure_logger(__name__)
+    logger = configure_logger()
 
     # Load the epochs data
     infile_path = get_path(infile)
