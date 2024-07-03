@@ -5,7 +5,8 @@ and saves the cleaned data to a new file in FIF format.
 """
 
 import argparse
-from pathlib import Path
+import os
+import traceback
 
 import matplotlib.pyplot as plt
 import mne
@@ -15,8 +16,10 @@ from logger import configure_logger
 from mne.preprocessing import ICA
 from utils import get_path
 
+logger = configure_logger(os.path.basename(__file__))
 
-def main(infile, outfile, artifacts, inspection=False):
+
+def main(infile, outfile, plotfile, artifacts, inspection=False):
     """
     Main function to load, process, and save EEG data using ICA.
 
@@ -30,11 +33,11 @@ def main(infile, outfile, artifacts, inspection=False):
         None
     """
     try:
-        logger = configure_logger()
-        file_path = get_path(infile)
+        in_path = get_path(infile)
 
-        df = pd.read_feather(file_path)
-        logger.info("Truncated data loaded")
+        logger.info("Reading data from %s", in_path)
+        df = pd.read_feather(in_path)
+        logger.info("Finished reading data. Applying ICA")
 
         sfreq = df["size"].iloc[0] / 2
         events = df["event"].unique()
@@ -44,6 +47,7 @@ def main(infile, outfile, artifacts, inspection=False):
         epoch_data = {event: [] for event in events}
         event_codes = {}
 
+        logger.info("Processing data for %d events", len(events))
         for event in events:
             event_df = df[df["event"] == event]
             epoch_signals = []
@@ -65,7 +69,10 @@ def main(infile, outfile, artifacts, inspection=False):
         epochs_data = np.array(epochs_list)
 
         # create mne object
-        info = mne.create_info(ch_names=list(channels), sfreq=sfreq, ch_types="eeg")
+        info = mne.create_info(
+            ch_names=list(channels),
+            sfreq=sfreq,
+            ch_types="eeg")
 
         # set montage, MDB uses 10-20
         montage = mne.channels.make_standard_montage("standard_1020")
@@ -73,7 +80,10 @@ def main(infile, outfile, artifacts, inspection=False):
 
         # Create an events array for MNE,
         # each event starts at the next multiple of the epoch length
-        event_ids = {str(code): idx for idx, code in enumerate(event_codes.values())}
+        event_ids = {
+            str(code): idx for idx,
+            code in enumerate(
+                event_codes.values())}
         events_array = np.array(
             [
                 [idx * target_length, 0, event_ids[str(event_codes[event])]]
@@ -89,51 +99,56 @@ def main(infile, outfile, artifacts, inspection=False):
             epochs_data, info, events_array, tmin=0, event_id=event_ids
         )
 
-        ica = ICA(n_components=min(len(channels), 20), random_state=97, max_iter=800)
+        ica = ICA(
+            n_components=min(
+                len(channels),
+                20),
+            random_state=97,
+            max_iter=800)
         ica.fit(epochs)
+
         # Save the ICA component plots as PNG files - only show them
         # for manual inspection
-        png_path = get_path("results/ica_components.png")
+        png_path = get_path(plotfile)
         fig = ica.plot_components(show=False)
         fig.savefig(png_path)
         plt.close(fig)
+        logger.info("ICA component plots saved to %s", png_path)
 
         # Inspect individual components and
         # get user input for artifacts, if specified
-        identified_artifacts = []
-
         if inspection:
+            identified_artifacts = []
             for i in range(ica.n_components_):
                 ica.plot_properties(epochs, picks=[i])
                 response = input(f"Mark component {i} as an artifact? (y/n): ")
                 if response.lower() == "y":
                     identified_artifacts.append(i)
+            logger.info("Identified artifacts: %s", identified_artifacts)
+            ica.exclude = identified_artifacts
         elif artifacts is not None:
-            with open(get_path(artifacts), "r") as file:
-                contents = file.read()
-            additional_artifacts = [int(x) for x in contents.split(",")]
-            logger.info(f"Identified artifact components: {additional_artifacts}")
+            additional_artifacts = [int(x) for x in artifacts.split(",")]
+            logger.info(
+                "Loaded additional artifacts: %s",
+                additional_artifacts)
             ica.exclude = additional_artifacts
-        else:
-            artifact_path = Path(get_path("data/artifacts.txt"))
-            artifact_path.touch(exist_ok=True)
 
         # Apply the ICA solution to remove the identified artifacts
         epochs_clean = epochs.copy()
         ica.apply(epochs_clean)
 
         # Save cleaned epoched data in FIF format for further use with MNE
-        output_path = outfile
-        epochs_clean.save(output_path, overwrite=True)
+        out_path = get_path(outfile)
+        epochs_clean.save(out_path, overwrite=True)
 
-        logger.info(f"Cleaned data saved to {output_path}")
+        logger.info("Cleaned data saved to %s", out_path)
 
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
+    except FileNotFoundError as e:
+        logger.error(f"Could not find file: {e}")
+        logger.debug(traceback.format_exc())
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":
@@ -149,13 +164,17 @@ if __name__ == "__main__":
         help="name of the file to save the denoised data",
     )
     parser.add_argument(
+        "plotfile",
+        type=str,
+        help="name of the file to save the ICA component plots",
+    )
+    parser.add_argument(
         "--artifacts",
         "-a",
         type=str,
         help="name of config file containing comma-separated artifacts",
         default=None,
     )
-
     parser.add_argument(
         "--inspect",
         "-i",
@@ -167,6 +186,7 @@ if __name__ == "__main__":
     main(
         infile=args.infile,
         outfile=args.outfile,
+        plotfile=args.plotfile,
         artifacts=args.artifacts,
         inspection=args.inspect,
     )

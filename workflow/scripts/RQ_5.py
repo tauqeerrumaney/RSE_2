@@ -1,44 +1,43 @@
 """
 This script generates a plot of kurtosis values for selected channels.
-Date: 2024-07-02
-License: MIT
 """
 
 # 5. How do the kurtosis values of EEG signals vary across different epochs
 # for channels FC6, F4, and F8, and what do these variations reveal about
 # the underlying neural dynamics?
 
-import numpy as np
-import matplotlib.pyplot as plt
 import argparse
+import os
 
-from utils import get_path
+import matplotlib.pyplot as plt
+import numpy as np
 from logger import configure_logger
+from utils import get_path
 
+logger = configure_logger(os.path.basename(__file__))
 
 def main(infile, outfile, channels, show=False):
     """
     Generate a plot of kurtosis values for selected channels.
 
     Parameters:
-    - infile (str): The path to the input file containing extracted features.
-    - outfile (str): The path to save the generated plot.
-    - channels (list): A list of channel names to plot kurtosis values for.
-    - show (bool, optional): Whether to display the plot. Defaults to False.
+        infile (str): The path to the input file containing extracted features.
+        outfile (str): The path to save the generated plot.
+        channels (list): A list of channel names to plot kurtosis values for.
+        show (bool, optional): Whether to display the plot. Defaults to False.
 
     Returns:
     None
     """
-
-    # Configure logger
-    logger = configure_logger()
-
     # Load the extracted features
-    infile_path = get_path(infile)
-    features = np.load(infile_path, allow_pickle=True).item()
-    logger.info(f"Loaded epochs data from {infile_path}")
+    in_path = get_path(infile)
+
+    logger.info("Reading data from %s", in_path)
+    features = np.load(in_path, allow_pickle=True).item()
+    logger.info("Finished reading data")
 
     # Plotting kurtosis values for selected channels
+    logger.info("Plotting kurtosis values for channels %s", channels)
     plt.figure(figsize=(10, 6))
     for channel in channels:
         key = f"{channel}_kurtosis"
@@ -53,14 +52,10 @@ def main(infile, outfile, channels, show=False):
     if show:
         plt.show()
 
-    try:
-        plt.savefig(get_path(outfile))
-        logger.info("plot saved")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-
+    # Save the plot
+    out_path = get_path(outfile)
+    plt.savefig(out_path)
+    logger.info("Plot saved to %s", out_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)

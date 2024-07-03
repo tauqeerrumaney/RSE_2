@@ -31,7 +31,8 @@ def main(infile, event, electrode):
     if electrode is not None:
         # Check if the electrode is within the range of values in the df
         if electrode not in df["channel"].unique():
-            raise ValueError(f"Electrode {electrode} not found in the dataframe")
+            raise ValueError(
+                f"Electrode {electrode} not found in the dataframe")
 
         # Filter data for the specified electrode across all events
         electrode_data = df[df["channel"] == electrode]
@@ -40,7 +41,8 @@ def main(infile, event, electrode):
         if event is not None:
             # Check if the event_id is within the range of values in the df
             if event not in df["event"].unique():
-                raise ValueError(f"Event ID {event} not found in the dataframe")
+                raise ValueError(
+                    f"Event ID {event} not found in the dataframe")
 
             # Filter data for the specified event
             electrode_data = df[df["event"] == event]

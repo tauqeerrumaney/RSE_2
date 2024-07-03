@@ -1,19 +1,29 @@
 import logging
 
-
-def configure_logger():
+def configure_logger(name):
     """
-    Configures and returns a logger.
+    Configure a logger with the given name.
 
     Args:
-        None
+        name (str): The name of the logger.
 
     Returns:
-        logging.Logger: Configured logger instance.
+        logging.Logger: The configured logger.
     """
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
-    logger = logging.getLogger()
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    
+    # Create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    # Add formatter to ch
+    ch.setFormatter(formatter)
+    
+    # Add ch to logger
+    logger.addHandler(ch)
+    
     return logger

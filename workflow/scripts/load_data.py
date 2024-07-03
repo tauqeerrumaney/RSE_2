@@ -1,10 +1,11 @@
 """
-This script allows EEG data in a .txt file (in a specific format)
+This script allows EEG data in a .csv file (in a specific format)
 to be loaded, converted into micro Volts based on the input
 resolution and saved into a smaller data format.
 """
 
 import argparse
+import os
 import traceback
 
 import numpy as np
@@ -12,6 +13,7 @@ import pandas as pd
 from logger import configure_logger
 from utils import get_path
 
+logger = configure_logger(os.path.basename(__file__))
 
 def main(infile, outfile, mock=False):
     """
@@ -26,11 +28,12 @@ def main(infile, outfile, mock=False):
         None
     """
     try:
-        logger = configure_logger()
-        file_path = get_path(infile)
+        in_path = get_path(infile)
+
         mock_size = 10000
         if mock:
             logger.info(f"Using mock data set with size {mock_size}")
+
         # format of MindBigData data set
         columns = [
             "id",
@@ -43,8 +46,8 @@ def main(infile, outfile, mock=False):
         ]
         rows = []
 
-        logger.info("Reading data")
-        with open(file_path, "r") as file:
+        logger.info("Reading data from %s", in_path)
+        with open(in_path, "r") as file:
             for line in file:
                 parts = line.strip().split("\t")
                 row_dict = {
@@ -57,6 +60,7 @@ def main(infile, outfile, mock=False):
                     "signal": list(map(float, parts[6].split(","))),
                 }
                 rows.append(row_dict)
+        logger.info("Finished reading data. Applying conversion factor")
 
         df = pd.DataFrame(rows, columns=columns)
         df.drop(columns=["device"], inplace=True)
@@ -64,31 +68,23 @@ def main(infile, outfile, mock=False):
         # this corresponds to the LSB of the resolution of the EEG device
         # emotiv.com/products/epoc-x
         conversion_factor = 0.125
-        df["signal"] = df["signal"].apply(lambda x: np.array(x) * conversion_factor)
+        df["signal"] = df["signal"].apply(
+            lambda x: np.array(x) * conversion_factor)
 
-        logger.info("Finished reading data")
+        # save the data in feather format
+        out_path = get_path(outfile)
+        if mock:
+            df = df.head(mock_size)
+        df.to_feather(out_path)
 
-        try:
-            if mock:
-                out_path = get_path(f"{outfile}")
-                df_mock = df.head(mock_size)
-                df_mock.to_feather(out_path)
-                logger.info(f"Mock file saved to {out_path}")
-            else:
-                # save data in feather format -> smaller
-                out_path = get_path(f"{outfile}")
-                df.to_feather(out_path)
-                logger.info(f"Raw file saved to {out_path}")
-        # TODO: handle different error types independently
-        except Exception:
-            logger.error("An error occurred: %s", traceback.format_exc())
+        logger.info("Converted file saved to %s", out_path)
 
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
+    except FileNotFoundError as e:
+        logger.error(f"Could not find file: {e}")
+        logger.debug(traceback.format_exc())
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":
