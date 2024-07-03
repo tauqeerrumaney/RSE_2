@@ -1,0 +1,12 @@
+name: eeg_ica
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6 
+  - matplotlib=3.9.0
+  - mne=1.7.1
+  - numpy=1.26.4
+  - pandas=2.2.2
+  - pyarrow=16.1.0
+  - pip

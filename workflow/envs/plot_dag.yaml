@@ -1,0 +1,7 @@
+name: eeg_plot_dag
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.6
+  - snakemake
+  - graphviz

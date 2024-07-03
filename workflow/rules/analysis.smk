@@ -6,6 +6,8 @@ rule RQ_1:
         json="results/RQ_1.json",
     log:
         "logs/RQ_1.txt",
+    conda:
+        "../envs/research_question.yaml"
     shell:
         """
         python workflow/scripts/RQ_1.py {input} {output.image} {output.json} &> {log}
@@ -19,6 +21,8 @@ rule RQ_5:
         "results/RQ_5.png",
     log:
         "logs/RQ_5.txt",
+    conda:
+        "../envs/research_question.yaml"
     shell:
         """
         python workflow/scripts/RQ_5.py {input} {output} &> {log}
@@ -35,9 +39,11 @@ rule generate_plots:
         raw_data="results/{sample}_raw.png",
     log:
         "logs/generate_plots_{sample}.txt",
+    conda:
+        "../envs/generate_plots.yaml"
     shell:
         """
-        python workflow/scripts/generate_plots.py {input} {output.epochs_data} {output.epochs_psd} {output.evoked_response} {output.raw_data} &> {log}
+        MNE_BROWSER_BACKEND=matplotlib python workflow/scripts/generate_plots.py {input} {output.epochs_data} {output.epochs_psd} {output.evoked_response} {output.raw_data} &> {log}
         """
 
 
@@ -50,6 +56,8 @@ rule RQ:
         "logs/RQ_{rule}.txt",
     params:
         script="workflow/scripts/RQ_{rule}.py",
+    conda:
+        "../envs/research_question.yaml"
     shell:
         """
         python {params.script} {input} {output} &> {log}
