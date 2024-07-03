@@ -31,24 +31,16 @@ Command-Line Arguments:
 
 """
 
-from pylatex import Document, Section, Command, Figure, Package
+from pylatex import Document, Section, Command, Package
 from pylatex.utils import NoEscape
 import argparse
 import os
 
-from utils import get_path
+from utils import get_path, get_text
 from logger import configure_logger
 
-FILE_NAMES = {
-    "erp_difference": get_path("results/erp_difference.png"),
-    "ica_components": get_path("results/ica_components.png"),
-    "O1_vs_O2": get_path("results/O1vO2.png"),
-    "spectogram": get_path("results/spectogram.png"),
-    "variability": get_path("results/variability.png"),
-}
 
-
-def create_document(pdf, latex, title, author):
+def create_document(pdf, latex, title, author, sections=[]):
     """
     Creates a LaTeX document with specified title and author
     and generates output documents in PDF and LaTeX formats.
@@ -84,30 +76,19 @@ def create_document(pdf, latex, title, author):
     doc.append(NoEscape(r"\maketitle"))
     logger.info("Preamble created successfully!")
 
-    doc.append(get_text("introduction"))
+    # Add introduction section
+    with doc.create(Section("Introduction")):
+        doc.append(get_text("introduction"))
 
-    for image in FILE_NAMES.keys():
-        # check if image was created
-        image_path = get_path(FILE_NAMES[image])
-        if os.path.exists(image_path):
-
-            # Create Section
-            section_title = image.replace("_", " ")
-            with doc.create(Section(f"{section_title.capitalize()} Section")):
-
-                # Add figure
-                with doc.create(Figure(position="H")) as pic:
-                    pic.add_image(image_path, width="120px")
-                    pic.add_caption(f"Image: {image}")
-
-                # Try to add text from textblock
-                try:
-                    doc.append(f"{get_text(image)}")
-                except ValueError as ve:
-                    logger.error(f"ValueError: {ve}")
-                except Exception as e:
-                    logger.error(f"An unexpected error occurred: {e}")
-                logger.info(f"Section '{section_title}' added successfully!")
+    # Add sections to the document
+    for section in sections:
+        section_path = get_path(section)
+        if os.path.exists(section_path):
+            with open(section_path, "r") as file:
+                section_content = file.read()
+            doc.append(NoEscape(section_content))
+        else:
+            logger.error(f"Section file '{section}' not found")
 
     try:
         # generate output documents
@@ -128,35 +109,6 @@ def create_document(pdf, latex, title, author):
                 get_path(latex).split(".tex")[0],
             )
             logger.info(f"LaTeX generated successfully at {latex}")
-    except FileNotFoundError as fnfe:
-        logger.error(f"FileNotFoundError: {fnfe}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-    return
-
-
-def get_text(keyword):
-    """
-    Retrieves the text content associated with the given keyword.
-
-    Args:
-        keyword (str): The keyword used to identify the text content.
-
-    Returns:
-        str: The text content associated with the keyword,
-            or None if the file is not found.
-
-    Raises:
-        FileNotFoundError: If the keyword file is not found.
-        Exception: If an unexpected error occurs while reading the file.
-    """
-    # Configure logger
-    logger = configure_logger()
-
-    try:
-        with open(get_path(f"data/textblocks/{keyword}.txt"), "r") as file:
-            keyword_text = file.read()
-        return keyword_text
     except FileNotFoundError as fnfe:
         logger.error(f"FileNotFoundError: {fnfe}")
     except Exception as e:
@@ -191,6 +143,18 @@ if __name__ == "__main__":
         help="The author of the document",
         default="University of Potsdam, RSE 2024",
     )
+    parser.add_argument(
+        "--sections",
+        type=str,
+        nargs="*",
+        help="The sections to include in the document",
+    )
     args = parser.parse_args()
 
-    create_document(args.pdf, args.latex, args.title, args.author)
+    create_document(
+        pdf=args.pdf,
+        latex=args.latex,
+        title=args.title,
+        author=args.author,
+        sections=args.sections,
+    )
