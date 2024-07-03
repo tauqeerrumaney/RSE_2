@@ -1,0 +1,49 @@
+# Snakefile
+from glob import glob
+import os
+import shutil
+
+
+include: "rules/analysis.smk"
+include: "rules/preprocessing.smk"
+
+
+# Define the shell command to use for all rules
+shell.prefix("set -euo pipefail; ")
+
+
+# Load the configuration file
+configfile: "config/config.yaml"
+
+
+# Default rule to fetch result files
+rule all:
+    input:
+        "results/RQ_1.json",
+        "results/raw_data.png",
+        "results/epochs_data.png",
+        "results/epochs_psd.png",
+        "results/evoked_response.png",
+        expand("results/RQ_{i}.png", i=range(1, 6)),
+
+
+# Clean up files
+rule clean:
+    run:
+        dirs_to_remove = ["temp", "results"]
+        for d in dirs_to_remove:
+            if os.path.exists(d):
+                shutil.rmtree(d)
+                print(f"Removed directory: {d}")
+            else:
+                print(f"Directory not found, skipping: {d}")
+
+
+# Use this rule to visualize the workflow
+rule plot_dag:
+    input:
+        "workflow/Snakefile",
+    output:
+        "workflow_dag.png",
+    shell:
+        "snakemake -c 1 --dag | dot -Tpng > {output}"

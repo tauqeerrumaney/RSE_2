@@ -1,0 +1,5 @@
+# Use a reduced dataset for testing
+mock: false
+
+# Comma-separated list of artifacts to exclude
+artifacts: "1,3,5"
