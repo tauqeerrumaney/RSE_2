@@ -1,8 +1,5 @@
 import os
-
 from workflow.scripts.logger import configure_logger
-
-from utils import get_path
 
 
 def get_path(filepath):
