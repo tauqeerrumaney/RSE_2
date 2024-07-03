@@ -1,12 +1,12 @@
 rule RQ_1:
     input:
-        "temp/denoised_data.fif",
+        "temp/denoised_epo.fif",
     output:
-        "results/RQ_1.png",
-        "results/RQ_1.json",
+        image="results/RQ_1.png",
+        json="results/RQ_1.json",
     shell:
         """
-        python workflow/scripts/RQ_1.py {input} {output}
+        python workflow/scripts/RQ_1.py {input} {output.image} {output.json}
         """
 
 
@@ -21,26 +21,26 @@ rule RQ_5:
         """
 
 
-rule RQ:
-    input:
-        "temp/denoised_data.fif",
-    output:
-        "results/{rule}.png",
-    params:
-        script="workflow/scripts/{rule}.py",
-    shell:
-        "python {params.script} {input} {output}"
-
-
 rule generate_plots:
     input:
-        "temp/denoised_data.fif",
+        "temp/{sample}.fif",
     output:
-        "results/raw_data.png",
-        "results/epochs_data.png",
-        "results/epochs_psd.png",
-        "results/evoked_response.png",
+        epochs_data="results/{sample}_epochs.png",
+        epochs_psd="results/{sample}_psd.png",
+        evoked_response="results/{sample}_response.png",
+        raw_data="results/{sample}_raw.png",
     shell:
         """
-        python workflow/scripts/generate_plots.py {input} results/
+        python workflow/scripts/generate_plots.py {input} {output.epochs_data} {output.epochs_psd} {output.evoked_response} {output.raw_data}
         """
+
+
+rule RQ:
+    input:
+        "temp/denoised_epo.fif",
+    output:
+        "results/RQ_{rule}.png",
+    params:
+        script="workflow/scripts/RQ_{rule}.py",
+    shell:
+        "python {params.script} {input} {output}"

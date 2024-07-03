@@ -37,20 +37,20 @@ rule ica:
     input:
         "temp/truncated_data.feather",
     output:
-        "temp/cleaned_data.fif",
+        "temp/cleaned_epo.fif",
         "results/ica_components.png",
     threads: workflow.cores
     shell:
         """
-        python workflow/scripts/ica.py {input} {output[0]} --artifacts data/artifacts.txt
+        python workflow/scripts/ica.py {input} {output} --artifacts {config[artifacts]}
         """
 
 
 rule denoising:
     input:
-        "temp/cleaned_data.fif",
+        "temp/cleaned_epo.fif",
     output:
-        "temp/denoised_data.fif",
+        "temp/denoised_epo.fif",
     shell:
         """
         python workflow/scripts/denoising.py {input} {output}
@@ -59,7 +59,7 @@ rule denoising:
 
 rule feature_extraction:
     input:
-        "temp/denoised_data.fif",
+        "temp/denoised_epo.fif",
     output:
         "temp/features.npy",
     threads: workflow.cores * 0.5

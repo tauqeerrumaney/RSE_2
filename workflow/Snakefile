@@ -19,11 +19,12 @@ configfile: "config/config.yaml"
 # Default rule to fetch result files
 rule all:
     input:
+        "results/denoised_epo_epochs.png",
+        "results/denoised_epo_psd.png",
+        "results/denoised_epo_raw.png",
+        "results/denoised_epo_response.png",
+        "results/ica_components.png",
         "results/RQ_1.json",
-        "results/raw_data.png",
-        "results/epochs_data.png",
-        "results/epochs_psd.png",
-        "results/evoked_response.png",
         expand("results/RQ_{i}.png", i=range(1, 6)),
 
 
