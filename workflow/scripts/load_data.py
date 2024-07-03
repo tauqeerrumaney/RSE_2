@@ -15,6 +15,7 @@ from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
+
 def main(infile, outfile, mock=False):
     """
     Main function to load, process, and save EEG data.

@@ -92,8 +92,8 @@ def main(infile, outfile, features):
     Main function to load, extract, and save EEG signal features.
 
     Args:
-        infile (str): The path to the input file containing the denoised EEG data.
-        outfile (str): The path to the output file where extracted features are saved.
+        infile (str): The path to the file containing the denoised EEG data.
+        outfile (str): The path to the file where extracted features are saved.
         features (list): List of feature types to extract.
 
     Returns:

@@ -1,5 +1,6 @@
 """
-This script loads denoised EEG data from a FIF file, converts it to raw format for inspection, and saves various plots as PNG files.
+This script loads denoised EEG data from a FIF file,
+converts it to raw format for inspection, and saves various plots as PNG files.
 """
 
 import os
@@ -13,7 +14,13 @@ from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
-def main(infile, epoch_plot_file, psd_plot_file, evoked_plot_file, raw_plot_file):
+
+def main(
+        infile,
+        epoch_plot_file,
+        psd_plot_file,
+        evoked_plot_file,
+        raw_plot_file):
     """
     Main function to load and plot EEG data.
 
@@ -33,7 +40,7 @@ def main(infile, epoch_plot_file, psd_plot_file, evoked_plot_file, raw_plot_file
         logger.info("Reading data from %s", in_path)
         epochs = mne.read_epochs(in_path, preload=True)
         logger.info("Finished reading data")
-        
+
         # Plot epochs and save
         fig = epochs.plot(
             n_epochs=10,
@@ -45,7 +52,11 @@ def main(infile, epoch_plot_file, psd_plot_file, evoked_plot_file, raw_plot_file
         logger.info("Epochs plot saved to %s", epoch_plot_file)
 
         # Plot PSD and save
-        fig = epochs.compute_psd(fmin=0.1, fmax=60).plot(show=False, amplitude=False)
+        fig = epochs.compute_psd(
+            fmin=0.1,
+            fmax=60).plot(
+            show=False,
+            amplitude=False)
         fig.savefig(get_path(psd_plot_file))
         plt.close(fig)
         logger.info("PSD plot saved to %s", psd_plot_file)
@@ -111,4 +122,9 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, epoch_plot_file=args.epoch_plot_file, psd_plot_file=args.psd_plot_file, evoked_plot_file=args.evoked_plot_file, raw_plot_file=args.raw_plot_file)
+    main(
+        infile=args.infile,
+        epoch_plot_file=args.epoch_plot_file,
+        psd_plot_file=args.psd_plot_file,
+        evoked_plot_file=args.evoked_plot_file,
+        raw_plot_file=args.raw_plot_file)

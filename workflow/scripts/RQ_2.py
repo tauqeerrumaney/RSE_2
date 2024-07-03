@@ -17,6 +17,7 @@ from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
+
 def main(infile, outfile, show=False):
     """
     Perform analysis on EEG signals from channels O1 and O2.

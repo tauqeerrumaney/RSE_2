@@ -20,8 +20,8 @@ def main(infile, outfile):
     Main function to load, truncate, and save EEG signal data.
 
     Args:
-        infile (str): The path to the input file containing the bandpass filtered EEG data.
-        outfile (str): The path to the output file where truncated data is saved.
+        infile (str): The path to the input file containing EEG data.
+        outfile (str): The path of the file to save truncated data to.
 
     Returns:
         None

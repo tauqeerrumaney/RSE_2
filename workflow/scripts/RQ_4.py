@@ -24,7 +24,7 @@ def main(infile, outfile, channels, show=False):
     Parameters:
         infile (str): Path to the input file containing epochs data.
         outfile (str): Path to the output file where the plot will be saved.
-        channels (list): Channel names for which spectrograms will be generated.
+        channels (list): Channel names for which to generate spectrograms.
         show (bool, optional): Whether to display the plot. Defaults to False.
 
     Returns:
@@ -70,6 +70,7 @@ def main(infile, outfile, channels, show=False):
     out_path = get_path(outfile)
     plt.savefig(out_path)
     logger.info("Plot saved to %s", out_path)
+
 
 def plot_spectrogram(data, sfreq, channel_name, ax):
     """

@@ -18,7 +18,7 @@ def main(infile, event, electrode):
     Args:
         infile (str): The path to the input file containing the EEG data.
         event (int): The event ID to filter by (set to None to plot all data).
-        electrode (str): The electrode to filter by (set to None to plot all data).
+        electrode (str): The electrode to filter by (set to None for all data).
 
     Returns:
         None

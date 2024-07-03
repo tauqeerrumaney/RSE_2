@@ -44,7 +44,7 @@ def main(infile, outfile):
 
     Args:
         infile (str): The path to the input file containing the raw EEG data.
-        outfile (str): The path to the output file where filtered data is saved.
+        outfile (str): The path to the file where output data will be saved.
 
     Returns:
         None

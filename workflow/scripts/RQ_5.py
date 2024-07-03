@@ -16,6 +16,7 @@ from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
+
 def main(infile, outfile, channels, show=False):
     """
     Generate a plot of kurtosis values for selected channels.
@@ -56,6 +57,7 @@ def main(infile, outfile, channels, show=False):
     out_path = get_path(outfile)
     plt.savefig(out_path)
     logger.info("Plot saved to %s", out_path)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)

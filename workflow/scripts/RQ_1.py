@@ -48,8 +48,10 @@ def main(infile, outimage, outtext, show=False):
 
     logger.info("Reading data from %s", in_path)
     epochs = mne.read_epochs(in_path, preload=True)
-    logger.info("Finished reading data. Calculating PSD for %d events", len(epochs.events))
-    
+    logger.info(
+        "Finished reading data. Calculating PSD for %d events", len(
+            epochs.events))
+
     # Calculate PSD for each band and event
     sfreq = epochs.info["sfreq"]
     psd_values = {band: [] for band in BANDS}

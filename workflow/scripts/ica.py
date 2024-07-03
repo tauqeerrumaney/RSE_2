@@ -26,7 +26,7 @@ def main(infile, outfile, plotfile, artifacts, inspection=False):
     Args:
         infile (str): Name of the file to load.
         outfile (str): Name of the file to save the denoised data.
-        artifacts (str): Name of the file containing additional artifact components.
+        artifacts (str): Comma-separated list of artifacts to remove.
         inspection (bool): Flag to inspect individual components for artifacts.
 
     Returns:

@@ -19,6 +19,7 @@ from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
+
 def main(infile, outfile, channels, show=False):
     """
     Generate and save an ERP plot for a selected event type and channels.
@@ -49,7 +50,7 @@ def main(infile, outfile, channels, show=False):
 
     # Plot the ERP for the selected channels
     logger.info("Plotting ERP for event %d at channels %s", event_id, channels)
-    
+
     erp = epochs[event_id].average()
     for channel in channels:
         plt.plot(
