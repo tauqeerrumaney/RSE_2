@@ -1,20 +1,21 @@
 """
-This script performs analysis on EEG signals from channels O1 and O2.
-Date: 2024-07-02
-License: MIT
+This script perform analysis on EEG signals from channels O1 and O2.
 """
 
 # How do the EEG signals from channels O1 and O2 differ during
 # various cognitive tasks, and what do these differences reveal about
 # lateralized brain activity in the occipital lobe?
 
+import argparse
+import os
+
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
-import matplotlib.pyplot as plt
-import argparse
-
-from utils import get_path
 from logger import configure_logger
+from utils import get_path
+
+logger = configure_logger(os.path.basename(__file__))
 
 
 def main(infile, outfile, show=False):
@@ -22,21 +23,23 @@ def main(infile, outfile, show=False):
     Perform analysis on EEG signals from channels O1 and O2.
 
     Parameters:
-    - infile (str): Path to the input file containing the epochs data.
-    - outfile (str): Path to save the output plot.
-    - show (bool, optional): Whether to display the plot. Defaults to False.
+        infile (str): Path to the input file containing the epochs data.
+        outfile (str): Path to save the output plot.
+        show (bool, optional): Whether to display the plot. Defaults to False.
+
+    Returns:
+        None
     """
-
-    # Configure logger
-    logger = configure_logger()
-
     # Load the epochs data
-    infile_path = get_path(infile)
-    epochs = mne.read_epochs(infile_path, preload=True)
+    in_path = get_path(infile)
+
+    logger.info("Reading data from %s", in_path)
+    epochs = mne.read_epochs(in_path, preload=True)
+    logger.info("Finished reading data")
 
     # Get data for channels O1 and O2
-    O1_data = epochs.get_data()[:, epochs.ch_names.index("O1"), :]
-    O2_data = epochs.get_data()[:, epochs.ch_names.index("O2"), :]
+    O1_data = epochs.get_data(copy=True)[:, epochs.ch_names.index("O1"), :]
+    O2_data = epochs.get_data(copy=True)[:, epochs.ch_names.index("O2"), :]
 
     # Compute the average across epochs for comparison
     O1_avg = np.mean(O1_data, axis=0)
@@ -54,13 +57,10 @@ def main(infile, outfile, show=False):
     if show:
         plt.show()
 
-    try:
-        plt.savefig(get_path(outfile))
-        logger.info("plot saved")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+    # Save the plot
+    out_path = get_path(outfile)
+    plt.savefig(out_path)
+    logger.info("Plot saved to %s", out_path)
 
 
 if __name__ == "__main__":

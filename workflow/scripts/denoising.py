@@ -4,10 +4,14 @@ the average of all channels, and saves the denoised data to a new .fif file.
 """
 
 import argparse
+import os
+import traceback
 
 import mne
 from logger import configure_logger
 from utils import get_path
+
+logger = configure_logger(os.path.basename(__file__))
 
 
 def main(infile, outfile):
@@ -22,26 +26,28 @@ def main(infile, outfile):
         None
     """
     try:
-        logger = configure_logger()
         # Load the cleaned dataset
-        input_path = get_path(infile)
-        epochs = mne.read_epochs(input_path, preload=True)
-        logger.info("Artifact filtered data loaded")
+        in_path = get_path(infile)
+
+        logger.info("Reading data from %s", in_path)
+        epochs = mne.read_epochs(in_path, preload=True)
+        logger.info("Finished reading data. Applying re-referencing")
 
         # Re-reference to the average of all channels
         epochs.set_eeg_reference("average", projection=True)
         epochs.apply_proj()
 
         # Save the denoised data
-        output_path = get_path(outfile)
-        epochs.save(output_path, overwrite=True)
-        logger.info(f"Denoised data saved to {output_path}")
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
+        out_path = get_path(outfile)
+        epochs.save(out_path, overwrite=True)
+        logger.info("Denoised data saved to %s", out_path)
+
+    except FileNotFoundError as e:
+        logger.error(f"Could not find file: {e}")
+        logger.debug(traceback.format_exc())
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":
