@@ -1,6 +1,7 @@
 name: eeg_plot_dag
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - python=3.11.6
   - snakemake
