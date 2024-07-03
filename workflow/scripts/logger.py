@@ -1,4 +1,5 @@
 import logging
+import sys
 
 
 def configure_logger(name):
@@ -15,7 +16,7 @@ def configure_logger(name):
     logger.setLevel(logging.DEBUG)
 
     # Create console handler and set level to debug
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.DEBUG)
 
     # Create formatter
