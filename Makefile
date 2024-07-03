@@ -34,4 +34,9 @@ lint:
 # Clean step
 .PHONY: clean
 clean:
-	snakemake -c 1 --delete-all-output
+	snakemake --use-conda --cores 1 clean
+
+# Plot workflow
+.PHONY: plot
+plot:
+	snakemake --use-conda --cores 1 plot_dag
