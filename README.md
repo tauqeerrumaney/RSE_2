@@ -20,9 +20,73 @@ Harshini Eggoni, Philipp Freiherr von Entreß-Fürsteneck, Max Nowaczyk, Tauqeer
 
 This is the second project in the 2024 course "Research Software Engineering" at the University of Potsdam
 
+Certainly! Here is an improved version of your README section for clarity and completeness:
+
 ## Usage
 
-How the project pipeline is expected to be used
+Ensure you have the following prerequisites installed on your system:
+
+- **[Conda](https://docs.anaconda.com/miniconda/)**: For environment management.
+- **[Snakemake](https://snakemake.readthedocs.io/en/stable/)**: For workflow management.
+
+### Running the Workflow
+
+To run the entire workflow, execute the following command from the root directory of the repository:
+
+```sh
+make
+```
+
+This command will initiate the workflow and handle all necessary steps automatically. Upon the first run, a configuration file (`config/config.yaml`) will be created if it does not already exist.
+
+### Configuration
+
+The configuration file (`config/config.yaml`) contains settings that can be customized to suit your needs:
+
+- **Use a Reduced Dataset for Testing**:
+  ```yaml
+  mock: false
+  ```
+  Set `mock` to `true` to use a smaller dataset for testing purposes.
+
+- **Exclude Specific Artifacts**:
+  ```yaml
+  artifacts: "1,3,5"
+  ```
+  Provide a comma-separated list of artifact IDs to exclude from the workflow.
+
+### Cleaning Up
+
+To remove all generated output and clean the output directories, use the following command:
+
+```sh
+make clean
+```
+
+### Developer Guide
+
+For developers looking to contribute or maintain the project, the following commands are available:
+
+- **Lint the Workflow**:
+  Ensure you have `snakefmt`, `autopep8`, and `flake8` installed. Run the following command to format and check the code:
+
+  ```sh
+  make lint
+  ```
+
+- **Generate Workflow Diagram**:
+  Create a visual representation of the workflow with:
+
+  ```sh
+  make plot
+  ```
+
+### Additional Notes
+
+To run specific steps of the workflow, use Snakemake's targeted execution:
+```sh
+snakemake <target_rule>
+```
 
 ## Data Source and License
 
