@@ -2,21 +2,22 @@
 This script loads epochs data from a file, selects a single event type for
 comparison, and plots the event-related potential (ERP) for the selected
 channels.
-Date: 2024-07-02
-License: MIT
 """
 
 # How does the event-related potential (ERP) differ across channels such as
 # AF3 (frontal), P7 (parietal), and O1 (occipital) for a specific cognitive
 # task in the EPOC data?
 
+import argparse
+import os
+
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
-import matplotlib.pyplot as plt
-import argparse
-
-from utils import get_path
 from logger import configure_logger
+from utils import get_path
+
+logger = configure_logger(os.path.basename(__file__))
 
 
 def main(infile, outfile, channels, show=False):
@@ -24,22 +25,20 @@ def main(infile, outfile, channels, show=False):
     Generate and save an ERP plot for a selected event type and channels.
 
     Parameters:
-    - infile (str): The path to the input file containing epochs data.
-    - outfile (str): The path to save the generated plot.
-    - channels (list): A list of channel names to plot.
-    - show (bool, optional): Whether to display the plot. Default is False.
+        infile (str): The path to the input file containing epochs data.
+        outfile (str): The path to save the generated plot.
+        channels (list): A list of channel names to plot.
+        show (bool, optional): Whether to display the plot. Default is False.
 
     Returns:
-    - None
+        None
     """
-
-    # Configure logger
-    logger = configure_logger()
-
     # Load the epochs data
-    infile_path = get_path(infile)
-    epochs = mne.read_epochs(infile_path, preload=True)
-    logger.info(f"Loaded epochs data from {infile_path}")
+    in_path = get_path(infile)
+
+    logger.info("Reading data from %s", in_path)
+    epochs = mne.read_epochs(in_path, preload=True)
+    logger.info("Finished reading data")
 
     # Get unique event types
     event_ids = np.unique(epochs.events[:, 2])
@@ -50,6 +49,8 @@ def main(infile, outfile, channels, show=False):
     plt.figure(figsize=(12, 8))
 
     # Plot the ERP for the selected channels
+    logger.info("Plotting ERP for event %d at channels %s", event_id, channels)
+
     erp = epochs[event_id].average()
     for channel in channels:
         plt.plot(
@@ -66,13 +67,10 @@ def main(infile, outfile, channels, show=False):
     if show:
         plt.show()
 
-    try:
-        plt.savefig(get_path(outfile))
-        logger.info("plot saved")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+    # Save the plot
+    out_path = get_path(outfile)
+    plt.savefig(out_path)
+    logger.info("Plot saved to %s", out_path)
 
 
 if __name__ == "__main__":

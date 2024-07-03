@@ -4,6 +4,8 @@ to the signals, and saves the filtered data to a new feather file.
 """
 
 import argparse
+import os
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -11,8 +13,10 @@ from logger import configure_logger
 from scipy.signal import butter, filtfilt
 from utils import get_path
 
+logger = configure_logger(os.path.basename(__file__))
 
-def bandpass_filter(data, fs, lowcut=0.1, highcut=60.0, order=5):
+
+def bandpass_filter(data, fs, lowcut=1.0, highcut=60.0, order=5):
     """
     Applies a bandpass filter to the given data.
 
@@ -40,29 +44,33 @@ def main(infile, outfile):
 
     Args:
         infile (str): The path to the input file containing the raw EEG data.
-        outfile (str): The path to the output file where filtered data is saved.
+        outfile (str): The path to the file where output data will be saved.
 
     Returns:
         None
     """
-    logger = configure_logger()
-    file_path = get_path(infile)
+    in_path = get_path(infile)
 
-    df = pd.read_feather(file_path)
-    logger.info("Raw data loaded")
+    logger.info("Reading data from %s", in_path)
+    df = pd.read_feather(in_path)
+    logger.info("Finished reading data. Applying bandpass filter")
 
     if "size" not in df.columns:
-        raise ValueError("DF must contain a 'size' column representing sampling rate.")
+        raise ValueError(
+            "DF must contain a 'size' column representing sampling rate.")
 
     df["signal"] = df.apply(
-        lambda row: bandpass_filter(np.array(row["signal"]), row["size"], lowcut=1),
+        lambda row: bandpass_filter(
+            np.array(
+                row["signal"]),
+            row["size"]),
         axis=1,
     )
 
-    output_file_path = get_path(outfile)
-    df.to_feather(output_file_path)
+    out_path = get_path(outfile)
+    df.to_feather(out_path)
 
-    logger.info(f"Filtered data saved to {output_file_path}")
+    logger.info("Bandpassed data saved to %s", out_path)
 
 
 if __name__ == "__main__":
@@ -71,14 +79,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "outfile", type=str, help="name of the file to save the filtered data"
     )
-    logger = configure_logger()
     args = parser.parse_args()
 
     try:
         main(infile=args.infile, outfile=args.outfile)
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
+    except ValueError as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+    except FileNotFoundError as e:
+        logger.error(f"Could not find file: {e}")
+        logger.debug(traceback.format_exc())
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())

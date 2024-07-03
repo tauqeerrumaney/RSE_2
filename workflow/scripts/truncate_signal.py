@@ -5,10 +5,14 @@ the truncated data back to a new feather file.
 """
 
 import argparse
+import os
+import traceback
 
 import pandas as pd
 from logger import configure_logger
 from utils import get_path
+
+logger = configure_logger(os.path.basename(__file__))
 
 
 def main(infile, outfile):
@@ -16,37 +20,34 @@ def main(infile, outfile):
     Main function to load, truncate, and save EEG signal data.
 
     Args:
-        infile (str): The path to the input file containing the bandpass filtered EEG data.
-        outfile (str): The path to the output file where truncated data is saved.
+        infile (str): The path to the input file containing EEG data.
+        outfile (str): The path of the file to save truncated data to.
 
     Returns:
         None
     """
 
-    logger = configure_logger()
-    file_path = get_path(infile)
+    in_path = get_path(infile)
 
-    df = pd.read_feather(file_path)
-    logger.info("Bandpass filtered data loaded")
+    logger.info("Reading data from %s", in_path)
+    df = pd.read_feather(in_path)
+    logger.info("Finished reading data. Truncating signals")
 
     target_length = min(df["size"])
 
     # Truncate all signals to the target length
-    truncated_signals = df["signal"].apply(lambda signal: signal[:target_length])
+    truncated_signals = df["signal"].apply(
+        lambda signal: signal[:target_length])
     df["signal"] = truncated_signals
-    logger.info("All signals truncated to the target length")
 
-    # Validate that all signals are of the target length
-    if not all(df["signal"].apply(len) == target_length):
-        raise ValueError(f"Not all signals are of length {target_length}")
+    logger.info("All signals truncated to length %d", target_length)
 
     df["size"] = target_length
-    logger.info(f"Size adjusted to {target_length}")
 
-    output_file_path = get_path(outfile)
-    df.to_feather(output_file_path)
+    out_path = get_path(outfile)
+    df.to_feather(out_path)
 
-    logger.info(f"Truncated data saved to {output_file_path}")
+    logger.info("Truncated data saved to %s", out_path)
 
 
 if __name__ == "__main__":
@@ -57,14 +58,14 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    logger = configure_logger()
     try:
         main(infile=args.infile, outfile=args.outfile)
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-
-    except FileNotFoundError as fnf_error:
-        logger.error(f"FileNotFoundError: {fnf_error}")
-
+    except ValueError as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+    except FileNotFoundError as e:
+        logger.error(f"Could not find file: {e}")
+        logger.debug(traceback.format_exc())
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
