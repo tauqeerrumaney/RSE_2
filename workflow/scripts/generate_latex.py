@@ -39,8 +39,10 @@ import os
 from utils import get_path, get_text
 from logger import configure_logger
 
+logger = configure_logger(os.path.basename(__file__))
 
-def create_document(pdf, latex, title, author, sections=[]):
+
+def main(pdf, latex, title, author, sections=[]):
     """
     Creates a LaTeX document with specified title and author
     and generates output documents in PDF and LaTeX formats.
@@ -54,9 +56,6 @@ def create_document(pdf, latex, title, author, sections=[]):
     Returns:
         None
     """
-
-    # Configure logger
-    logger = configure_logger()
 
     if pdf is None and latex is None:
         logger.error("Please provide a filename for the output PDF or LaTeX.")
@@ -96,7 +95,7 @@ def create_document(pdf, latex, title, author, sections=[]):
             if not pdf.endswith(".pdf"):
                 pdf = f"{pdf}.pdf"
             doc.generate_pdf(
-                get_path(pdf).strip(".pdf"),
+                get_path(pdf).split(".pdf")[0],
                 clean_tex=True,
                 compiler="pdflatex",
             )
@@ -151,7 +150,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    create_document(
+    main(
         pdf=args.pdf,
         latex=args.latex,
         title=args.title,

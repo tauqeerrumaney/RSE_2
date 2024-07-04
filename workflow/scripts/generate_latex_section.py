@@ -5,11 +5,10 @@ import os
 from utils import get_path, get_text
 from logger import configure_logger
 
+logger = configure_logger(os.path.basename(__file__))
 
-def create_section(outfile, image, json, keyword):
 
-    # Configure logger
-    logger = configure_logger()
+def main(outfile, image, json, keyword):
 
     # Create a new document
     doc = Document("basic")
@@ -82,10 +81,7 @@ def create_section(outfile, image, json, keyword):
 
 
 def found_keyword(keyword):
-    if get_text(keyword) is not False:
-        return True
-    else:
-        return False
+    return get_text(keyword) is not False
 
 
 if __name__ == "__main__":
@@ -116,4 +112,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    create_section(args.outfile, args.image, args.json, args.keyword)
+    main(args.outfile, args.image, args.json, args.keyword)
