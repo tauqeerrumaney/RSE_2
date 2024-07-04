@@ -1,3 +1,31 @@
+"""
+This script generates a basic LaTeX document based on research results
+and outputs it as a PDF or LaTeX file.
+
+Usage:
+    Run the script from the command line with optional arguments
+    for the output file names, section title, text, image, and json:
+    ```
+    python generate_latex_section.py
+    output.tex
+    --section "Section Title"
+    --text "path/to/textfile.txt"
+    --image "path/to/image.png"
+    --json "path/to/jsonfile.json"
+    ```
+
+Functions:
+    main(outfile, section, text, image, json)
+        Generates a LaTeX document as a .tex file.
+
+Command-Line Arguments:
+    outfile (str): The path to the output .tex file.
+    --section (str): The title of the section.
+    --text (str): The path to the text file containing the description.
+    --image (str): The path to the image file.
+    --json (str): The path to the JSON file containing additional data.
+"""
+
 from pylatex import Document, Section, Subsection, Figure, Package
 import argparse
 import os
@@ -9,6 +37,19 @@ logger = configure_logger(os.path.basename(__file__))
 
 
 def main(outfile, section, text, image, json):
+    """
+    Generate a LaTeX section with the given content.
+
+    Args:
+        outfile (str): The output file path for the generated LaTeX.
+        section (str): The section title.
+        text (str): The path to the text file to be included in the section.
+        image (str): The path to the image file to be included in the section.
+        json (str): The path to the JSON file to be included in the section.
+
+    Returns:
+        None
+    """
 
     # Create a new document
     doc = Document("basic")
@@ -80,7 +121,7 @@ def main(outfile, section, text, image, json):
 
 
 if __name__ == "__main__":
-    USAGE = "Generate a basic LaTeX document based on the research results"
+    USAGE = "Generate a LaTeX section with the given content."
     parser = argparse.ArgumentParser(description=USAGE)
     parser.add_argument(
         "outfile",

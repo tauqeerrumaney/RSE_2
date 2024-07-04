@@ -6,20 +6,18 @@ Usage:
     Run the script from the command line with optional arguments
     for the output file names, title, and author:
     ```
-    python generate_document.py --pdf output.pdf --latex output.tex
-    --title "Document Title" --author "Author Name"
+    python generate_latex.py
+    --pdf output.pdf
+    --latex output.tex
+    --title "Document Title"
+    --author "Author Name"
+    --sections "section1.tex" "section2.tex"
     ```
 
 Functions:
-    create_document(pdf, latex, title, author)
+    main(pdf, latex, title, author, sections=[])
         Creates a LaTeX document with the specified title and author
         and generates output documents in PDF and LaTeX formats.
-
-    get_text(keyword)
-        Retrieves the text associated with a given keyword from a text file.
-
-Constants:
-    FILE_NAMES: A dictionary mapping image names to their file paths.
 
 Command-Line Arguments:
     --pdf (str): The filename for the generated PDF document. Default: None
@@ -28,15 +26,15 @@ Command-Line Arguments:
         Default: "Analysis Results of EEG Dataset"
     --author (str): The author of the document.
         Default: "University of Potsdam, RSE 2024"
-
+    --sections (str): The sections to include in the document.
 """
 
-from pylatex import Document, Section, Command, Package
+from pylatex import Document, Command
 from pylatex.utils import NoEscape
 import argparse
 import os
 
-from utils import get_path, get_text
+from utils import get_path
 from logger import configure_logger
 
 logger = configure_logger(os.path.basename(__file__))
@@ -65,19 +63,12 @@ def main(pdf, latex, title, author, sections=[]):
     doc = Document("basic")
     logger.info("Document created successfully!")
 
-    # Add packages
-    doc.packages.append(Package("float"))
-
     # Create preamble
     doc.preamble.append(Command("title", title))
     doc.preamble.append(Command("author", author))
     doc.preamble.append(Command("date", NoEscape(r"\today")))
     doc.append(NoEscape(r"\maketitle"))
     logger.info("Preamble created successfully!")
-
-    # Add introduction section
-    with doc.create(Section("Introduction")):
-        doc.append(get_text("introduction"))
 
     # Add sections to the document
     for section in sections:
