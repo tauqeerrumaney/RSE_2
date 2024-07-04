@@ -35,6 +35,14 @@ from logger import configure_logger
 
 logger = configure_logger(os.path.basename(__file__))
 
+# Define rules for processing keys globally
+processing_rules = {
+    "max_var_band":
+        lambda data: f"Max Variability Band: {data['max_var_band']}",
+    "variability":
+        lambda data: f"Variability: {data['variability']}",
+}
+
 
 def main(outfile, section, text, image, json):
     """
@@ -73,9 +81,9 @@ def main(outfile, section, text, image, json):
                 logger.info(f"Text from '{text}' added")
             else:
                 logger.error(f"Text '{text}' not found")
-            logger.info(f"Description for '{section}' added")
 
         with doc.create(Subsection("Results")):
+
             # check if image was created
             image_path = get_path(image)
             if os.path.exists(image_path):
@@ -93,12 +101,14 @@ def main(outfile, section, text, image, json):
                 # Add json content
                 with open(json_path, "r") as f:
                     data = json.load(f)
-                max_var_band = data["max_var_band"]
-                variability = data["variability"]
-
-                doc.append(f"Max Variability Band: {max_var_band}")
-                doc.append(f"Variability: {variability}")
-
+                    missing_keys = []
+                    for key, rule in processing_rules.items():
+                        if key in data:
+                            doc.append(rule(data))
+                        else:
+                            missing_keys.append(key)
+                    if missing_keys:
+                        logger.info(f"Missing keys in JSON: {missing_keys}")
                 logger.info(f"JSON '{json}' added")
             else:
                 logger.error(f"JSON '{json}' not found")

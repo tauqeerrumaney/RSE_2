@@ -113,13 +113,15 @@ if __name__ == "__main__":
         "--pdf",
         type=str,
         default=None,
-        help="The path to the output PDF file",
+        help="The path to the output PDF file. "
+        "If not ending in '.pdf', it will be appended.",
     )
     parser.add_argument(
         "--latex",
         type=str,
         default=None,
-        help="The path to the output LaTeX file",
+        help="The path to the output LaTeX file. "
+        "If not ending in '.tex', it will be appended.",
     )
     parser.add_argument(
         "--title",
