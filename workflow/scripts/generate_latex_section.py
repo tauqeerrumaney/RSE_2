@@ -16,7 +16,7 @@ Usage:
 
 Functions:
     main(outfile, section, text, image, json)
-        Generates a LaTeX document as a .tex file.
+        Generate a LaTeX section with the given content.
 
 Command-Line Arguments:
     outfile (str): The path to the output .tex file.
