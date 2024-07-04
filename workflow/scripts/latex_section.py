@@ -27,6 +27,7 @@ Command-Line Arguments:
 """
 
 from pylatex import Document, Section, Subsection, Figure, Package
+import json
 import argparse
 import os
 
@@ -44,7 +45,7 @@ processing_rules = {
 }
 
 
-def main(outfile, section, text, image, json):
+def main(outfile, section, textin, imagein, jsonin):
     """
     Generate a LaTeX section with the given content.
 
@@ -68,40 +69,40 @@ def main(outfile, section, text, image, json):
     doc.packages.append(Package("subfiles"))
 
     # Check if there is content to add to section
-    if not any([image, json, text]):
+    if not any([imagein, jsonin, textin]):
         logger.error("Please provide at least one piece of valid content.")
         return
 
     with doc.create(Section(section)):
 
-        if text is not None:
+        if textin is not None:
             with doc.create(Subsection("Description")):
                 # Try to add text from textblock
-                text_path = get_path(text)
+                text_path = get_path(textin)
                 if os.path.exists(text_path):
                     # Add text
                     doc.append(open(text_path).read())
-                    logger.info(f"Text from '{text}' added")
+                    logger.info(f"Text from '{textin}' added")
                 else:
-                    logger.error(f"Text '{text}' not found")
+                    logger.error(f"Text '{textin}' not found")
 
         with doc.create(Subsection("Results")):
 
             # check if image was created
-            if image is not None:
-                image_path = get_path(image)
+            if imagein is not None:
+                image_path = get_path(imagein)
                 if os.path.exists(image_path):
                     # Add figure
                     with doc.create(Figure(position="H")) as pic:
                         pic.add_image(image_path, width="120px")
-                        pic.add_caption(image)
-                    logger.info(f"Image '{image}' added")
+                        pic.add_caption(imagein)
+                    logger.info(f"Image '{imagein}' added")
                 else:
-                    logger.error(f"Image '{image}' not found")
+                    logger.error(f"Image '{imagein}' not found")
 
             # check if json was created
-            if json is not None:
-                json_path = get_path(json)
+            if jsonin is not None:
+                json_path = get_path(jsonin)
                 if os.path.exists(json_path):
                     # Add json content
                     with open(json_path, "r") as f:
@@ -114,9 +115,9 @@ def main(outfile, section, text, image, json):
                                 missing_keys.append(key)
                         if missing_keys:
                             logger.info(f"Missing keys in JSON: {missing_keys}")
-                    logger.info(f"JSON '{json}' added")
+                    logger.info(f"JSON '{jsonin}' added")
                 else:
-                    logger.error(f"JSON '{json}' not found")
+                    logger.error(f"JSON '{jsonin}' not found")
 
         logger.info(f"Section '{section}' added")
 
@@ -150,19 +151,19 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
-        "--text",
+        "--textin",
         type=str,
         help="The keyword to add textblock",
         default=None,
     )
     parser.add_argument(
-        "--image",
+        "--imagein",
         type=str,
         default=None,
         help="The path to an image",
     )
     parser.add_argument(
-        "--json",
+        "--jsonin",
         type=str,
         default=None,
         help="The path to a json input",
@@ -173,7 +174,7 @@ if __name__ == "__main__":
     main(
         args.outfile,
         args.section,
-        args.text,
-        args.image,
-        args.json,
+        args.textin,
+        args.imagein,
+        args.jsonin,
     )
