@@ -2,13 +2,13 @@ from pylatex import Document, Section, Subsection, Figure, Package
 import argparse
 import os
 
-from utils import get_path, get_text
+from utils import get_path
 from logger import configure_logger
 
 logger = configure_logger(os.path.basename(__file__))
 
 
-def main(outfile, image, json, keyword):
+def main(outfile, section, text, image, json):
 
     # Create a new document
     doc = Document("basic")
@@ -17,23 +17,22 @@ def main(outfile, image, json, keyword):
     doc.packages.append(Package("float"))
 
     # Check if there is content to add to section
-    if image is None and json is None and not found_keyword(keyword):
+    if not any([image, json, text]):
         logger.error("Please provide at least one piece of valid content.")
         return
 
-    # Create Section
-    section_title = keyword.replace("_", " ")
-    with doc.create(Section(f"{section_title.capitalize()}")):
+    with doc.create(Section(section)):
 
         with doc.create(Subsection("Description")):
             # Try to add text from textblock
-            try:
-                doc.append(get_text(image))
-            except ValueError as ve:
-                logger.error(f"ValueError: {ve}")
-            except Exception as e:
-                logger.error(f"An unexpected error occurred: {e}")
-            logger.info(f"Description for '{section_title}' added")
+            text_path = get_path(text)
+            if os.path.exists(text_path):
+                # Add text
+                doc.append(open(text_path).read())
+                logger.info(f"Text from '{text}' added")
+            else:
+                logger.error(f"Text '{text}' not found")
+            logger.info(f"Description for '{section}' added")
 
         with doc.create(Subsection("Results")):
             # check if image was created
@@ -51,7 +50,7 @@ def main(outfile, image, json, keyword):
             json_path = get_path(json)
             if os.path.exists(json_path):
                 # Add json content
-                with open(json_path, 'r') as f:
+                with open(json_path, "r") as f:
                     data = json.load(f)
                 max_var_band = data["max_var_band"]
                 variability = data["variability"]
@@ -63,7 +62,7 @@ def main(outfile, image, json, keyword):
             else:
                 logger.error(f"JSON '{json}' not found")
 
-        logger.info(f"Section '{section_title}' added")
+        logger.info(f"Section '{section}' added")
 
     # Generate LaTeX
     try:
@@ -80,10 +79,6 @@ def main(outfile, image, json, keyword):
     return
 
 
-def found_keyword(keyword):
-    return get_text(keyword) is not False
-
-
 if __name__ == "__main__":
     USAGE = "Generate a basic LaTeX document based on the research results"
     parser = argparse.ArgumentParser(description=USAGE)
@@ -91,6 +86,18 @@ if __name__ == "__main__":
         "outfile",
         type=str,
         help="The path to the output PDF file",
+    )
+    parser.add_argument(
+        "--section",
+        type=str,
+        help="Section Title",
+        default=None,
+    )
+    parser.add_argument(
+        "--text",
+        type=str,
+        help="The keyword to add textblock",
+        default=None,
     )
     parser.add_argument(
         "--image",
@@ -104,12 +111,13 @@ if __name__ == "__main__":
         default=None,
         help="The path to a json input",
     )
-    parser.add_argument(
-        "--keyword",
-        type=str,
-        help="The keyword to add textblock",
-        default=None,
-    )
+
     args = parser.parse_args()
 
-    main(args.outfile, args.image, args.json, args.keyword)
+    main(
+        args.outfile,
+        args.section,
+        args.text,
+        args.image,
+        args.json,
+    )
