@@ -64,6 +64,8 @@ def main(outfile, section, text, image, json):
 
     # Add packages
     doc.packages.append(Package("float"))
+    doc.packages.append(Package("graphicx"))
+    doc.packages.append(Package("subfiles"))
 
     # Check if there is content to add to section
     if not any([image, json, text]):
@@ -72,46 +74,49 @@ def main(outfile, section, text, image, json):
 
     with doc.create(Section(section)):
 
-        with doc.create(Subsection("Description")):
-            # Try to add text from textblock
-            text_path = get_path(text)
-            if os.path.exists(text_path):
-                # Add text
-                doc.append(open(text_path).read())
-                logger.info(f"Text from '{text}' added")
-            else:
-                logger.error(f"Text '{text}' not found")
+        if text is not None:
+            with doc.create(Subsection("Description")):
+                # Try to add text from textblock
+                text_path = get_path(text)
+                if os.path.exists(text_path):
+                    # Add text
+                    doc.append(open(text_path).read())
+                    logger.info(f"Text from '{text}' added")
+                else:
+                    logger.error(f"Text '{text}' not found")
 
         with doc.create(Subsection("Results")):
 
             # check if image was created
-            image_path = get_path(image)
-            if os.path.exists(image_path):
-                # Add figure
-                with doc.create(Figure(position="H")) as pic:
-                    pic.add_image(image_path, width="120px")
-                    pic.add_caption(image)
-                logger.info(f"Image '{image}' added")
-            else:
-                logger.error(f"Image '{image}' not found")
+            if image is not None:
+                image_path = get_path(image)
+                if os.path.exists(image_path):
+                    # Add figure
+                    with doc.create(Figure(position="H")) as pic:
+                        pic.add_image(image_path, width="120px")
+                        pic.add_caption(image)
+                    logger.info(f"Image '{image}' added")
+                else:
+                    logger.error(f"Image '{image}' not found")
 
             # check if json was created
-            json_path = get_path(json)
-            if os.path.exists(json_path):
-                # Add json content
-                with open(json_path, "r") as f:
-                    data = json.load(f)
-                    missing_keys = []
-                    for key, rule in processing_rules.items():
-                        if key in data:
-                            doc.append(rule(data))
-                        else:
-                            missing_keys.append(key)
-                    if missing_keys:
-                        logger.info(f"Missing keys in JSON: {missing_keys}")
-                logger.info(f"JSON '{json}' added")
-            else:
-                logger.error(f"JSON '{json}' not found")
+            if json is not None:
+                json_path = get_path(json)
+                if os.path.exists(json_path):
+                    # Add json content
+                    with open(json_path, "r") as f:
+                        data = json.load(f)
+                        missing_keys = []
+                        for key, rule in processing_rules.items():
+                            if key in data:
+                                doc.append(rule(data))
+                            else:
+                                missing_keys.append(key)
+                        if missing_keys:
+                            logger.info(f"Missing keys in JSON: {missing_keys}")
+                    logger.info(f"JSON '{json}' added")
+                else:
+                    logger.error(f"JSON '{json}' not found")
 
         logger.info(f"Section '{section}' added")
 

@@ -29,7 +29,7 @@ Command-Line Arguments:
     --sections (str): The sections to include in the document.
 """
 
-from pylatex import Document, Command
+from pylatex import Document, Command, Package
 from pylatex.utils import NoEscape
 import argparse
 import os
@@ -63,6 +63,10 @@ def main(pdf, latex, title, author, sections=[]):
     doc = Document("basic")
     logger.info("Document created successfully!")
 
+    doc.packages.append(Package("float"))
+    doc.packages.append(Package("graphicx"))
+    doc.packages.append(Package("subfiles"))
+
     # Create preamble
     doc.preamble.append(Command("title", title))
     doc.preamble.append(Command("author", author))
@@ -74,9 +78,9 @@ def main(pdf, latex, title, author, sections=[]):
     for section in sections:
         section_path = get_path(section)
         if os.path.exists(section_path):
-            with open(section_path, "r") as file:
-                section_content = file.read()
-            doc.append(NoEscape(section_content))
+            doc.append(
+                Command(command="subfile", arguments=NoEscape(section_path))
+            )
         else:
             logger.error(f"Section file '{section}' not found")
 
