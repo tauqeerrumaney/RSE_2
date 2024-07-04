@@ -5,6 +5,7 @@ features to a new file.
 """
 
 import argparse
+import os
 
 import mne
 import numpy as np
@@ -14,6 +15,8 @@ from logger import configure_logger
 from scipy.signal import welch
 from scipy.stats import kurtosis, skew
 from utils import get_path
+
+logger = configure_logger(os.path.basename(__file__))
 
 
 def extract_features(epochs, feature_types):
@@ -28,7 +31,7 @@ def extract_features(epochs, feature_types):
         dict: Extracted features with channel names as keys.
     """
     features = {}
-    data = epochs.get_data()
+    data = epochs.get_data(copy=False)
     channel_names = epochs.info["ch_names"]
     sfreq = epochs.info["sfreq"]
 
@@ -40,6 +43,7 @@ def extract_features(epochs, feature_types):
         "gamma": (30, 45),
     }
 
+    logger.info("Extracting features for %d channels", len(channel_names))
     for i, channel in enumerate(channel_names):
         channel_data = data[:, i, :]
 
@@ -61,51 +65,51 @@ def extract_features(epochs, feature_types):
         if "wavelet" in feature_types:
             coeffs = pywt.wavedec(channel_data, "db4", level=5, axis=1)
             for j, coeff in enumerate(coeffs):
-                features[f"{channel}_wavelet_{j}_mean"] = np.mean(coeff, axis=1)
+                features[f"{channel}_wavelet_{j}_mean"] = np.mean(
+                    coeff, axis=1)
                 features[f"{channel}_wavelet_{j}_std"] = np.std(coeff, axis=1)
 
         if "psd" in feature_types:
-            freqs, psd = welch(channel_data, sfreq)
+            freqs, psd = welch(channel_data, sfreq, nperseg=248)
             for band, (low, high) in bands.items():
-                band_power = np.sum(psd[:, (freqs >= low) & (freqs <= high)], axis=1)
+                band_power = np.sum(
+                    psd[:, (freqs >= low) & (freqs <= high)], axis=1)
                 features[f"{channel}_{band}_power"] = band_power
 
         if "entropy" in feature_types:
-            samp_entropy = np.array([ent.sample_entropy(ch) for ch in channel_data])
-            app_entropy = np.array([ent.app_entropy(ch) for ch in channel_data])
+            samp_entropy = np.array([ent.sample_entropy(ch)
+                                    for ch in channel_data])
+            app_entropy = np.array([ent.app_entropy(ch)
+                                   for ch in channel_data])
             features[f"{channel}_sample_entropy"] = samp_entropy
             features[f"{channel}_approx_entropy"] = app_entropy
 
     return features
 
 
-
 def main(infile, outfile, features):
     """
     Main function to load, extract, and save EEG signal features.
 
-    This function performs the following steps:
-    1. Loads the denoised EEG data from the specified input file.
-    2. Extracts the specified features from the data.
-    3. Saves the extracted features to the specified output file.
-
     Args:
-        args: Command-line arguments parsed by argparse.
+        infile (str): The path to the file containing the denoised EEG data.
+        outfile (str): The path to the file where extracted features are saved.
+        features (list): List of feature types to extract.
 
     Returns:
         None
     """
-    logger = configure_logger()
-    input_path = get_path(infile)
+    in_path = get_path(infile)
 
-    epochs = mne.read_epochs(input_path, preload=True)
-    logger.info("Denoised data loaded")
+    logger.info("Reading data from %s", in_path)
+    epochs = mne.read_epochs(in_path, preload=True)
+    logger.info("Finished reading data. Extracting features")
 
     features = extract_features(epochs, features)
 
     out_path = get_path(outfile)
     np.save(out_path, features)
-    logger.info(f"Extracted features saved to {out_path}")
+    logger.info("Extracted features saved to %s", out_path)
 
 
 if __name__ == "__main__":
