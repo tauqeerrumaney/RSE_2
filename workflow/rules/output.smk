@@ -31,28 +31,6 @@ rule generate_plots:
         """
 
 
-rule latex_section_RQ_1:
-    input:
-        image="results/RQ_1.png",
-        json="results/RQ_1.json",
-    output:
-        "temp/RQ_1_section.tex",
-    log:
-        "logs/latex_section_RQ_1.txt",
-    params:
-        textblock="data/textblocks/RQ_1.txt",
-        section_title=lambda wildcards, input, output: section_titles["RQ_1"],
-    conda:
-        "../envs/latex_section.yaml"
-    shell:
-        """
-        python workflow/scripts/latex_section.py {output} "{params.section_title}" \
-            --textin {params.textblock} \
-            --imagein {input.image} \
-            --jsonin {input.json} &> {log}
-        """
-
-
 rule latex_section:
     input:
         "results/{section}.png",
@@ -63,11 +41,15 @@ rule latex_section:
     params:
         textblock="data/textblocks/{section}.txt",
         section_title=lambda wildcards, input, output: section_titles[wildcards.section],
+        conditional_json=lambda wildcards, input, output: (
+            "--jsonin results/RQ_1.json" if wildcards.section == "RQ_1" else ""
+        ),
     conda:
         "../envs/latex_section.yaml"
     shell:
         """
         python workflow/scripts/latex_section.py {output} "{params.section_title}" \
+            {params.conditional_json} \
             --textin {params.textblock} \
             --imagein {input} &> {log}
         """
