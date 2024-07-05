@@ -1,27 +1,14 @@
 # RSE Project 2
 
-**NOTE: This project will no longer be continued or maintained after submission on 2024-07-17.**
-
-## Group L Members:
-- Harshini Eggoni
-- Philipp Freiherr von Entreß-Fürsteneck
-- Max Nowaczyk
-- Tauqeer Kasam Rumaney
-- Tim Werner
+This is the second project in the 2024 course "Research Software Engineering" at the University of Potsdam. For more information, see the [requirements document](docs/requirements.md).
 
 ## Table of Contents
-1. [Description](#description)
 1. [Usage](#usage)
 1. [Data Source and License](#data-source-and-license)
 1. [Contributing Guidelines](#contributing-guidelines)
 1. [Contact Information](#contact-information)
 1. [Citation](#citation)
 1. [License](#license)
-
-## Description
-This is the second project in the 2024 course "Research Software Engineering" at the University of Potsdam. For more information, see the [requirements document](docs/requirements.md).
-
-Certainly! Here is an improved version of your README section for clarity and completeness:
 
 ## Usage
 
@@ -64,29 +51,43 @@ To remove all generated output and clean the output directories, use the followi
 make clean
 ```
 
-### Developer Guide
-
-For developers looking to contribute or maintain the project, the following commands are available:
-
-- **Lint the Workflow**:
-  Ensure you have `snakefmt`, `autopep8`, and `flake8` installed. Run the following command to format and check the code:
-
-  ```sh
-  make lint
-  ```
-
-- **Generate Workflow Diagram**:
-  Create a visual representation of the workflow with:
-
-  ```sh
-  make plot
-  ```
-
-### Additional Notes
+### Running Specific Steps
 
 To run specific steps of the workflow, use Snakemake's targeted execution:
 ```sh
 snakemake <target_rule>
+```
+
+If you wish to run a script or command outside of the workflow, you can activate the specific Conda environment manually:
+```sh
+conda env create --name <environment_name> -f workflow/envs/<environment_file>.yaml
+conda activate <environment_name>
+# Run your script or command here
+```
+
+For example, to run the Independent Component Analysis (ICA) script:
+```sh
+conda env create -f workflow/envs/ica.yaml
+conda activate rse24_project-two_ica
+python workflow/scripts/ica.py temp/truncated_data.feather ica_epo.fif plot.png
+```
+
+### Developer Guide
+
+For developers looking to contribute or maintain the project, the following commands are available:
+
+**Lint the Workflow**:
+Ensure you have `snakefmt`, `autopep8`, and `flake8` installed. Run the following command to format and check the code:
+
+```sh
+make lint
+```
+
+**Generate Workflow Diagram**:
+Create a visual representation of the workflow with:
+
+```sh
+make plot
 ```
 
 ## Data Source and License
