@@ -16,7 +16,7 @@ Usage:
 Functions:
     main(outfile, section, textin, imagein, jsonin)
         Generate a LaTeX section with the given content.
-    extract_dict(indict)
+    dict_text(dictin)
         Extract key-value pairs of dictionary into string.
 
 Command-Line Arguments:
@@ -39,12 +39,12 @@ logger = configure_logger(os.path.basename(__file__))
 
 # Define rules for processing keys globally
 processing_rules = {
-    "max_var_band": lambda data: f"Max Variability Band: {data}\n\n",
-    "variability": lambda data: f"Calculated Variability \n{dict_str(data)}\n",
+    "max_var_band": lambda data: f"Max Variability Band: {data}.\n\n",
+    "variability": lambda data: f"Calculated Variability:\n{dict_str(data)}\n",
 }
 
 
-def dict_str(indict: dict):
+def dict_str(dictin: dict):
     """
     Extracts key-value pairs from a dictionary
     and returns them as a formatted string.
@@ -58,9 +58,9 @@ def dict_str(indict: dict):
     """
     outtext = ""
     try:
-        if type(indict) is dict:
-            for key in indict:
-                outtext += f"{key}: {round(indict[key], 6)}\n"
+        if type(dictin) is dict:
+            for key in dictin:
+                outtext += f"{key}: {round(dictin[key], 6)}\n"
     except ValueError as ve:
         logger.error(f"ValueError: {ve}")
     except Exception as e:
