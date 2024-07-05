@@ -7,23 +7,24 @@ Usage:
     for the output file names, section title, text, image, and json:
     ```
     python generate_latex_section.py
-    output.tex
-    --section "Section Title"
-    --text "path/to/textfile.txt"
-    --image "path/to/image.png"
-    --json "path/to/jsonfile.json"
+    output.tex "Section Title"
+    --textin "path/to/textfile.txt"
+    --imagein "path/to/image.png"
+    --jsonin "path/to/jsonfile.json"
     ```
 
 Functions:
-    main(outfile, section, text, image, json)
+    main(outfile, section, textin, imagein, jsonin)
         Generate a LaTeX section with the given content.
+    extract_dict(indict)
+        Extract key-value pairs of dictionary into string.
 
 Command-Line Arguments:
     outfile (str): The path to the output .tex file.
-    --section (str): The title of the section.
-    --text (str): The path to the text file containing the description.
-    --image (str): The path to the image file.
-    --json (str): The path to the JSON file containing additional data.
+    section (str): The title of the section.
+    --textin (str): The path to the text file containing the description.
+    --imagein (str): The path to the image file.
+    --jsonin (str): The path to the JSON file containing additional data.
 """
 
 from pylatex import Document, Section, Subsection, Figure, Package
@@ -38,11 +39,33 @@ logger = configure_logger(os.path.basename(__file__))
 
 # Define rules for processing keys globally
 processing_rules = {
-    "max_var_band":
-        lambda data: f"Max Variability Band: {data['max_var_band']}",
-    "variability":
-        lambda data: f"Variability: {data['variability']}",
+    "max_var_band": lambda data: f"Max Variability Band: {data}\n\n",
+    "variability": lambda data: f"Calculated Variability \n{dict_str(data)}\n",
 }
+
+
+def dict_str(indict: dict):
+    """
+    Extracts key-value pairs from a dictionary
+    and returns them as a formatted string.
+
+    Args:
+        indict (dict): The input dictionary.
+
+    Returns:
+        str: A formatted string containing the
+            key-value pairs from the input dictionary.
+    """
+    outtext = ""
+    try:
+        if type(indict) is dict:
+            for key in indict:
+                outtext += f"{key}: {round(indict[key], 6)}\n"
+    except ValueError as ve:
+        logger.error(f"ValueError: {ve}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
+    return outtext
 
 
 def main(outfile, section, textin, imagein, jsonin):
@@ -107,18 +130,17 @@ def main(outfile, section, textin, imagein, jsonin):
                     # Add json content
                     with open(json_path, "r") as f:
                         data = json.load(f)
-                        missing_keys = []
+                        absentKeys = []
                         for key, rule in processing_rules.items():
                             if key in data:
-                                doc.append(rule(data))
+                                doc.append(rule(data[key]))
                             else:
-                                missing_keys.append(key)
-                        if missing_keys:
-                            logger.info(f"Missing keys in JSON: {missing_keys}")
+                                absentKeys.append(key)
+                        if absentKeys:
+                            logger.info(f"Missing keys in JSON: {absentKeys}")
                     logger.info(f"JSON '{jsonin}' added")
                 else:
                     logger.error(f"JSON '{jsonin}' not found")
-
         logger.info(f"Section '{section}' added")
 
     # Generate LaTeX
@@ -145,10 +167,10 @@ if __name__ == "__main__":
         help="The path to the output PDF file",
     )
     parser.add_argument(
-        "--section",
+        "section",
         type=str,
         help="Section Title",
-        default=None,
+        default="Section",
     )
     parser.add_argument(
         "--textin",
