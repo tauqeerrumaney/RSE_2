@@ -34,9 +34,10 @@ lint:
 # Clean step
 .PHONY: clean
 clean:
-	snakemake --use-conda --cores 1 clean
+	rm -rf temp/ results/ logs/ workflow_dag.png
 
 # Plot workflow
 .PHONY: plot
 plot:
-	snakemake --use-conda --cores 1 plot_dag
+	rm -f workflow_dag.png
+	snakemake --cores 1 plot_dag

@@ -4,8 +4,9 @@ import os
 import shutil
 
 
-include: "rules/analysis.smk"
 include: "rules/preprocessing.smk"
+include: "rules/analysis.smk"
+include: "rules/output.smk"
 
 
 # Define the shell command to use for all rules
@@ -16,29 +17,10 @@ shell.prefix("set -euo pipefail; ")
 configfile: "config/config.yaml"
 
 
-# Default rule to fetch result files
+# Default rule to create the report
 rule all:
     input:
-        "results/denoised_epo_epochs.png",
-        "results/denoised_epo_psd.png",
-        "results/denoised_epo_raw.png",
-        "results/denoised_epo_response.png",
-        "results/ica_components.png",
-        "results/RQ_1.json",
-        expand("results/RQ_{i}.png", i=range(1, 6)),
-
-
-# Clean up files
-rule clean:
-    log:
-        "logs/clean.log",
-    container:
-        "busybox:latest"
-    shell:
-        """
-        rm -rf temp/ results/ logs/ workflow_dag.png
-        mkdir temp/ results/ logs/
-        """
+        "results/report.pdf",
 
 
 # Visualize the workflow

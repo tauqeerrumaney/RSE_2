@@ -29,24 +29,6 @@ rule RQ_5:
         """
 
 
-rule generate_plots:
-    input:
-        "temp/{sample}.fif",
-    output:
-        epochs_data="results/{sample}_epochs.png",
-        epochs_psd="results/{sample}_psd.png",
-        evoked_response="results/{sample}_response.png",
-        raw_data="results/{sample}_raw.png",
-    log:
-        "logs/generate_plots_{sample}.txt",
-    conda:
-        "../envs/generate_plots.yaml"
-    shell:
-        """
-        MNE_BROWSER_BACKEND=matplotlib python workflow/scripts/generate_plots.py {input} {output.epochs_data} {output.epochs_psd} {output.evoked_response} {output.raw_data} &> {log}
-        """
-
-
 rule RQ:
     input:
         "temp/denoised_epo.fif",

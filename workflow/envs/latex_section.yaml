@@ -1,0 +1,8 @@
+name: rse24_project-two_latex_section
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6 
+  - pylatex=1.4.2
+  - pip
