@@ -1,4 +1,4 @@
-name: eeg_feature_extraction
+name: rse24_project-two_feature_extraction
 channels:
   - conda-forge
   - defaults

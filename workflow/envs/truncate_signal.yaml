@@ -1,4 +1,4 @@
-name: eeg_truncate_signal
+name: rse24_project-two_truncate_signal
 channels:
   - conda-forge
   - defaults

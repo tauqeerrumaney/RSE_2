@@ -1,4 +1,4 @@
-name: eeg_denoising
+name: rse24_project-two_denoising
 channels:
   - conda-forge
   - defaults

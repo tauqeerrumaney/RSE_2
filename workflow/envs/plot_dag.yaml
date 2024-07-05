@@ -1,4 +1,4 @@
-name: eeg_plot_dag
+name: rse24_project-two_plot_dag
 channels:
   - conda-forge
   - bioconda

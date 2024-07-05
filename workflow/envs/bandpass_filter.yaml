@@ -1,4 +1,4 @@
-name: eeg_bandpass_filter
+name: rse24_project-two_bandpass_filter
 channels:
   - conda-forge
   - defaults

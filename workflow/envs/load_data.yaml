@@ -1,4 +1,4 @@
-name: eeg_load_data
+name: rse24_project-two_load_data
 channels:
   - conda-forge
   - defaults

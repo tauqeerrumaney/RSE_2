@@ -1,9 +1,9 @@
-name: eeg_generate_plots
+name: rse24_project-two_generate_plots
 channels:
   - conda-forge
   - defaults
 dependencies:
   - python=3.11.6
-  - matplotlib=3.9.0
+  - matplotlib=3.8.0
   - mne=1.7.1
   - pip
