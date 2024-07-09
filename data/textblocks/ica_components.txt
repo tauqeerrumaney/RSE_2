@@ -1,0 +1,3 @@
+This plot shows an analysis of artifacts identified using Independent Component Analysis (ICA), with the artifacts visually represented on a topographic map. An ICA artifact plot is a graphical representation used to isolate and display the sources of noise and artifacts in EEG data. These artifacts can include eye blinks, muscle movements, and other non-neural interferences that contaminate the EEG signals. According to color, point of origin and overall signal distribution, artifacts can be visually identified in order to be removed.
+
+The plot provides a clear visualization of the spatial distribution of these artifacts on a head map, making it easier to identify and understand their origin.
