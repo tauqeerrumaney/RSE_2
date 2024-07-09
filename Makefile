@@ -34,10 +34,9 @@ lint:
 # Clean step
 .PHONY: clean
 clean:
-	rm -rf temp/ results/ logs/ workflow_dag.png
+	rm -rf temp/ results/ logs/
 
 # Plot workflow
 .PHONY: plot
 plot:
-	rm -f workflow_dag.png
-	snakemake --cores 1 plot_dag
+	snakemake -c 1 --dag | dot -Tpng -o docs/dag.png

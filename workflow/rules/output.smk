@@ -41,9 +41,10 @@ rule latex_section:
             --imagein {input} &> {log}
         """
 
+
 rule latex_document:
     input:
-        expand("temp/{section}_section.tex", section=section_titles.keys())
+        expand("temp/{section}_section.tex", section=section_titles.keys()),
     output:
         tex="temp/report.tex",
         pdf="results/report.pdf",

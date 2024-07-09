@@ -75,10 +75,16 @@ ENV/
 env.bak/
 venv.bak/
 
+# Visual Studio Code
+.vscode
+
+# Snakemake 
+.snakemake
+
+# Output directories
 temp/
 results/
 logs/
+
+# Workflow configuration
 config/config.yaml
-.vscode
-.snakemake
-workflow_dag.png
