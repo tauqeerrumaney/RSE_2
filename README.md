@@ -16,6 +16,7 @@ Ensure you have the following prerequisites installed on your system:
 
 - **[Conda](https://docs.anaconda.com/miniconda/)**: For environment management.
 - **[Snakemake](https://snakemake.readthedocs.io/en/stable/)**: For workflow management.
+- **[PDFLaTeX](https://www.latex-project.org/get/)**: For generating the final report.
 - **[GNU Make](https://www.gnu.org/software/make/)**: For task automation. (Optional, but recommended)
 
 ### Running the Workflow
