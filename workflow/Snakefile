@@ -1,9 +1,3 @@
-# Snakefile
-from glob import glob
-import os
-import shutil
-
-
 include: "rules/preprocessing.smk"
 include: "rules/analysis.smk"
 include: "rules/output.smk"
