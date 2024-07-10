@@ -44,20 +44,17 @@ class TestLogger(unittest.TestCase):
 
     def test_logger_level(self):
         """
-        Test that the logger's effective level is INFO.
+        Test that the logger's effective level is DEBUG.
         """
         logger = configure_logger(name='test_logger')
 
-        # Validate the effective level by logging an INFO message and checking the output
+        # Validate the effective level by logging a DEBUG message and checking the output
         logger.addHandler(self.handler)
-        logger.info("Checking logger level")
+        logger.debug("Checking logger level")
         log_output = self.log_capture.getvalue()
 
-        # Assert that the INFO message appears in the log output
-        self.assertIn("INFO - Checking logger level", log_output)
-
-        # Assert that DEBUG message does not appear in the log output
-        self.assertNotIn("DEBUG", log_output)
+        # Assert that the DEBUG message appears in the log output
+        self.assertIn("DEBUG - Checking logger level", log_output)
 
     def test_log_format(self):
         """
@@ -79,7 +76,7 @@ class TestLogger(unittest.TestCase):
         """
         Test different log levels.
 
-        Verifies that the logger outputs messages for levels INFO and above, and not for DEBUG.
+        Verifies that the logger outputs messages for all levels.
         """
         logger = configure_logger(name='test_logger')
         logger.addHandler(self.handler)
@@ -92,8 +89,8 @@ class TestLogger(unittest.TestCase):
 
         log_output = self.log_capture.getvalue()
         
-        # Check that debug message is not in the output
-        self.assertNotIn("Debug message", log_output)
+        # Check that all messages are in the output
+        self.assertIn("Debug message", log_output)
         self.assertIn("Info message", log_output)
         self.assertIn("Warning message", log_output)
         self.assertIn("Error message", log_output)
