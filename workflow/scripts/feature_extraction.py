@@ -6,14 +6,16 @@ features to a new file.
 
 import argparse
 import os
+import traceback
 
 import mne
 import numpy as np
 import pywt
 from antropy import entropy as ent
-from logger import configure_logger
 from scipy.signal import welch
 from scipy.stats import kurtosis, skew
+
+from logger import configure_logger
 from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
@@ -87,7 +89,7 @@ def extract_features(epochs, feature_types):
     return features
 
 
-def main(infile, outfile, features):
+def main(infile: str, outfile: str, features: list[str]):
     """
     Main function to load, extract, and save EEG signal features.
 
@@ -98,16 +100,51 @@ def main(infile, outfile, features):
 
     Returns:
         None
-    """
-    in_path = get_path(infile)
 
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the output directory does not exist.
+    """
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}"
+        )
+    if not isinstance(outfile, str):
+        raise TypeError(
+            f"Expected 'outfile' to be of type str, but got "
+            f"{type(outfile).__name__}"
+        )
+    if not isinstance(features, list):
+        raise TypeError(
+            f"Expected 'features' to be of type list, but got "
+            f"{type(features).__name__}"
+        )
+    if not all(isinstance(feature, str) for feature in features):
+        raise TypeError(
+            "Expected all elements in 'features' to be of type str"
+        )
+
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
+
+    # Validate output file
+    out_path = get_path(outfile)
+    out_dir = os.path.dirname(out_path)
+    if not os.path.exists(out_dir):
+        raise ValueError(f"Output directory does not exist: {out_dir}")
+
+    # Read the data from the input file
     logger.info("Reading data from %s", in_path)
     epochs = mne.read_epochs(in_path, preload=True)
     logger.info("Finished reading data. Extracting features")
 
     features = extract_features(epochs, features)
 
-    out_path = get_path(outfile)
     np.save(out_path, features)
     logger.info("Extracted features saved to %s", out_path)
 
@@ -134,4 +171,13 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile, features=args.features)
+    try:
+        main(infile=args.infile, outfile=args.outfile, features=args.features)
+    except (TypeError, ValueError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

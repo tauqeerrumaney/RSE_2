@@ -1,0 +1,9 @@
+name: rse24_project-two_truncate_signal
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6
+  - pandas=2.2.2
+  - pyarrow=16.1.0
+  - pip

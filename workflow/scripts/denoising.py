@@ -8,13 +8,14 @@ import os
 import traceback
 
 import mne
+
 from logger import configure_logger
 from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
 
-def main(infile, outfile):
+def main(infile: str, outfile: str):
     """
     Main function to load, process, and save EEG data.
 
@@ -24,30 +25,41 @@ def main(infile, outfile):
 
     Returns:
         None
+
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
     """
-    try:
-        # Load the cleaned dataset
-        in_path = get_path(infile)
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}"
+        )
+    if not isinstance(outfile, str):
+        raise TypeError(
+            f"Expected 'outfile' to be of type str, but got "
+            f"{type(outfile).__name__}"
+        )
 
-        logger.info("Reading data from %s", in_path)
-        epochs = mne.read_epochs(in_path, preload=True)
-        logger.info("Finished reading data. Applying re-referencing")
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
 
-        # Re-reference to the average of all channels
-        epochs.set_eeg_reference("average", projection=True)
-        epochs.apply_proj()
+    # Load the epochs
+    logger.info("Reading data from %s", in_path)
+    epochs = mne.read_epochs(in_path, preload=True)
+    logger.info("Finished reading data. Applying re-referencing")
 
-        # Save the denoised data
-        out_path = get_path(outfile)
-        epochs.save(out_path, overwrite=True)
-        logger.info("Denoised data saved to %s", out_path)
+    # Re-reference to the average of all channels
+    epochs.set_eeg_reference("average", projection=True)
+    epochs.apply_proj()
 
-    except FileNotFoundError as e:
-        logger.error(f"Could not find file: {e}")
-        logger.debug(traceback.format_exc())
-    except Exception as e:
-        logger.critical(f"An unexpected error occurred: {e}")
-        logger.debug(traceback.format_exc())
+    # Save the denoised data
+    out_path = get_path(outfile)
+    epochs.save(out_path, overwrite=True)
+    logger.info("Denoised data saved to %s", out_path)
 
 
 if __name__ == "__main__":
@@ -58,4 +70,13 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(infile=args.infile, outfile=args.outfile)
+    try:
+        main(infile=args.infile, outfile=args.outfile)
+    except (TypeError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

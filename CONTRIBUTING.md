@@ -50,7 +50,7 @@ This project follows the [Conventional Commits](https://www.conventionalcommits.
 
 ## Code Formatting
 
-For Python code, please run `black` to ensure your submissions adhere to our formatting standards.
+Please run `make lint` before submitting a merge request to ensure your code adheres to the project's formatting standards. This command will run the linter and formatter for both Python and Snakemake files.
 
 ## Merge Request Process
 

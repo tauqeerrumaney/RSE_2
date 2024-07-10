@@ -1,0 +1,8 @@
+name: rse24_project-two_denoising
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6
+  - mne=1.7.1
+  - pip

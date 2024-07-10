@@ -3,12 +3,13 @@ This script loads denoised EEG data from a FIF file,
 converts it to raw format for inspection, and saves various plots as PNG files.
 """
 
+import argparse
 import os
 import traceback
-import argparse
 
 import matplotlib.pyplot as plt
 import mne
+
 from logger import configure_logger
 from utils import get_path
 
@@ -16,11 +17,11 @@ logger = configure_logger(os.path.basename(__file__))
 
 
 def main(
-        infile,
-        epoch_plot_file,
-        psd_plot_file,
-        evoked_plot_file,
-        raw_plot_file):
+        infile: str,
+        epoch_plot_file: str,
+        psd_plot_file: str,
+        evoked_plot_file: str,
+        raw_plot_file: str):
     """
     Main function to load and plot EEG data.
 
@@ -33,64 +34,86 @@ def main(
 
     Returns:
         None
+
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
     """
-    try:
-        in_path = get_path(infile)
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}")
+    if not isinstance(epoch_plot_file, str):
+        raise TypeError(
+            f"Expected 'epoch_plot_file' to be of type str, but got "
+            f"{type(epoch_plot_file).__name__}")
+    if not isinstance(psd_plot_file, str):
+        raise TypeError(
+            f"Expected 'psd_plot_file' to be of type str, but got "
+            f"{type(psd_plot_file).__name__}")
+    if not isinstance(evoked_plot_file, str):
+        raise TypeError(
+            f"Expected 'evoked_plot_file' to be of type str, but got "
+            f"{type(evoked_plot_file).__name__}")
+    if not isinstance(raw_plot_file, str):
+        raise TypeError(
+            f"Expected 'raw_plot_file' to be of type str, but got "
+            f"{type(raw_plot_file).__name__}")
 
-        logger.info("Reading data from %s", in_path)
-        epochs = mne.read_epochs(in_path, preload=True)
-        logger.info("Finished reading data")
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
 
-        # Plot epochs and save
-        fig = epochs.plot(
-            n_epochs=10,
-            n_channels=10,
-            scalings="auto",
-            show=False)
-        fig.savefig(get_path(epoch_plot_file))
-        plt.close(fig)
-        logger.info("Epochs plot saved to %s", epoch_plot_file)
+    # Load epochs
+    logger.info("Reading data from %s", in_path)
+    epochs = mne.read_epochs(in_path, preload=True)
+    logger.info("Finished reading data")
 
-        # Plot PSD and save
-        fig = epochs.compute_psd(
-            fmin=0.1,
-            fmax=60).plot(
-            show=False,
-            amplitude=False)
-        fig.savefig(get_path(psd_plot_file))
-        plt.close(fig)
-        logger.info("PSD plot saved to %s", psd_plot_file)
+    # Plot epochs and save
+    fig = epochs.plot(
+        n_epochs=10,
+        n_channels=10,
+        scalings="auto",
+        show=False)
+    fig.savefig(get_path(epoch_plot_file))
+    plt.close(fig)
+    logger.info("Epochs plot saved to %s", epoch_plot_file)
 
-        # Plot evoked response and save
-        evoked = epochs.average()
-        fig = evoked.plot(show=False)
-        fig.savefig(get_path(evoked_plot_file))
-        plt.close(fig)
-        logger.info("Evoked response plot saved to %s", evoked_plot_file)
+    # Plot PSD and save
+    fig = epochs.compute_psd(
+        fmin=0.1,
+        fmax=60).plot(
+        show=False,
+        amplitude=False)
+    fig.savefig(get_path(psd_plot_file))
+    plt.close(fig)
+    logger.info("PSD plot saved to %s", psd_plot_file)
 
-        # Convert epochs to raw for inspection
-        raw_data = epochs.get_data(copy=True)
-        info = epochs.info
-        _, n_channels, _ = raw_data.shape
+    # Plot evoked response and save
+    evoked = epochs.average()
+    fig = evoked.plot(show=False)
+    fig.savefig(get_path(evoked_plot_file))
+    plt.close(fig)
+    logger.info("Evoked response plot saved to %s", evoked_plot_file)
 
-        raw = mne.io.RawArray(raw_data.reshape(n_channels, -1), info)
+    # Convert epochs to raw for inspection
+    raw_data = epochs.get_data(copy=True)
+    info = epochs.info
+    _, n_channels, _ = raw_data.shape
 
-        # Plot raw data and save
-        fig = raw.plot(
-            n_channels=len(
-                raw.ch_names),
-            scalings="auto",
-            show=False)
-        fig.savefig(get_path(raw_plot_file))
-        plt.close(fig)
-        logger.info("Raw data plot saved to %s", raw_plot_file)
+    raw = mne.io.RawArray(raw_data.reshape(n_channels, -1), info)
 
-    except FileNotFoundError as e:
-        logger.error(f"Could not find file: {e}")
-        logger.debug(traceback.format_exc())
-    except Exception as e:
-        logger.critical(f"An unexpected error occurred: {e}")
-        logger.debug(traceback.format_exc())
+    # Plot raw data and save
+    fig = raw.plot(
+        n_channels=len(
+            raw.ch_names),
+        scalings="auto",
+        show=False)
+    fig.savefig(get_path(raw_plot_file))
+    plt.close(fig)
+    logger.info("Raw data plot saved to %s", raw_plot_file)
 
 
 if __name__ == "__main__":
@@ -122,9 +145,18 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(
-        infile=args.infile,
-        epoch_plot_file=args.epoch_plot_file,
-        psd_plot_file=args.psd_plot_file,
-        evoked_plot_file=args.evoked_plot_file,
-        raw_plot_file=args.raw_plot_file)
+    try:
+        main(
+            infile=args.infile,
+            epoch_plot_file=args.epoch_plot_file,
+            psd_plot_file=args.psd_plot_file,
+            evoked_plot_file=args.evoked_plot_file,
+            raw_plot_file=args.raw_plot_file)
+    except (TypeError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

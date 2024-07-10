@@ -1,0 +1,12 @@
+name: rse24_project-two_feature_extraction
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6
+  - mne=1.7.1
+  - numpy=1.26.4
+  - pywavelets=1.6.0
+  - antropy=0.1.6
+  - scipy=1.13.1
+  - pip

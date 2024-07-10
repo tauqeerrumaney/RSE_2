@@ -1,0 +1,10 @@
+name: rse24_project-two_load_data
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6
+  - numpy=1.26.4
+  - pandas=2.2.2
+  - pyarrow=16.1.0
+  - pip
