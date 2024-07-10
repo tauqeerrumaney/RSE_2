@@ -1,0 +1,5 @@
+This plot shows an analysis of the time-frequency content of EEG signals by generating spectrograms for specified channels. A spectrogram is a visual representation of the spectrum of frequencies in a signal as it varies with time. This analysis provides insights into how the power of different frequency bands changes over the course of the recorded epochs.
+
+Each spectrogram plot displays frequency on the y-axis and time on the x-axis, with color representing the power/frequency (dB/Hz). This visualization allows for the identification of transient events, oscillatory patterns, and other dynamic features in the EEG signal.
+Since plotting spectrograms for all channels in a single plot is impractical, only the selected channels (F3 and FC6) are shown here.
+This visualization helps in identifying frequency patterns and their temporal changes.
