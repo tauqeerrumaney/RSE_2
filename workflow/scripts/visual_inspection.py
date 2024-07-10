@@ -4,14 +4,19 @@ specific electrode or event, and plots the EEG signal.
 """
 
 import argparse
+import os
+import traceback
 
 import matplotlib.pyplot as plt
 import pandas as pd
+
 from logger import configure_logger
 from utils import get_path
 
+logger = configure_logger(os.path.basename(__file__))
 
-def main(infile, event, electrode):
+
+def main(infile: str, event: int = None, electrode: str = None):
     """
     Main function to load, filter, and plot EEG data.
 
@@ -22,10 +27,35 @@ def main(infile, event, electrode):
 
     Returns:
         None
+
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the event ID or electrode is not found in the dataframe.
     """
-    logger = configure_logger()
-    file_path = get_path(infile)
-    df = pd.read_feather(file_path)
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}"
+        )
+    if event is not None and not isinstance(event, int):
+        raise TypeError(
+            f"Expected 'event' to be of type int, but got "
+            f"{type(event).__name__}"
+        )
+    if electrode is not None and not isinstance(electrode, str):
+        raise TypeError(
+            f"Expected 'electrode' to be of type str, but got "
+            f"{type(electrode).__name__}"
+        )
+
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
+
+    df = pd.read_feather(in_path)
     logger.info("Raw data loaded")
 
     if electrode is not None:
@@ -98,10 +128,13 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    logger = configure_logger()
     try:
         main(infile=args.infile, event=args.event, electrode=args.electrode)
-    except ValueError as ve:
-        logger.error(ve)
+    except (TypeError, ValueError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
     except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

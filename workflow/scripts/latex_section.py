@@ -27,61 +27,92 @@ Command-Line Arguments:
     --jsonin (str): The path to the JSON file containing additional data.
 """
 
-from pylatex import Document, Section, Subsection, Figure, Package
-import json
 import argparse
+import json
 import os
+import traceback
 
-from utils import get_path
+from pylatex import Document, Figure, Package, Section, Subsection
+from pylatex.utils import NoEscape
+
 from logger import configure_logger
+from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
-# Define rules for processing keys globally
-processing_rules = {
+# Define rules for processing JSON data
+DATA_PROCESSING_RULES = {
     "max_var_band": lambda data: f"Max Variability Band: {data}.\n\n",
-    "variability": lambda data: f"Calculated Variability:\n{dict_str(data)}\n",
+    "variability": lambda data: "\n".join(
+        [
+            f"{key}: {data[key]:.4e}"
+            if isinstance(data[key], float)
+            else f"{key}: {data[key]}" for key in data]),
 }
 
 
-def dict_str(dictin: dict):
-    """
-    Extracts key-value pairs from a dictionary
-    and returns them as a formatted string.
-
-    Args:
-        indict (dict): The input dictionary.
-
-    Returns:
-        str: A formatted string containing the
-            key-value pairs from the input dictionary.
-    """
-    outtext = ""
-    try:
-        if type(dictin) is dict:
-            for key in dictin:
-                outtext += f"{key}: {round(dictin[key], 6)}\n"
-    except ValueError as ve:
-        logger.error(f"ValueError: {ve}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-    return outtext
-
-
-def main(outfile, section, textin, imagein, jsonin):
+def main(
+        outfile: str,
+        section: str,
+        textin: str = None,
+        imagein: str = None,
+        jsonin: str = None):
     """
     Generate a LaTeX section with the given content.
 
     Args:
         outfile (str): The output file path for the generated LaTeX.
         section (str): The section title.
-        text (str): The path to the text file to be included in the section.
-        image (str): The path to the image file to be included in the section.
-        json (str): The path to the JSON file to be included in the section.
+        textin (str): The path to the text file to be included.
+        imagein (str): The path to the image file to be included.
+        jsonin (str): The path to the JSON file to be included.
 
     Returns:
         None
+
+    Raises:
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the output directory does not exist or
+          no content is provided.
     """
+    # Validate input types
+    if not isinstance(outfile, str):
+        raise TypeError(
+            f"Expected 'outfile' to be of type str, but got "
+            f"{type(outfile).__name__}"
+        )
+    if not isinstance(section, str):
+        raise TypeError(
+            f"Expected 'section' to be of type str, but got "
+            f"{type(section).__name__}"
+        )
+    if textin is not None and not isinstance(textin, str):
+        raise TypeError(
+            f"Expected 'textin' to be of type str, but got "
+            f"{type(textin).__name__}"
+        )
+    if imagein is not None and not isinstance(imagein, str):
+        raise TypeError(
+            f"Expected 'imagein' to be of type str, but got "
+            f"{type(imagein).__name__}"
+        )
+    if jsonin is not None and not isinstance(jsonin, str):
+        raise TypeError(
+            f"Expected 'jsonin' to be of type str, but got "
+            f"{type(jsonin).__name__}"
+        )
+    if not any([textin, imagein, jsonin]):
+        raise ValueError("Please provide at least one piece of valid content.")
+
+    # Validate output file
+    out_path = get_path(outfile)
+    out_dir = os.path.dirname(out_path)
+    if not os.path.exists(out_dir):
+        raise ValueError(f"Output directory does not exist: {out_dir}")
+
+    # If out_path is a .tex file remove the extension
+    if out_path.endswith(".tex"):
+        out_path = out_path.split(".tex")[0]
 
     # Create a new document
     doc = Document("basic")
@@ -91,13 +122,7 @@ def main(outfile, section, textin, imagein, jsonin):
     doc.packages.append(Package("graphicx"))
     doc.packages.append(Package("subfiles"))
 
-    # Check if there is content to add to section
-    if not any([imagein, jsonin, textin]):
-        logger.error("Please provide at least one piece of valid content.")
-        return
-
     with doc.create(Section(section)):
-
         if textin is not None:
             with doc.create(Subsection("Description")):
                 # Try to add text from textblock
@@ -110,14 +135,14 @@ def main(outfile, section, textin, imagein, jsonin):
                     logger.error(f"Text '{textin}' not found")
 
         with doc.create(Subsection("Results")):
-
             # check if image was created
             if imagein is not None:
                 image_path = get_path(imagein)
                 if os.path.exists(image_path):
                     # Add figure
                     with doc.create(Figure(position="H")) as pic:
-                        pic.add_image(image_path, width="120px")
+                        pic.add_image(
+                            image_path, width=NoEscape(r"\textwidth"))
                         pic.add_caption(imagein)
                     logger.info(f"Image '{imagein}' added")
                 else:
@@ -131,31 +156,23 @@ def main(outfile, section, textin, imagein, jsonin):
                     with open(json_path, "r") as f:
                         data = json.load(f)
                         absentKeys = []
-                        for key, rule in processing_rules.items():
+                        for key, rule in DATA_PROCESSING_RULES.items():
                             if key in data:
                                 doc.append(rule(data[key]))
                             else:
                                 absentKeys.append(key)
                         if absentKeys:
-                            logger.info(f"Missing keys in JSON: {absentKeys}")
+                            logger.warn(
+                                f"Could not find rule to process keys: "
+                                f"{absentKeys}")
                     logger.info(f"JSON '{jsonin}' added")
                 else:
                     logger.error(f"JSON '{jsonin}' not found")
         logger.info(f"Section '{section}' added")
 
     # Generate LaTeX
-    try:
-        if not outfile.endswith(".tex"):
-            outfile = f"{outfile}.tex"
-        doc.generate_tex(
-            get_path(outfile).split(".tex")[0],
-        )
-        logger.info(f"LaTeX generated successfully at {outfile}")
-    except FileNotFoundError as fnfe:
-        logger.error(f"FileNotFoundError: {fnfe}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-    return
+    doc.generate_tex(out_path)
+    logger.info(f"LaTeX generated successfully at {out_path}")
 
 
 if __name__ == "__main__":
@@ -192,11 +209,19 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    main(
-        args.outfile,
-        args.section,
-        args.textin,
-        args.imagein,
-        args.jsonin,
-    )
+    try:
+        main(
+            args.outfile,
+            args.section,
+            args.textin,
+            args.imagein,
+            args.jsonin,
+        )
+    except (TypeError, ValueError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)
