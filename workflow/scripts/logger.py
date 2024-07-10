@@ -2,7 +2,7 @@ import logging
 import sys
 
 
-def configure_logger(name):
+def configure_logger(name: str):
     """
     Configure a logger with the given name.
 

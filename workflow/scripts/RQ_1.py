@@ -9,13 +9,15 @@ across different frequency bands and events.
 import argparse
 import json
 import os
+import traceback
 
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
 import pandas as pd
-from logger import configure_logger
 from scipy.signal import welch
+
+from logger import configure_logger
 from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
@@ -30,22 +32,61 @@ BANDS = {
 }
 
 
-def main(infile, outimage, outtext, show=False):
+def main(infile: str, outimage: str, outtext: str, show: bool = False):
     """
     Calculate the variability of power spectral density (PSD)
     across different frequency bands and events.
 
     Parameters:
         infile (str): The input file path of the epochs data.
-        outfile (str): The output file path to save the plot.
+        outimage (str): The output file path to save the plot.
+        outtext (str): The output file path to save the variability data
+          as JSON.
         show (bool): Whether to display the plot.
 
     Returns:
         None
-    """
-    # Load the epochs data
-    in_path = get_path(infile)
 
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the output directory does not exist.
+    """
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}")
+    if not isinstance(outimage, str):
+        raise TypeError(
+            f"Expected 'outimage' to be of type str, but got "
+            f"{type(outimage).__name__}")
+    if not isinstance(outtext, str):
+        raise TypeError(
+            f"Expected 'outtext' to be of type str, but got "
+            f"{type(outtext).__name__}")
+    if not isinstance(show, bool):
+        raise TypeError(
+            f"Expected 'show' to be of type bool, but got "
+            f"{type(show).__name__}")
+
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
+
+    # Validate output files
+    out_img_path = get_path(outimage)
+    out_text_path = get_path(outtext)
+
+    out_img_dir = os.path.dirname(out_img_path)
+    out_text_dir = os.path.dirname(out_text_path)
+    if out_img_dir and not os.path.exists(out_img_dir):
+        raise ValueError(f"Output directory does not exist: {out_img_dir}")
+    if out_text_dir and not os.path.exists(out_text_dir):
+        raise ValueError(f"Output directory does not exist: {out_text_dir}")
+
+    # Load the epochs data
     logger.info("Reading data from %s", in_path)
     epochs = mne.read_epochs(in_path, preload=True)
     logger.info(
@@ -78,9 +119,6 @@ def main(infile, outimage, outtext, show=False):
     # Identify bands with highest variability
     max_var = max(variability, key=lambda band: variability[band].mean())
 
-    # save output to file
-    out_text_path = get_path(outtext)
-
     output_data = {
         "max_var_band": max_var,
         "variability": {band: var.mean() for band, var in variability.items()},
@@ -100,13 +138,11 @@ def main(infile, outimage, outtext, show=False):
     plt.xlabel("Frequency Band")
     plt.ylabel("Variability (Standard Deviation)")
     plt.title("Variability in Frequency Bands Across Different Events")
+    plt.savefig(out_img_path)
+    logger.info("Plot saved to %s", out_img_path)
 
     if show:
         plt.show()
-
-    out_img_path = get_path(outimage)
-    plt.savefig(out_img_path)
-    logger.info("Plot saved to %s", out_img_path)
 
 
 def compute_psd(data, sfreq, band):
@@ -151,9 +187,18 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(
-        infile=args.infile,
-        outimage=args.outimage,
-        outtext=args.outtext,
-        show=args.show,
-    )
+    try:
+        main(
+            infile=args.infile,
+            outimage=args.outimage,
+            outtext=args.outtext,
+            show=args.show,
+        )
+    except (TypeError, ValueError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

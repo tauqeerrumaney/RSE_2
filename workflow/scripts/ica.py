@@ -12,143 +12,191 @@ import matplotlib.pyplot as plt
 import mne
 import numpy as np
 import pandas as pd
-from logger import configure_logger
 from mne.preprocessing import ICA
+
+from logger import configure_logger
 from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
 
-def main(infile, outfile, plotfile, artifacts, inspection=False):
+def main(
+        infile: str,
+        outfile: str,
+        plotfile: str,
+        artifacts: str,
+        inspection: bool):
     """
     Main function to load, process, and save EEG data using ICA.
 
     Args:
         infile (str): Name of the file to load.
         outfile (str): Name of the file to save the denoised data.
-        artifacts (str): Comma-separated list of artifacts to remove.
+        plotfile (str): Name of the file to save the ICA component plots.
+        artifacts (str): Comma-separated list of integer artifacts to remove.
         inspection (bool): Flag to inspect individual components for artifacts.
 
     Returns:
         None
+
+    Raises:
+        FileNotFoundError: If the input file does not exist.
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the output directory does not exist or if the artifacts
+          list is not a comma-separated list of integers.
     """
-    try:
-        in_path = get_path(infile)
-
-        logger.info("Reading data from %s", in_path)
-        df = pd.read_feather(in_path)
-        logger.info("Finished reading data. Applying ICA")
-
-        sfreq = df["size"].iloc[0] / 2
-        events = df["event"].unique()
-        channels = df["channel"].unique()
-        target_length = int(2 * sfreq)
-
-        epoch_data = {event: [] for event in events}
-        event_codes = {}
-
-        logger.info("Processing data for %d events", len(events))
-        for event in events:
-            event_df = df[df["event"] == event]
-            epoch_signals = []
-            for channel in channels:
-                channel_signal = event_df[event_df["channel"] == channel][
-                    "signal"
-                ].values
-                if len(channel_signal) > 0:
-                    signal = channel_signal[0]
-                else:
-                    signal = np.zeros(
-                        target_length
-                    )  # Handle missing channel data by padding with zeros
-                epoch_signals.append(signal)
-            epoch_data[event] = epoch_signals
-            event_codes[event] = event_df["code"].iloc[0]
-
-        epochs_list = [np.array(epoch_data[event]) for event in events]
-        epochs_data = np.array(epochs_list)
-
-        # create mne object
-        info = mne.create_info(
-            ch_names=list(channels),
-            sfreq=sfreq,
-            ch_types="eeg")
-
-        # set montage, MDB uses 10-20
-        montage = mne.channels.make_standard_montage("standard_1020")
-        info.set_montage(montage)
-
-        # Create an events array for MNE,
-        # each event starts at the next multiple of the epoch length
-        event_ids = {
-            str(code): idx for idx,
-            code in enumerate(
-                event_codes.values())}
-        events_array = np.array(
-            [
-                [idx * target_length, 0, event_ids[str(event_codes[event])]]
-                for idx, event in enumerate(events)
-            ]
+    # Validate input types
+    if not isinstance(infile, str):
+        raise TypeError(
+            f"Expected 'infile' to be of type str, but got "
+            f"{type(infile).__name__}"
+        )
+    if not isinstance(outfile, str):
+        raise TypeError(
+            f"Expected 'outfile' to be of type str, but got "
+            f"{type(outfile).__name__}"
+        )
+    if not isinstance(plotfile, str):
+        raise TypeError(
+            f"Expected 'plotfile' to be of type str, but got "
+            f"{type(plotfile).__name__}"
+        )
+    if artifacts is not None and not isinstance(artifacts, str):
+        raise TypeError(
+            f"Expected 'artifacts' to be of type str, but got "
+            f"{type(artifacts).__name__}"
+        )
+    if artifacts is not None and not all(
+            x.isdigit() for x in artifacts.split(",")):
+        raise ValueError(
+            "Artifacts must be a comma-separated list of integers")
+    if not isinstance(inspection, bool):
+        raise TypeError(
+            f"Expected 'inspection' to be of type bool, but got "
+            f"{type(inspection).__name__}"
         )
 
-        # Check the shape of epochs_data
-        logger.info(f"Shape of epochs_data: {epochs_data.shape}")
+    # Validate input file
+    in_path = get_path(infile)
+    if not os.path.exists(in_path):
+        raise FileNotFoundError(f"Input file not found: {in_path}")
 
-        # create epochs
-        epochs = mne.EpochsArray(
-            epochs_data, info, events_array, tmin=0, event_id=event_ids
-        )
+    # Validate output file
+    out_path = get_path(outfile)
+    out_dir = os.path.dirname(out_path)
+    if not os.path.exists(out_dir):
+        raise ValueError(f"Output directory does not exist: {out_dir}")
 
-        ica = ICA(
-            n_components=min(
-                len(channels),
-                20),
-            random_state=97,
-            max_iter=800)
-        ica.fit(epochs)
+    plot_path = get_path(plotfile)
+    plot_dir = os.path.dirname(plot_path)
+    if not os.path.exists(plot_dir):
+        raise ValueError(f"Output directory does not exist: {plot_dir}")
 
-        # Save the ICA component plots as PNG files - only show them
-        # for manual inspection
-        png_path = get_path(plotfile)
-        fig = ica.plot_components(show=False)
-        fig.savefig(png_path)
-        plt.close(fig)
-        logger.info("ICA component plots saved to %s", png_path)
+    # Load the data from the input file
+    logger.info("Reading data from %s", in_path)
+    df = pd.read_feather(in_path)
+    logger.info("Finished reading data. Applying ICA")
 
-        # Inspect individual components and
-        # get user input for artifacts, if specified
-        if inspection:
-            identified_artifacts = []
-            for i in range(ica.n_components_):
-                ica.plot_properties(epochs, picks=[i])
-                response = input(f"Mark component {i} as an artifact? (y/n): ")
-                if response.lower() == "y":
-                    identified_artifacts.append(i)
-            logger.info("Identified artifacts: %s", identified_artifacts)
-            ica.exclude = identified_artifacts
-        elif artifacts is not None:
-            additional_artifacts = [int(x) for x in artifacts.split(",")]
-            logger.info(
-                "Loaded additional artifacts: %s",
-                additional_artifacts)
-            ica.exclude = additional_artifacts
+    sfreq = df["size"].iloc[0] / 2
+    events = df["event"].unique()
+    channels = df["channel"].unique()
+    target_length = int(2 * sfreq)
 
-        # Apply the ICA solution to remove the identified artifacts
-        epochs_clean = epochs.copy()
-        ica.apply(epochs_clean)
+    epoch_data = {event: [] for event in events}
+    event_codes = {}
 
-        # Save cleaned epoched data in FIF format for further use with MNE
-        out_path = get_path(outfile)
-        epochs_clean.save(out_path, overwrite=True)
+    logger.info("Processing data for %d events", len(events))
+    for event in events:
+        event_df = df[df["event"] == event]
+        epoch_signals = []
+        for channel in channels:
+            channel_signal = event_df[event_df["channel"] == channel][
+                "signal"
+            ].values
+            if len(channel_signal) > 0:
+                signal = channel_signal[0]
+            else:
+                signal = np.zeros(
+                    target_length
+                )  # Handle missing channel data by padding with zeros
+            epoch_signals.append(signal)
+        epoch_data[event] = epoch_signals
+        event_codes[event] = event_df["code"].iloc[0]
 
-        logger.info("Cleaned data saved to %s", out_path)
+    epochs_list = [np.array(epoch_data[event]) for event in events]
+    epochs_data = np.array(epochs_list)
 
-    except FileNotFoundError as e:
-        logger.error(f"Could not find file: {e}")
-        logger.debug(traceback.format_exc())
-    except Exception as e:
-        logger.critical(f"An unexpected error occurred: {e}")
-        logger.debug(traceback.format_exc())
+    # create mne object
+    info = mne.create_info(
+        ch_names=list(channels),
+        sfreq=sfreq,
+        ch_types="eeg")
+
+    # set montage, MDB uses 10-20
+    montage = mne.channels.make_standard_montage("standard_1020")
+    info.set_montage(montage)
+
+    # Create an events array for MNE,
+    # each event starts at the next multiple of the epoch length
+    event_ids = {
+        str(code): idx for idx,
+        code in enumerate(
+            event_codes.values())}
+    events_array = np.array(
+        [
+            [idx * target_length, 0, event_ids[str(event_codes[event])]]
+            for idx, event in enumerate(events)
+        ]
+    )
+
+    # Check the shape of epochs_data
+    logger.info(f"Shape of epochs_data: {epochs_data.shape}")
+
+    # create epochs
+    epochs = mne.EpochsArray(
+        epochs_data, info, events_array, tmin=0, event_id=event_ids
+    )
+
+    ica = ICA(
+        n_components=min(
+            len(channels),
+            20),
+        random_state=97,
+        max_iter=800)
+    ica.fit(epochs)
+
+    # Save the ICA component plots as PNG files - only show them
+    # for manual inspection
+    fig = ica.plot_components(show=False)
+    fig.savefig(plot_path)
+    plt.close(fig)
+    logger.info("ICA component plots saved to %s", plot_path)
+
+    # Inspect individual components and
+    # get user input for artifacts, if specified
+    if inspection:
+        identified_artifacts = []
+        for i in range(ica.n_components_):
+            ica.plot_properties(epochs, picks=[i])
+            response = input(f"Mark component {i} as an artifact? (y/n): ")
+            if response.lower() == "y":
+                identified_artifacts.append(i)
+        logger.info("Identified artifacts: %s", identified_artifacts)
+        ica.exclude = identified_artifacts
+    elif artifacts is not None:
+        additional_artifacts = [int(x) for x in artifacts.split(",")]
+        logger.info(
+            "Loaded additional artifacts: %s",
+            additional_artifacts)
+        ica.exclude = additional_artifacts
+
+    # Apply the ICA solution to remove the identified artifacts
+    epochs_clean = epochs.copy()
+    ica.apply(epochs_clean)
+
+    # Save cleaned epoched data in FIF format for further use with MNE
+    epochs_clean.save(out_path, overwrite=True)
+    logger.info("Cleaned data saved to %s", out_path)
 
 
 if __name__ == "__main__":
@@ -183,10 +231,19 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    main(
-        infile=args.infile,
-        outfile=args.outfile,
-        plotfile=args.plotfile,
-        artifacts=args.artifacts,
-        inspection=args.inspect,
-    )
+    try:
+        main(
+            infile=args.infile,
+            outfile=args.outfile,
+            plotfile=args.plotfile,
+            artifacts=args.artifacts,
+            inspection=args.inspect,
+        )
+    except (TypeError, ValueError, FileNotFoundError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)

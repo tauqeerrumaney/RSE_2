@@ -29,40 +29,104 @@ Command-Line Arguments:
     --sections (str): The sections to include in the document.
 """
 
-from pylatex import Document, Command, Package
-from pylatex.utils import NoEscape
 import argparse
 import os
+import traceback
 
-from utils import get_path
+from pylatex import Command, Document, Package
+from pylatex.utils import NoEscape
+
 from logger import configure_logger
+from utils import get_path
 
 logger = configure_logger(os.path.basename(__file__))
 
 
-def main(pdf, latex, title, author, sections=[]):
+def main(
+        pdf: str | None,
+        latex: str | None,
+        title: str,
+        author: str,
+        sections: list[str] = []):
     """
     Creates a LaTeX document with specified title and author
     and generates output documents in PDF and LaTeX formats.
 
     Parameters:
-    - pdf (str): The filename for the generated PDF document.
-    - latex (str): The filename for the generated LaTeX document.
-    - title (str): The title of the document.
-    - author (str): The author of the document.
+        pdf (str): The filename for the generated PDF document.
+        latex (str): The filename for the generated LaTeX document.
+        title (str): The title of the document.
+        author (str): The author of the document.
+        sections (list): The paths to the sections to include in the document.
 
     Returns:
         None
-    """
 
-    if pdf is None and latex is None:
-        logger.error("Please provide a filename for the output PDF or LaTeX.")
-        return
+    Raises:
+        FileNotFoundError: If a section file does not exist.
+        TypeError: If the input parameters are not of the expected types.
+        ValueError: If the output directory does not exist.
+    """
+    # Validate input types
+    if not isinstance(pdf, (str, type(None))):
+        raise TypeError(
+            f"Expected 'pdf' to be of type str or None, but got "
+            f"{type(pdf).__name__}"
+        )
+    if not isinstance(latex, (str, type(None))):
+        raise TypeError(
+            f"Expected 'latex' to be of type str or None, but got "
+            f"{type(latex).__name__}"
+        )
+    if not isinstance(title, str):
+        raise TypeError(
+            f"Expected 'title' to be of type str, but got "
+            f"{type(title).__name__}"
+        )
+    if not isinstance(author, str):
+        raise TypeError(
+            f"Expected 'author' to be of type str, but got "
+            f"{type(author).__name__}"
+        )
+    if not isinstance(sections, list):
+        raise TypeError(
+            f"Expected 'sections' to be of type list, but got "
+            f"{type(sections).__name__}"
+        )
+    if not all(isinstance(section, str) for section in sections):
+        raise TypeError(
+            "Expected all elements in 'sections' to be of type str"
+        )
+
+    # Validate input files
+    for section in sections:
+        section_path = get_path(section)
+        if not os.path.exists(section_path):
+            raise FileNotFoundError(f"Section file not found: {section_path}")
+
+    # Validate output files
+    if pdf is not None:
+        pdf_path = get_path(pdf)
+        out_dir = os.path.dirname(pdf_path)
+        if not os.path.exists(out_dir):
+            raise ValueError(f"Output directory does not exist: {out_dir}")
+
+        # If out_path is a .pdf file remove the extension
+        if pdf_path.endswith(".pdf"):
+            pdf_path = pdf_path.split(".pdf")[0]
+
+    if latex is not None:
+        tex_path = get_path(latex)
+        out_dir = os.path.dirname(tex_path)
+        if not os.path.exists(out_dir):
+            raise ValueError(f"Output directory does not exist: {out_dir}")
+
+        # If out_path is a .tex file remove the extension
+        if tex_path.endswith(".tex"):
+            tex_path = tex_path.split(".tex")[0]
 
     # Create basic document
     doc = Document("basic")
-    logger.info("Document created successfully!")
-
     doc.packages.append(Package("float"))
     doc.packages.append(Package("graphicx"))
     doc.packages.append(Package("subfiles"))
@@ -72,42 +136,23 @@ def main(pdf, latex, title, author, sections=[]):
     doc.preamble.append(Command("author", author))
     doc.preamble.append(Command("date", NoEscape(r"\today")))
     doc.append(NoEscape(r"\maketitle"))
-    logger.info("Preamble created successfully!")
 
     # Add sections to the document
     for section in sections:
-        section_path = get_path(section)
-        if os.path.exists(section_path):
-            doc.append(
-                Command(command="subfile", arguments=NoEscape(section_path))
-            )
-        else:
-            logger.error(f"Section file '{section}' not found")
+        doc.append(Command("subfile", NoEscape(get_path(section))))
 
-    try:
-        # generate output documents
-        if pdf is not None:
-            if not pdf.endswith(".pdf"):
-                pdf = f"{pdf}.pdf"
-            doc.generate_pdf(
-                get_path(pdf).split(".pdf")[0],
-                clean_tex=True,
-                compiler="pdflatex",
-            )
-            logger.info(f"PDF generated successfully at {pdf}")
+    # Generate output documents
+    if pdf_path:
+        doc.generate_pdf(
+            pdf_path,
+            clean_tex=True,
+            compiler="pdflatex",
+        )
+        logger.info(f"PDF generated successfully at {pdf_path}")
 
-        if latex is not None:
-            if not latex.endswith(".tex"):
-                latex = f"{latex}.tex"
-            doc.generate_tex(
-                get_path(latex).split(".tex")[0],
-            )
-            logger.info(f"LaTeX generated successfully at {latex}")
-    except FileNotFoundError as fnfe:
-        logger.error(f"FileNotFoundError: {fnfe}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-    return
+    if tex_path:
+        doc.generate_tex(tex_path)
+        logger.info(f"LaTeX generated successfully at {tex_path}")
 
 
 if __name__ == "__main__":
@@ -146,11 +191,19 @@ if __name__ == "__main__":
         help="The sections to include in the document",
     )
     args = parser.parse_args()
-
-    main(
-        pdf=args.pdf,
-        latex=args.latex,
-        title=args.title,
-        author=args.author,
-        sections=args.sections,
-    )
+    try:
+        main(
+            pdf=args.pdf,
+            latex=args.latex,
+            title=args.title,
+            author=args.author,
+            sections=args.sections,
+        )
+    except (TypeError, FileNotFoundError, ValueError) as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logger.critical(f"An unexpected error occurred: {e}")
+        logger.debug(traceback.format_exc())
+        exit(99)
