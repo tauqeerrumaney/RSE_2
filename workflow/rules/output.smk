@@ -29,7 +29,7 @@ rule latex_section:
         textblock="data/textblocks/{section}.txt",
         section_title=lambda wildcards, input, output: section_titles[wildcards.section],
         conditional_json=lambda wildcards, input, output: (
-            "--jsonin results/RQ_1.json" if wildcards.section == "RQ_1" else ""
+            "--jsonin results/rq_1.json" if wildcards.section == "rq_1" else ""
         ),
     conda:
         "../envs/latex_section.yaml"
