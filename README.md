@@ -1,14 +1,24 @@
 # RSE Project 2
 
-This is the second project in the 2024 course "Research Software Engineering" at the University of Potsdam. For more information, see the [requirements document](docs/requirements.md).
+The project aims to analyze EEG data from the Emotiv EPOC device, focusing on the identification of independent components and the extraction of relevant features. The workflow processes the data, generates visualizations, and provides insights into the data through a comprehensive report.
+
+For more information, see the [requirements](docs/requirements.md), [component overview](docs/component.md) and [directed acyclic graph](docs/dag.png) of the workflow.
 
 ## Table of Contents
-1. [Usage](#usage)
-1. [Data Source and License](#data-source-and-license)
-1. [Contributing Guidelines](#contributing-guidelines)
-1. [Contact Information](#contact-information)
-1. [Citation](#citation)
-1. [License](#license)
+* [Usage](#usage)
+  + [Running the Workflow](#running-the-workflow)
+  + [Configuration](#configuration)
+    - [Section Generation](#section-generation)
+  + [Cleaning Up](#cleaning-up)
+  + [Running Specific Steps](#running-specific-steps)
+  + [Developer Guide](#developer-guide)
+* [Data Source and License](#data-source-and-license)
+    - [Source of EPOC Data](#source-of-epoc-data)
+    - [License](#license)
+* [Contributing Guidelines](#contributing-guidelines)
+* [Contact Information](#contact-information)
+* [Citation](#citation)
+* [License](#license-1)
 
 ## Usage
 
@@ -121,8 +131,18 @@ make plot
 ```
 
 ## Data Source and License
-- Data sources: Detailed information on where the data is sourced from.
-- Data license: Information on how the data is licensed.
+
+#### Source of EPOC Data
+This repository utilizes EPOC data from the MindBigData project, which offers a vast collection of brain signals. These signals were captured using various commercial EEG devices, including the Emotiv EPOC. The data includes over 910,000 signals of 2 seconds each, recorded during the stimuli of seeing and thinking about digits.
+
+For more details, visit the [MindBigData Open Database](https://mindbigdata.com/opendb/index.html).
+
+#### Data License
+The EPOC data is licensed under the Open Database License (ODbL) v1.0. Individual contents of the database are under the Database Contents License (DbCL) v1.0. This allows for sharing, modification, and use of the data, provided that proper attribution is given and any derivative works are also shared alike.
+
+For full license details, refer to:
+- [ODbL v1.0](http://opendatacommons.org/licenses/odbl/1.0/)
+- [DbCL v1.0](http://opendatacommons.org/licenses/dbcl/1.0/)
 
 ## Contributing Guidelines
 If you wish to contribute to the project, please review the [contribution guidelines](CONTRIBUTING.md) and the [code of conduct](CONDUCT.md). By participating, you are expected to adhere to these guidelines.
