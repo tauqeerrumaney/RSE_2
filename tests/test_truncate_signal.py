@@ -4,6 +4,7 @@ Description: This module contains unit tests for the functions
 in the truncate_signal module.
 """
 
+from truncate_signal import main
 import os
 import unittest
 import pandas as pd
@@ -13,7 +14,7 @@ import sys
 import csv
 
 sys.path.append(os.path.join("workflow", "scripts"))
-from truncate_signal import main
+
 
 class TestTruncateSignal(unittest.TestCase):
     """
@@ -22,13 +23,15 @@ class TestTruncateSignal(unittest.TestCase):
 
     def setUp(self):
         """
-        Set up the test environment by initializing a list to hold temporary file paths.
+        Set up the test environment by initializing a list to hold
+        temporary file paths.
         """
         self.temp_files = []
 
     def tearDown(self):
         """
-        Clean up the test environment by removing all temporary files created during the tests.
+        Clean up the test environment by removing all temporary files
+        created during the tests.
         """
         for file in self.temp_files:
             if os.path.exists(file):
@@ -36,11 +39,12 @@ class TestTruncateSignal(unittest.TestCase):
 
     def create_temp_feather_file(self, data):
         """
-        Create a temporary Feather file from the provided data and return its file path.
-        
+        Create a temporary Feather file from the provided data and
+        return its file path.
+
         Parameters:
             data (dict): The data to write to the Feather file.
-            
+
         Returns:
             str: The path to the created Feather file.
         """
@@ -53,11 +57,12 @@ class TestTruncateSignal(unittest.TestCase):
 
     def create_temp_csv_file(self, data):
         """
-        Create a temporary CSV file from the provided data and return its file path.
-        
+        Create a temporary CSV file from the provided data and
+        return its file path.
+
         Parameters:
             data (dict): The data to write to the CSV file.
-            
+
         Returns:
             str: The path to the created CSV file.
         """
@@ -75,7 +80,8 @@ class TestTruncateSignal(unittest.TestCase):
         """
         Test the main function with basic input data.
 
-        Verifies that all signals in the output have the same truncated length.
+        Verifies that all signals in the output have the same
+        truncated length.
         """
         input_data = {
             "signal": [
@@ -91,14 +97,16 @@ class TestTruncateSignal(unittest.TestCase):
         main(input_file, output_file)
 
         df_output = pd.read_feather(output_file)
-        self.assertTrue(all(len(signal) == 3 for signal in df_output['signal']))
+        self.assertTrue(
+            all(len(signal) == 3 for signal in df_output['signal']))
         self.assertTrue(all(df_output['size'] == 3))
 
     def test_signals_of_different_lengths(self):
         """
         Test the main function with signals of different lengths.
 
-        Verifies that all signals in the output are truncated to the shortest signal length.
+        Verifies that all signals in the output are truncated to the
+        shortest signal length.
         """
         input_data = {
             "signal": [
@@ -114,7 +122,8 @@ class TestTruncateSignal(unittest.TestCase):
         main(input_file, output_file)
 
         df_output = pd.read_feather(output_file)
-        self.assertTrue(all(len(signal) == 2 for signal in df_output['signal']))
+        self.assertTrue(
+            all(len(signal) == 2 for signal in df_output['signal']))
         self.assertTrue(all(df_output['size'] == 2))
 
     def test_empty_signals(self):
@@ -137,7 +146,8 @@ class TestTruncateSignal(unittest.TestCase):
         main(input_file, output_file)
 
         df_output = pd.read_feather(output_file)
-        self.assertTrue(all(len(signal) == 0 for signal in df_output['signal']))
+        self.assertTrue(
+            all(len(signal) == 0 for signal in df_output['signal']))
         self.assertTrue(all(df_output['size'] == 0))
 
     def test_large_number_of_signals(self):
@@ -148,7 +158,8 @@ class TestTruncateSignal(unittest.TestCase):
         """
         num_signals = 1000
         max_length = 100
-        signals = [list(np.random.rand(np.random.randint(1, max_length))) for _ in range(num_signals)]
+        signals = [list(np.random.rand(np.random.randint(1, max_length)))
+                   for _ in range(num_signals)]
         input_data = {
             "signal": signals,
             "size": [len(signal) for signal in signals]
@@ -160,7 +171,8 @@ class TestTruncateSignal(unittest.TestCase):
 
         df_output = pd.read_feather(output_file)
         min_length = min(len(signal) for signal in signals)
-        self.assertTrue(all(len(signal) == min_length for signal in df_output['signal']))
+        self.assertTrue(
+            all(len(signal) == min_length for signal in df_output['signal']))
         self.assertTrue(all(df_output['size'] == min_length))
 
     def test_error_handling_file_not_found(self):
@@ -191,6 +203,7 @@ class TestTruncateSignal(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             main(input_file, output_file)
+
 
 if __name__ == '__main__':
     unittest.main()
