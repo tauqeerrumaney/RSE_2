@@ -1,12 +1,19 @@
+"""
+Module: test_utils
+Description: This module contains unit tests for the get_path functions
+in the util module.
+"""
+from utils import get_path
 import unittest
 import os
 from unittest.mock import patch
 import sys
-
 sys.path.append(os.path.join("workflow", "scripts"))
-from utils import get_path  
+
 
 class TestGetPath(unittest.TestCase):
+    """Unit tests for the 'get_path' function in the 'utils' module."""
+
     def test_absolute_path(self):
         """Test that an absolute path is returned unchanged."""
         abs_path = "/home/user/documents/file.txt"
@@ -48,6 +55,7 @@ class TestGetPath(unittest.TestCase):
     def test_parent_directory(self):
         """Test behavior with parent directory '..'"""
         self.assertEqual(get_path(".."), os.path.abspath(".."))
+
 
 if __name__ == '__main__':
     unittest.main()
