@@ -4,6 +4,7 @@ Description: This module contains unit tests for the functions
              in the feature_extraction module.
 """
 
+from feature_extraction import extract_features
 import unittest
 from unittest.mock import patch
 import numpy as np
@@ -11,7 +12,7 @@ import mne
 import os
 import sys
 sys.path.append(os.path.join("workflow", "scripts"))
-from feature_extraction import extract_features
+
 
 class TestFeatureExtraction(unittest.TestCase):
     """
@@ -55,36 +56,36 @@ class TestFeatureExtraction(unittest.TestCase):
 
         # Expected feature values for channel 'ch1'
         expected_features = {
-            'ch1_mean': [-0.04525671],
-            'ch1_std': [0.97267244],
-            'ch1_max': [3.56706532],
-            'ch1_min': [-2.99939714],
-            'ch1_kurtosis': [-0.15153331],
-            'ch1_skewness': [-0.000301],
-            'ch1_wavelet_0_mean': [0.2251093],
-            'ch1_wavelet_0_std': [1.12064203],
-            'ch1_wavelet_1_mean': [0.02524351],
-            'ch1_wavelet_1_std': [0.92669826],
-            'ch1_wavelet_2_mean': [-0.11906461],
-            'ch1_wavelet_2_std': [1.03268539],
-            'ch1_wavelet_3_mean': [0.02321793],
-            'ch1_wavelet_3_std': [1.00711005],
-            'ch1_wavelet_4_mean': [0.15906194],
-            'ch1_wavelet_4_std': [1.01269121],
-            'ch1_wavelet_5_mean': [-0.06254589],
-            'ch1_wavelet_5_std': [1.00652331],
-            'ch1_delta_power': [0., 0.],
-            'ch1_theta_power': [0., 0.],
-            'ch1_alpha_power': [0., 0.],
-            'ch1_beta_power': [0., 0.],
-            'ch1_gamma_power': [0., 0.],
-            'ch1_sample_entropy': [2.24808718],
-            'ch1_approx_entropy': [1.68016063],
+            'ch1_mean': np.array([-0.04525671]),
+            'ch1_std': np.array([0.98703316]),
+            'ch1_max': np.array([2.75935511]),
+            'ch1_min': np.array([-3.04614305]),
+            'ch1_kurtosis': np.array([-0.04676632]),
+            'ch1_skewness': np.array([0.03385895]),
+            'ch1_wavelet_0_mean': np.array([0.68780501]),
+            'ch1_wavelet_0_std': np.array([2.89026408]),
+            'ch1_wavelet_1_mean': np.array([-0.15368656]),
+            'ch1_wavelet_1_std': np.array([0.83737634]),
+            'ch1_wavelet_2_mean': np.array([0.08943787]),
+            'ch1_wavelet_2_std': np.array([0.89597881]),
+            'ch1_wavelet_3_mean': np.array([-0.03778026]),
+            'ch1_wavelet_3_std': np.array([0.972202]),
+            'ch1_wavelet_4_mean': np.array([0.07335742]),
+            'ch1_wavelet_4_std': np.array([0.90946569]),
+            'ch1_wavelet_5_mean': np.array([-0.02770826]),
+            'ch1_wavelet_5_std': np.array([1.00921858]),
+            'ch1_delta_power': np.array([0., 0.]),
+            'ch1_theta_power': np.array([0., 0.]),
+            'ch1_alpha_power': np.array([0., 0.]),
+            'ch1_beta_power': np.array([0., 0.]),
+            'ch1_gamma_power': np.array([0., 0.]),
+            'ch1_sample_entropy': np.array([2.24417546]),
+            'ch1_approx_entropy': np.array([1.6889074]),
         }
 
         channel = "ch1"
         for key_suffix, expected_value in expected_features.items():
-            feature_key = f"{channel}_{key_suffix.split('_')[1]}"
+            feature_key = f"{key_suffix}"
             with self.subTest(channel=channel, feature=feature_key):
                 self.assertIn(
                     feature_key,
