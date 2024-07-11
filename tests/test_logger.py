@@ -1,9 +1,10 @@
 """
 Module: test_logger
-Description: This module contains unit tests for the configure_logger functionality
-in the `logger` module.
+Description: This module contains unit tests for the configure_logger
+functionality in the `logger` module.
 """
 
+from logger import configure_logger
 import unittest
 import logging
 from io import StringIO
@@ -11,7 +12,7 @@ import sys
 import os
 
 sys.path.append(os.path.join("workflow", "scripts"))
-from logger import configure_logger
+
 
 class TestLogger(unittest.TestCase):
     """
@@ -30,7 +31,8 @@ class TestLogger(unittest.TestCase):
         # Capture the log output
         self.log_capture = StringIO()
         self.handler = logging.StreamHandler(self.log_capture)
-        self.handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        self.handler.setFormatter(logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
 
     def tearDown(self):
         """
@@ -54,7 +56,8 @@ class TestLogger(unittest.TestCase):
         """
         logger = configure_logger(name='test_logger')
 
-        # Validate the effective level by logging a DEBUG message and checking the output
+        # Validate the effective level by logging a DEBUG message and checking
+        # the output
         logger.addHandler(self.handler)
         logger.debug("Checking logger level")
         log_output = self.log_capture.getvalue()
@@ -72,7 +75,7 @@ class TestLogger(unittest.TestCase):
         logger.addHandler(self.handler)
         logger.info("Test message")
         log_output = self.log_capture.getvalue()
-        
+
         # Check if the log output contains all required elements
         self.assertIn("test_logger", log_output)
         self.assertIn("INFO", log_output)
@@ -86,7 +89,7 @@ class TestLogger(unittest.TestCase):
         """
         logger = configure_logger(name='test_logger')
         logger.addHandler(self.handler)
-        
+
         logger.debug("Debug message")
         logger.info("Info message")
         logger.warning("Warning message")
@@ -94,13 +97,14 @@ class TestLogger(unittest.TestCase):
         logger.critical("Critical message")
 
         log_output = self.log_capture.getvalue()
-        
+
         # Check that all messages are in the output
         self.assertIn("Debug message", log_output)
         self.assertIn("Info message", log_output)
         self.assertIn("Warning message", log_output)
         self.assertIn("Error message", log_output)
         self.assertIn("Critical message", log_output)
+
 
 if __name__ == '__main__':
     unittest.main()
