@@ -1,3 +1,9 @@
+"""
+Module: test_logger
+Description: This module contains unit tests for the configure_logger functionality
+in the `logger` module.
+"""
+
 import unittest
 import logging
 from io import StringIO
