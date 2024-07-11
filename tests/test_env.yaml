@@ -1,0 +1,15 @@
+name: rse24_project-two_test
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11.6
+  - antropy=0.1.6
+  - mne=1.7.1
+  - numpy=1.26.4
+  - pandas=2.2.2
+  - pyarrow=16.1.0
+  - pytest=7.4.4
+  - pywavelets=1.6.0
+  - scipy=1.13.1
+  - pip
