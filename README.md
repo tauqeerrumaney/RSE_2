@@ -5,20 +5,22 @@ The project aims to analyze EEG data from the Emotiv EPOC device, focusing on th
 For more information, see the [requirements](docs/requirements.md), [component overview](docs/component.md) and [directed acyclic graph](docs/dag.png) of the workflow.
 
 ## Table of Contents
-* [Usage](#usage)
-  + [Running the Workflow](#running-the-workflow)
-  + [Configuration](#configuration)
+
+- [Table of Contents](#table-of-contents)
+- [Usage](#usage)
+  - [Running the Workflow](#running-the-workflow)
+  - [Configuration](#configuration)
     - [Section Generation](#section-generation)
-  + [Cleaning Up](#cleaning-up)
-  + [Running Specific Steps](#running-specific-steps)
-  + [Developer Guide](#developer-guide)
-* [Data Source and License](#data-source-and-license)
-    - [Source of EPOC Data](#source-of-epoc-data)
-    - [License](#license)
-* [Contributing Guidelines](#contributing-guidelines)
-* [Contact Information](#contact-information)
-* [Citation](#citation)
-* [License](#license-1)
+  - [Cleaning Up](#cleaning-up)
+  - [Running Specific Steps](#running-specific-steps)
+  - [Developer Guide](#developer-guide)
+- [Data Source and License](#data-source-and-license)
+  - [Source of EPOC Data](#source-of-epoc-data)
+  - [Data License](#data-license)
+- [Contributing Guidelines](#contributing-guidelines)
+- [Contact Information](#contact-information)
+- [Citation](#citation)
+- [License](#license)
 
 ## Usage
 
@@ -51,24 +53,29 @@ snakemake --use-conda --cores <num_cores>
 The configuration file (`config/config.yaml`) contains settings that can be customized to suit your needs:
 
 **Mock Flag (`mock`)**:
+
 ```yaml
 mock: <true|false>
 ```
+
 When set to `true`, the workflow uses a reduced dataset for testing purposes, allowing for quicker iterations during development.
 
+**Artifacts (`artifacts`)**:
 
-**Artifacts (`artifacts`)**: 
 ```yaml
 artifacts: "<artifact_index_1>,<artifact_index_2>,..."
 ```
+
 Specifies a comma-separated list of artifact indices to exclude from processing, enhancing the flexibility in managing dataset quality.
 
-**Section Titles (`section_titles`)**: 
+**Section Titles (`section_titles`)**:
+
 ```yaml
 section_titles:
   <key>: <human-readable-title>
   # ...
 ```
+
 Defines human-readable titles for each section of the generated report. The key used in this dictionary also helps in dynamically generating corresponding `.tex` files from data processing results. The order in the configuration file preserves the order in the final report.
 
 #### Section Generation
@@ -94,11 +101,13 @@ make clean
 ### Running Specific Steps
 
 To run specific steps of the workflow, use Snakemake's targeted execution:
+
 ```sh
 snakemake --use-conda <target_rule>
 ```
 
 If you wish to run a script or command outside of the workflow, you can activate the specific Conda environment manually:
+
 ```sh
 conda env create --name <environment_name> -f workflow/envs/<environment_file>.yaml
 conda activate <environment_name>
@@ -106,6 +115,7 @@ conda activate <environment_name>
 ```
 
 For example, to run the Independent Component Analysis (ICA) script:
+
 ```sh
 conda env create -f workflow/envs/ica.yaml
 conda activate rse24_project-two_ica
@@ -130,27 +140,40 @@ Create a visual representation of the workflow with:
 make plot
 ```
 
+**Run Tests**:
+To execute the test suite, use the following command (requires `conda`):
+
+```sh
+make test
+```
+
 ## Data Source and License
 
-#### Source of EPOC Data
+### Source of EPOC Data
+
 This repository utilizes EPOC data from the MindBigData project, which offers a vast collection of brain signals. These signals were captured using various commercial EEG devices, including the Emotiv EPOC. The data includes over 910,000 signals of 2 seconds each, recorded during the stimuli of seeing and thinking about digits.
 
 For more details, visit the [MindBigData Open Database](https://mindbigdata.com/opendb/index.html).
 
-#### Data License
+### Data License
+
 The EPOC data is licensed under the Open Database License (ODbL) v1.0. Individual contents of the database are under the Database Contents License (DbCL) v1.0. This allows for sharing, modification, and use of the data, provided that proper attribution is given and any derivative works are also shared alike.
 
 For full license details, refer to:
+
 - [ODbL v1.0](http://opendatacommons.org/licenses/odbl/1.0/)
 - [DbCL v1.0](http://opendatacommons.org/licenses/dbcl/1.0/)
 
 ## Contributing Guidelines
+
 If you wish to contribute to the project, please review the [contribution guidelines](CONTRIBUTING.md) and the [code of conduct](CONDUCT.md). By participating, you are expected to adhere to these guidelines.
 
 We use the [issues tab](https://gitup.uni-potsdam.de/werner10/rse24_project-two/-/issues) for tracking features and bugs.
 
 ## Contact Information
+
 For any inquiries, please contact us at:
+
 - [Harshini Eggoni](mailto:eggoni@uni-potsdam.de)
 - [Philipp Freiherr von Entreß-Fürsteneck](mailto:entressfue@uni-potsdam.de)
 - [Max Nowaczyk](mailto:nowaczyk@uni-potsdam.de)
@@ -158,7 +181,9 @@ For any inquiries, please contact us at:
 - [Tim Werner](mailto:tim.werner@uni-potsdam.de)
 
 ## Citation
+
 For information on how to cite this project, please refer to the [citation file](CITATION.cff).
 
 ## License
+
 This project is licensed under the [MIT License](LICENSE).
