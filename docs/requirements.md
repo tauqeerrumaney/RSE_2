@@ -63,7 +63,7 @@ This document outlines the functional and non-functional requirements for the pr
    - The workflow must support various comparative analyses to identify significant differences and patterns within the data. These analyses should include comparisons based on predefined categories and criteria.
 
 3. **Data Transformation**
-   - The system should be capable of applying necessary transformations to the data, such as conversion into micro Volts or , to prepare it for more detailed analysis.
+   - The system should be capable of applying necessary transformations to the data, such as conversion into micro Volts or denoising, to prepare it for more detailed analysis.
 
 4. **Result Generation**
    - The workflow must generate visualizations and reports to summarize and present the findings clearly and comprehensively. These outputs should be suitable for inclusion in scientific documentation and presentations.
