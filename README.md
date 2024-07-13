@@ -39,7 +39,7 @@ To run the entire workflow, execute the following command from the root director
 make
 ```
 
-This command will initiate the workflow and handle all necessary steps automatically. Upon the first run, a configuration file (`config/config.yaml`) will be created if it does not already exist.
+This command will initiate the workflow and handle all necessary steps automatically. The first execution of the workflow will take some time, as all environments have to be created by conda. Subsequent runs will be substantially faster. Upon the first run, a configuration file (`config/config.yaml`) will be created if it does not already exist.
 
 Alternatively, you can copy the configuration file from the template and run the workflow manually:
 
@@ -176,7 +176,7 @@ For any inquiries, please contact us at:
 
 - [Harshini Eggoni](mailto:eggoni@uni-potsdam.de)
 - [Philipp Freiherr von Entreß-Fürsteneck](mailto:entressfue@uni-potsdam.de)
-- [Max Nowaczyk](mailto:nowaczyk@uni-potsdam.de)
+- [Max Nowaczyk](mailto:nowaczyk2@uni-potsdam.de)
 - [Tauqeer Kasam Rumaney](mailto:rumaney@uni-potsdam.de)
 - [Tim Werner](mailto:tim.werner@uni-potsdam.de)
 
