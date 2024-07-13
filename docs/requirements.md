@@ -3,6 +3,8 @@ This document outlines the functional and non-functional requirements for the pr
 
 ### Functional Requirements
 
+### User-Stories:
+
 **Must have:**
 
 "As a researcher, I want to be able to preprocess my EEG data using a defined sequence of steps."
