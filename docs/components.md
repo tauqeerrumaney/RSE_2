@@ -3,7 +3,7 @@
 | Abstract Workflow Node (Operation) | Input(s) | Output(s) | Implementation (Custom Scripts) |
 | ------ | ------ | ------ | ------ |
 | Data Loading and Filtering | Raw Data Files | filtered_data.feather | Load data and filter |
-| Bandpass Filter | filtered_data.feather | bandpassed_data.feather | Apply bandpass filter (1 - 40 Hz) |
+| Bandpass Filter | filtered_data.feather | bandpassed_data.feather | Apply bandpass filter (1 - 60 Hz) |
 | Truncate Data | bandpassed_data.feather | truncated_data.feather | Truncate data to desired time window |
 | Artifact Removal (ICA) | truncated_data.feather | cleaned_epo.fif, ica_components.png | Perform ICA to remove artifacts |
 | De-Noising (Re-referencing) | cleaned_epo.fif | denoised_epo.fif | Re-reference signals to reduce noise |
