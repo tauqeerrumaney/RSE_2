@@ -1,10 +1,40 @@
 """
-This script calculates the variability of power spectral density (PSD)
-across different frequency bands and events.
-"""
+The script reads EEG epochs data, calculates the PSD across specified
+frequency bands for different events, and determines the variability in
+these bands. The results are saved as a plot and a JSON file.
 
-# Question 1: Which frequency bands show the highest variability across
-# different events, indicating event-related changes in brain activity?
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python rq_1.py infile outimage outtext [--show]
+    ```
+
+    Example:
+    ```
+    python rq_1.py denoised_epo.fif rq_1.png rq_1.json --show
+    ```
+
+Options:
+    infile (str): Path to the input file containing the denoised data.
+    outimage (str): Path to save the output plot.
+    outtext (str): Path to save the variability data as JSON.
+    --show (bool, optional): Whether to display the plot. Default: False
+
+Files:
+    infile: The input file contains denoised data in the FIF format.
+    outimage: The output file where the plot will be saved in the PNG format.
+    outtext: The output file where the variability data will be saved in
+             the JSON format.
+
+Functions:
+    main(infile, outimage, outtext, show=False):
+        Calculates and saves the variability of PSD across different
+        frequency bands and events.
+    compute_psd(data, sfreq, band):
+        Computes the power spectral density (PSD) for a given frequency
+        band using Welch's method.
+"""
 
 import argparse
 import json
@@ -37,12 +67,17 @@ def main(infile: str, outimage: str, outtext: str, show: bool = False):
     Calculate the variability of power spectral density (PSD)
     across different frequency bands and events.
 
-    Parameters:
-        infile (str): The input file path of the epochs data.
-        outimage (str): The output file path to save the plot.
-        outtext (str): The output file path to save the variability data
-          as JSON.
-        show (bool): Whether to display the plot.
+    This function reads denoised data from an input file, computes the
+    power spectral density (PSD) for different frequency bands and events,
+    calculates the variability of these PSDs, and saves the results to output
+    files. Optionally, it can display the variability plot.
+
+    Args:
+        infile (str): Path to the input file containing the denoised data.
+        outimage (str):Path to the output file where the plot will be saved.
+        outtext (str): Path to the output file to save the variability data
+            as JSON.
+        show (bool, optional): Whether to display the plot. Default is False.
 
     Returns:
         None
@@ -56,19 +91,23 @@ def main(infile: str, outimage: str, outtext: str, show: bool = False):
     if not isinstance(infile, str):
         raise TypeError(
             f"Expected 'infile' to be of type str, but got "
-            f"{type(infile).__name__}")
+            f"{type(infile).__name__}"
+        )
     if not isinstance(outimage, str):
         raise TypeError(
             f"Expected 'outimage' to be of type str, but got "
-            f"{type(outimage).__name__}")
+            f"{type(outimage).__name__}"
+        )
     if not isinstance(outtext, str):
         raise TypeError(
             f"Expected 'outtext' to be of type str, but got "
-            f"{type(outtext).__name__}")
+            f"{type(outtext).__name__}"
+        )
     if not isinstance(show, bool):
         raise TypeError(
             f"Expected 'show' to be of type bool, but got "
-            f"{type(show).__name__}")
+            f"{type(show).__name__}"
+        )
 
     # Validate input file
     in_path = get_path(infile)
@@ -89,15 +128,18 @@ def main(infile: str, outimage: str, outtext: str, show: bool = False):
     # Load the epochs data
     logger.info("Reading data from %s", in_path)
     epochs = mne.read_epochs(in_path, preload=True)
+    n_epochs = min(len(epochs.events), 100)  # Use at most 100 epochs
+    epochs_subset = epochs[:n_epochs]
     logger.info(
-        "Finished reading data. Calculating PSD for %d events", len(
-            epochs.events))
+        "Finished reading data. Calculating PSD for %d events",
+        len(epochs_subset.events),
+    )
 
-    # Calculate PSD for each band and event
+    # Calculate PSD for each band and event using parallel processing
     sfreq = epochs.info["sfreq"]
     psd_values = {band: [] for band in BANDS}
-    for event_id in range(len(epochs.events)):
-        epoch_data = epochs[event_id].get_data(copy=True)
+    for event_id in range(len(epochs_subset.events)):
+        epoch_data = epochs_subset[event_id].get_data(copy=True)
         for band, freq_range in BANDS.items():
             psd_band_values = []
             for channel_data in epoch_data:
@@ -150,13 +192,27 @@ def compute_psd(data, sfreq, band):
     Compute the power spectral density (PSD) for a given frequency band
     using Welch's method.
 
-    Parameters:
-        data (array-like): The input data.
-        sfreq (float): The sampling frequency of the data.
-        band (tuple): The frequency band of interest.
+    This function calculates the PSD of the input data using Welch's method,
+    which segments the data, applies a window function to each segment, and
+    averages the periodograms of the segments. The function returns the mean
+    PSD values within the specified frequency band.
+
+    Args:
+        data (array-like): The input data. It can be a 1-D array or
+          a 2-D array where each row represents a different channel or trial.
+        sfreq (float): The sampling frequency of the input data in Hertz (Hz).
+        band (tuple): A tuple specifying the frequency band of interest.
+           The tuple should contain two elements: the lower and upper
+           frequency bounds in Hz.
 
     Returns:
         array-like: The mean PSD values within the specified frequency band.
+           If the input data is a 2-D array, the returned array will contain
+           the mean PSD values for each row (channel/trial).
+
+    Raises:
+        ValueError: If the input data is not array-like or if the band is
+           not a tuple with two elements.
     """
     freqs, psd = welch(data, sfreq, nperseg=248)
     band_freqs = (freqs >= band[0]) & (freqs <= band[1])

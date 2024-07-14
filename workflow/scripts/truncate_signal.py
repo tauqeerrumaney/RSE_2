@@ -1,7 +1,33 @@
 """
 This script loads bandpass filtered EEG data from a feather file,
-truncates all signals to the length of the shortest signal, and saves
-the truncated data back to a new feather file.
+ truncates all signals to the length of the shortest signal,
+ and saves the truncated data back to a new feather file.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python truncate_signal.py infile outfile
+    ```
+
+    Example:
+    ```
+    python truncate_signal.py bandpassed_data.feather truncated_data.feather
+    ```
+
+Options:
+    infile (str): Path to the input file containing the bandpass filter data.
+    outfile (str):  Path to the output file where the data is saved.
+
+Files:
+    infile: The input file contains bandpass filtered EEG data in the
+       feather format.
+    outfile: The output file where the truncated data will be saved in
+       the feather format.
+
+Functions:
+    main(infile, outfile):
+        Loads, truncates, and saves EEG signal data.
 """
 
 import argparse
@@ -18,11 +44,15 @@ logger = configure_logger(os.path.basename(__file__))
 
 def main(infile: str, outfile: str):
     """
-    Main function to load, truncate, and save EEG signal data.
+    Main function to load, truncate, and save bandpass data.
+
+    This function reads bandpass filter data from the specified input file,
+    truncates the signals to the shortest length found among them, and saves
+    the truncated data to the specified output file.
 
     Args:
-        infile (str): The path to the input file containing EEG data.
-        outfile (str): The path of the file to save truncated data to.
+        infile (str): Path to the input file containing bandpass filter data
+        outfile (str): Path to the outfile to save truncated data.
 
     Returns:
         None
@@ -64,7 +94,8 @@ def main(infile: str, outfile: str):
 
     # Truncate all signals to the target length
     truncated_signals = df["signal"].apply(
-        lambda signal: signal[:target_length])
+        lambda signal: signal[:target_length]
+    )
     df["signal"] = truncated_signals
     logger.info("All signals truncated to length %d", target_length)
 

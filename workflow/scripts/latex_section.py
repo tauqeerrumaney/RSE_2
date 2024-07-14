@@ -5,26 +5,36 @@ and outputs it as a PDF or LaTeX file.
 Usage:
     Run the script from the command line with optional arguments
     for the output file names, section title, text, image, and json:
+
+    python latex_section.py output.tex “Section Title” [--textin TEXTIN]
+    [--imagein IMAGEIN] [--jsonin JSONIN]
+
+Example:
     ```
-    python generate_latex_section.py
-    output.tex "Section Title"
-    --textin "path/to/textfile.txt"
-    --imagein "path/to/image.png"
-    --jsonin "path/to/jsonfile.json"
+    python latex_section.py  "Section Title"  --textin "path/to/textfile.txt"
+    --imagein "path/to/image.png" --jsonin "path/to/jsonfile.json"
     ```
+
+Options:
+    outfile (str): Path to the output .tex file.
+    section (str): The title of the section.
+    --textin (str, optional): Path to the text file containing the description.
+      Default is None.
+    --imagein (str, optional): Path to the image file. Default is None.
+    --jsonin (str, optional): Path to the JSON file containing additional data.
+    Default is None.
+
+Files:
+    outfile: The output file where the LaTeX document will be saved.
+    --textin (optional): The input text file containing the description.
+    --imagein (optional): The input image file to be included in the document.
+    --jsonin (optional): The input JSON file containing additional data.
 
 Functions:
-    main(outfile, section, textin, imagein, jsonin)
+    main(outfile, section, textin=None, imagein=None, jsonin=None):
         Generate a LaTeX section with the given content.
-    dict_text(dictin)
-        Extract key-value pairs of dictionary into string.
-
-Command-Line Arguments:
-    outfile (str): The path to the output .tex file.
-    section (str): The title of the section.
-    --textin (str): The path to the text file containing the description.
-    --imagein (str): The path to the image file.
-    --jsonin (str): The path to the JSON file containing additional data.
+    dict_text(dictin):
+        Extract key-value pairs of dictionary into a string.
 """
 
 import argparse
@@ -45,35 +55,45 @@ DATA_PROCESSING_RULES = {
     "max_var_band": lambda data: f"Max Variability Band: {data}.\n\n",
     "variability": lambda data: "\n".join(
         [
-            f"{key}: {data[key]:.4e}"
-            if isinstance(data[key], float)
-            else f"{key}: {data[key]}" for key in data]),
+            (
+                f"{key}: {data[key]:.4e}"
+                if isinstance(data[key], float)
+                else f"{key}: {data[key]}"
+            )
+            for key in data
+        ]
+    ),
 }
 
 
 def main(
-        outfile: str,
-        section: str,
-        textin: str = None,
-        imagein: str = None,
-        jsonin: str = None):
+    outfile: str,
+    section: str,
+    textin: str = None,
+    imagein: str = None,
+    jsonin: str = None,
+):
     """
     Generate a LaTeX section with the given content.
 
+    This function creates a LaTeX document with a specified section title,
+    including optional text, an image, and JSON data.
+
     Args:
-        outfile (str): The output file path for the generated LaTeX.
+        outfile (str): Path to the output file where the generated
+        LaTeX will be saved.
         section (str): The section title.
-        textin (str): The path to the text file to be included.
-        imagein (str): The path to the image file to be included.
-        jsonin (str): The path to the JSON file to be included.
+        textin (str):  Path to the text file to be included.
+        imagein (str): Path to the image file to be included.
+        jsonin (str): Path to the JSON file to be included.
 
     Returns:
         None
 
     Raises:
         TypeError: If the input parameters are not of the expected types.
-        ValueError: If the output directory does not exist or
-          no content is provided.
+        ValueError: If the output directory does not exist or no content is
+            provided.
     """
     # Validate input types
     if not isinstance(outfile, str):
@@ -142,7 +162,8 @@ def main(
                     # Add figure
                     with doc.create(Figure(position="H")) as pic:
                         pic.add_image(
-                            image_path, width=NoEscape(r"\textwidth"))
+                            image_path, width=NoEscape(r"\textwidth")
+                        )
                         pic.add_caption(imagein)
                     logger.info(f"Image '{imagein}' added")
                 else:
@@ -164,7 +185,8 @@ def main(
                         if absentKeys:
                             logger.warn(
                                 f"Could not find rule to process keys: "
-                                f"{absentKeys}")
+                                f"{absentKeys}"
+                            )
                     logger.info(f"JSON '{jsonin}' added")
                 else:
                     logger.error(f"JSON '{jsonin}' not found")

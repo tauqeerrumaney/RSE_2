@@ -4,29 +4,37 @@ and outputs it as a PDF or LaTeX file.
 
 Usage:
     Run the script from the command line with optional arguments
-    for the output file names, title, and author:
+    for the output file names, title, author, and sections:
+
+    python latex_document.py [--pdf PDF] [--latex LATEX] [--title TITLE]
+    [--author AUTHOR] [--sections ...]
+
+Example:
     ```
-    python generate_latex.py
-    --pdf output.pdf
-    --latex output.tex
-    --title "Document Title"
-    --author "Author Name"
-    --sections "section1.tex" "section2.tex"
+    python latex_document.py --author "Author Name" --sections
+    "section1.tex" "section2.tex"
     ```
+
+Options:
+    --pdf (str, optional): The filename for the generated PDF document.
+        Default: None
+    --latex (str, optional): The filename for the generated LaTeX document.
+        Default: None
+    --title (str, optional): The title of the document. Default: "Analysis
+        Results of EEG Dataset"
+    --author (str, optional): The author of the document. Default:
+        "University of Potsdam, RSE 2024"
+    --sections (str, optional): The sections to include in the document.
+
+Files:
+    --pdf: The output PDF file where the document will be saved.
+    --latex: The output LaTeX file where the document will be saved.
+    --sections: The input LaTeX section files to be included in the document.
 
 Functions:
-    main(pdf, latex, title, author, sections=[])
+    main(pdf, latex, title, author, sections=[]):
         Creates a LaTeX document with the specified title and author
         and generates output documents in PDF and LaTeX formats.
-
-Command-Line Arguments:
-    --pdf (str): The filename for the generated PDF document. Default: None
-    --latex (str): The filename for the generated LaTeX document. Default: None
-    --title (str): The title of the document.
-        Default: "Analysis Results of EEG Dataset"
-    --author (str): The author of the document.
-        Default: "University of Potsdam, RSE 2024"
-    --sections (str): The sections to include in the document.
 """
 
 import argparse
@@ -43,21 +51,25 @@ logger = configure_logger(os.path.basename(__file__))
 
 
 def main(
-        pdf: str | None,
-        latex: str | None,
-        title: str,
-        author: str,
-        sections: list[str] = []):
+    pdf: str | None,
+    latex: str | None,
+    title: str,
+    author: str,
+    sections: list[str] = [],
+):
     """
-    Creates a LaTeX document with specified title and author
+    Creates a LaTeX document with the specified title and author
     and generates output documents in PDF and LaTeX formats.
 
-    Parameters:
+    Args:
         pdf (str): The filename for the generated PDF document.
+            Default is None.
         latex (str): The filename for the generated LaTeX document.
+            Default is None.
         title (str): The title of the document.
         author (str): The author of the document.
-        sections (list): The paths to the sections to include in the document.
+        sections (list): Paths to the sections to include in
+            the document.
 
     Returns:
         None

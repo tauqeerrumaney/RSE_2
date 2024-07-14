@@ -1,12 +1,35 @@
 """
-This script loads epochs data from a file, selects a single event type for
-comparison, and plots the event-related potential (ERP) for the selected
-channels.
-"""
+This script analyzes event-related potential (ERP) differences across specific
+EEG channels and saves the plot.
 
-# How does the event-related potential (ERP) differ across channels such as
-# AF3 (frontal), P7 (parietal), and O1 (occipital) for a specific cognitive
-# task in the EPOC data?
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python rq_3.py infile outfile [--channels CHANNELS] [--show]
+    ```
+
+    Example:
+    ```
+    python rq_3.py denoised_epo.fif rq_3.png --channels AF3 P7 O1 --show
+    ```
+
+Options:
+    infile (str): Path to the input file containing the denoised data.
+    outfile (str): Path to save the output plot.
+    --channels (list of str, optional): List of channels to compare ERP across.
+        Default: ["AF3", "P7", "O1"]
+    --show (bool, optional): Whether to display the plot. Default: False
+
+Files:
+    infile: The input file contains denoised data in the FIF format.
+    outfile: The output file where the plot will be saved in the PNG format.
+
+Functions:
+    main(infile, outfile, channels, show=False):
+        Generates and saves an ERP plot for a selected event type and
+        channels.
+"""
 
 import argparse
 import os
@@ -25,10 +48,16 @@ def main(infile: str, outfile: str, channels: list[str], show=False):
     """
     Generate and save an ERP plot for a selected event type and channels.
 
-    Parameters:
-        infile (str): The path to the input file containing epochs data.
-        outfile (str): The path to save the generated plot.
-        channels (list): A list of channel names to plot.
+    This function reads denoised data from an input file, generates an
+    Event-Related Potential (ERP) plot for a specified event type and
+    selected channels, and saves the plot to an output file. Optionally,
+    the plot can be displayed.
+
+    Args:
+        infile (str): Path to the input file containing the denoised data.
+        outfile (str): Path to save the output plot.
+        channels (list of str, optional): A list of channel names to plot.
+           Default: ["AF3", "P7", "O1"]
         show (bool, optional): Whether to display the plot. Default is False.
 
     Returns:
@@ -86,7 +115,7 @@ def main(infile: str, outfile: str, channels: list[str], show=False):
     # Select a single event type for comparison
     event_id = event_ids[0]
 
-    # initialise the plot
+    # Initialise the plot
     plt.figure(figsize=(12, 8))
 
     # Plot the ERP for the selected channels
@@ -118,16 +147,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load",
+        help="Path to the input file containing epochs data.",
     )
     parser.add_argument(
         "outfile",
         type=str,
-        help="name of the file to save the filtered data",
+        help="Path to save the generated plot.",
     )
     parser.add_argument(
         "--channels",
-        type=list,
+        type=str,
         nargs="+",
         choices=[
             "AF3",
@@ -146,12 +175,12 @@ if __name__ == "__main__":
             "AF4",
         ],
         default=["AF3", "P7", "O1"],
-        help="list of channels to compare ERP across",
+        help="List of channels to compare ERP across.",
     )
     parser.add_argument(
         "--show",
         action="store_true",
-        help="whether to display the plot",
+        help="Whether to display the plot.",
     )
 
     args = parser.parse_args()

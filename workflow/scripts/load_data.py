@@ -1,7 +1,35 @@
 """
-This script allows EEG data in a .csv file (in a specific format)
-to be loaded, converted into micro Volts based on the input
-resolution and saved into a smaller data format.
+This script allows EEG data in a .txt file (in a specific format) to be
+loaded, converted into micro Volts based on the input resolution and
+saved into a smaller data format.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python data_load.py infile outfile [--mock]
+    ```
+
+    Example:
+    ```
+    python data_load.py EPOC.txt filtered_data.feather --mock
+    ```
+
+Options:
+    infile (str): Path to the input file containing the raw EEG data.
+    outfile (str): Path to the output file where the data is saved.
+    --mock (bool, optional): Whether to use a subset of the data for
+        testing purposes.
+
+Files:
+    infile: The input file contains rows for id, event, device, channel, code,
+        size, data; in tsv format.
+    outfile: The output file where the filtered data will be saved in
+        feather format.
+
+Functions:
+    main(infile, outfile, mock=False):
+        Loads, processes, and saves EEG data.
 """
 
 import argparse
@@ -23,9 +51,14 @@ def main(infile: str, outfile: str, mock: bool = False):
     """
     Main function to load, process, and save EEG data.
 
+    This function reads raw EEG data from an input file, converts the signal
+    values to micro Volts based on a predefined conversion factor, and saves
+    the processed data into a feather file format. Optionally, a subset of
+    the data can be used for testing purposes.
+
     Args:
-        infile (str): The path to the input file containing the raw EEG data.
-        outfile (str): The path to the output file where the data is saved.
+        infile (str): Path to the input file containing the raw EEG data.
+        outfile (str): Path to the output file where the data is saved.
         mock (bool): Whether to use a subset of the data for testing purposes.
 
     Returns:
@@ -102,7 +135,8 @@ def main(infile: str, outfile: str, mock: bool = False):
     # emotiv.com/products/epoc-x
     conversion_factor = 0.125
     df["signal"] = df["signal"].apply(
-        lambda x: np.array(x) * conversion_factor)
+        lambda x: np.array(x) * conversion_factor
+    )
 
     if mock:
         df = df.head(MOCK_SIZE)

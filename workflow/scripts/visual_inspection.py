@@ -1,6 +1,32 @@
 """
 This script loads EEG data from a feather file, allows filtering by
 specific electrode or event, and plots the EEG signal.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python visual_inspection.py infile [--event EVENT] [--electrode ELECTRODE]
+    ```
+
+    Example:
+    ```
+    python visual_inspection.py filtered_data.feather --event 1
+    ```
+
+Options:
+    infile (str): Path to the input file containing the EEG data.
+    --event (int, optional): Event ID to filter by (set to None to
+        plot all data).
+    --electrode (str, optional): Electrode to filter by (set to None to
+    plot all channels).
+
+Files:
+    infile: The input file containing the EEG data in the feather format.
+
+Functions:
+    main(infile, event=None, electrode=None):
+        Main function to load, filter, and plot EEG data.
 """
 
 import argparse
@@ -20,10 +46,16 @@ def main(infile: str, event: int = None, electrode: str = None):
     """
     Main function to load, filter, and plot EEG data.
 
+    This function loads EEG data from the specified input file, optionally
+    filters the data by a specific event ID and/or electrode, and generates
+    plots for the filtered data.
+
     Args:
-        infile (str): The path to the input file containing the EEG data.
-        event (int): The event ID to filter by (set to None to plot all data).
-        electrode (str): The electrode to filter by (set to None for all data).
+        infile (str): Path to the input file containing the EEG data.
+        event (int, optional): The event ID to filter by. Defaults to None to
+            plot all data.
+        electrode (str, optional): The electrode to filter by. Defaults to
+            None for all data.
 
     Returns:
         None
@@ -62,7 +94,8 @@ def main(infile: str, event: int = None, electrode: str = None):
         # Check if the electrode is within the range of values in the df
         if electrode not in df["channel"].unique():
             raise ValueError(
-                f"Electrode {electrode} not found in the dataframe")
+                f"Electrode {electrode} not found in the dataframe"
+            )
 
         # Filter data for the specified electrode across all events
         electrode_data = df[df["channel"] == electrode]
@@ -72,7 +105,8 @@ def main(infile: str, event: int = None, electrode: str = None):
             # Check if the event_id is within the range of values in the df
             if event not in df["event"].unique():
                 raise ValueError(
-                    f"Event ID {event} not found in the dataframe")
+                    f"Event ID {event} not found in the dataframe"
+                )
 
             # Filter data for the specified event
             electrode_data = df[df["event"] == event]

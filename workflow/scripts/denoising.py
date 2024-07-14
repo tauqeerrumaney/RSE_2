@@ -1,6 +1,32 @@
 """
-This script loads cleaned EEG data from a .fif file, re-references the data to
-the average of all channels, and saves the denoised data to a new .fif file.
+This script loads cleaned EEG data from a .fif file, re-references the data
+to the average of all channels, and saves the denoised data to a new file.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python denoising.py infile outfile
+    ```
+
+    Example:
+    ```
+    python denoising.py cleaned_epo.fif denoised_epo.fif
+    ```
+
+Options:
+    infile (str): Path to the input file containing cleaned EEG data.
+    outfile (str): Path to save the denoised EEG data.
+
+Files:
+    infile: The input file contains cleaned EEG data in the FIF format.
+    outfile: The output file where the denoised EEG data will be saved
+        in the FIF format.
+
+Functions:
+    main(infile, outfile):
+        Loads the EEG data from the input file, applies re-referencing,
+        and saves the denoised data to the output file
 """
 
 import argparse
@@ -19,9 +45,14 @@ def main(infile: str, outfile: str):
     """
     Main function to load, process, and save EEG data.
 
+    This function reads EEG data from an input file, applies re-referencing
+    to the average of all channels, and saves the denoised data to an
+    output file.
+
     Args:
-        infile (str): Name of the file to load.
-        outfile (str): Name of the file to save the denoised data.
+        infile (str): Path to the input file containing cleaned EEG data.
+        outfile (str): Path to the output file where the denoised EEG data
+            will be saved.
 
     Returns:
         None

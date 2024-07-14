@@ -1,6 +1,35 @@
 """
 This script generates spectrograms for the specified channels
-and saves the plot to an output file.
+and saves the plot.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python  rq_4.py infile outfile [--channels CHANNELS] [--show]
+    ```
+
+    Example:
+    ```
+    python rq_4.py denoised_epo.fif rq_4.png --channels F3 FC6 --show
+    ```
+
+Options:
+    infile (str): Path to the input file containing denoised data.
+    outfile (str): Path to save the output plot.
+    --channels (list of str, optional): List of channels for which to generate
+       spectrograms. Default: ["F3", "FC6"]
+    --show (bool, optional): Whether to display the plot. Default: False
+
+Files:
+    infile: The input file containing the denoised data in the FIF format.
+    outfile: The output file where the plot will be saved in the PNG format.
+
+Functions:
+    main(infile, outfile, channels, show=False):
+        Generates and saves spectrograms for the specified channels.
+    plot_spectrogram(data, sfreq, channel_name, ax):
+        Plots a spectrogram of the given data.
 """
 
 import argparse
@@ -20,13 +49,18 @@ logger = configure_logger(os.path.basename(__file__))
 
 def main(infile: str, outfile: str, channels: list[str], show: bool = False):
     """
-    Generate spectrograms for the specified channels
-    and save the plot to an output file.
+    Generate spectrograms for the specified channels and save the plot to
+    an output file.
 
-    Parameters:
-        infile (str): Path to the input file containing epochs data.
-        outfile (str): Path to the output file where the plot will be saved.
-        channels (list): Channel names for which to generate spectrograms.
+    This function reads denoised data from an input file in FIF format,
+    generates spectrograms for the specified channels, and saves the plot
+    to the specified output file. Optionally, it can display the plot.
+
+    Args:
+        infile (str): Path to the input file containing the denoised data.
+        outfile (str): Path to save the output plot.
+        channels (list of str, optional): Channel names for which to generate
+           spectrograms.Default: ["F3", "FC6"]
         show (bool, optional): Whether to display the plot. Defaults to False.
 
     Returns:
@@ -116,15 +150,18 @@ def plot_spectrogram(data, sfreq, channel_name, ax):
     """
     Plot a spectrogram of the given data.
 
-    Parameters:
-        data numpy.ndarray: The input data array.
+    This function computes and plots a spectrogram of the given data
+    on the specified axes.
+
+    Args:
+        data (numpy.ndarray): The input data array.
         sfreq (int): The sampling frequency of the data.
         channel_name (str): The name of the channel.
         ax (matplotlib.axes.Axes): The axes object to plot the spectrogram on.
 
     Returns:
-        cax (matplotlib.collections.QuadMesh)
-            The QuadMesh object representing the spectrogram plot.
+        matplotlib.collections.QuadMesh: The QuadMesh object representing the
+            spectrogram plot.
     """
 
     f, t, Sxx = spectrogram(data, fs=sfreq)  # Compute the spectrogram
@@ -142,16 +179,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load",
+        help="Path to the input file containing epochs data.",
     )
     parser.add_argument(
         "outfile",
         type=str,
-        help="name of the file to save the filtered data",
+        help="Path to save the generated plot.",
     )
     parser.add_argument(
         "--channels",
-        type=list,
+        type=str,
         nargs="+",
         choices=[
             "AF3",
@@ -170,12 +207,12 @@ if __name__ == "__main__":
             "AF4",
         ],
         default=["F3", "FC6"],
-        help="list of channels to compare ERP across",
+        help="List of channels for which to generate spectrograms.",
     )
     parser.add_argument(
         "--show",
         action="store_true",
-        help="whether to display the plot",
+        help="Whether to display the plot.",
     )
 
     args = parser.parse_args()
