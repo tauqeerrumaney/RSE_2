@@ -4,14 +4,18 @@ Description: This module contains unit tests for the denoising functionality
 in the `denoising` module.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock
-import numpy as np
-import mne
 import os
-import sys
-sys.path.append(os.path.join("workflow", "scripts"))
-import denoising
+import unittest
+from unittest.mock import MagicMock, patch
+
+import mne
+import numpy as np
+
+from path_utils import extend_sys_path
+
+with extend_sys_path(os.path.join("workflow", "scripts")):
+    import denoising
+
 
 class TestDenoising(unittest.TestCase):
     """

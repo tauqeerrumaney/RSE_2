@@ -4,14 +4,17 @@ Description: This module contains unit tests for the functions
              in the feature_extraction module.
 """
 
-from feature_extraction import extract_features
+import os
 import unittest
 from unittest.mock import patch
-import numpy as np
+
 import mne
-import os
-import sys
-sys.path.append(os.path.join("workflow", "scripts"))
+import numpy as np
+
+from path_utils import extend_sys_path
+
+with extend_sys_path(os.path.join("workflow", "scripts")):
+    from feature_extraction import extract_features
 
 
 class TestFeatureExtraction(unittest.TestCase):

@@ -4,14 +4,15 @@ Description: This module contains unit tests for the configure_logger
 functionality in the `logger` module.
 """
 
-from logger import configure_logger
-import unittest
 import logging
-from io import StringIO
-import sys
 import os
+import unittest
+from io import StringIO
 
-sys.path.append(os.path.join("workflow", "scripts"))
+from path_utils import extend_sys_path
+
+with extend_sys_path(os.path.join("workflow", "scripts")):
+    from logger import configure_logger
 
 
 class TestLogger(unittest.TestCase):

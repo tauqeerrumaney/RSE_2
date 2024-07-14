@@ -4,16 +4,18 @@ Description: This module contains unit tests for the functions
 in the truncate_signal module.
 """
 
-from truncate_signal import main
+import csv
 import os
 import unittest
-import pandas as pd
-import numpy as np
 from tempfile import NamedTemporaryFile
-import sys
-import csv
 
-sys.path.append(os.path.join("workflow", "scripts"))
+import numpy as np
+import pandas as pd
+
+from path_utils import extend_sys_path
+
+with extend_sys_path(os.path.join("workflow", "scripts")):
+    from truncate_signal import main
 
 
 class TestTruncateSignal(unittest.TestCase):

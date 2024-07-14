@@ -3,12 +3,14 @@ Module: test_utils
 Description: This module contains unit tests for the get_path functions
 in the util module.
 """
-from utils import get_path
-import unittest
 import os
+import unittest
 from unittest.mock import patch
-import sys
-sys.path.append(os.path.join("workflow", "scripts"))
+
+from path_utils import extend_sys_path
+
+with extend_sys_path(os.path.join("workflow", "scripts")):
+    from utils import get_path
 
 
 class TestGetPath(unittest.TestCase):
