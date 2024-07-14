@@ -1,7 +1,40 @@
 """
-This script loads EEG data from a feather file, performs
-Independent Component Analysis (ICA) to identify and remove artifacts,
-and saves the cleaned data to a new file in FIF format.
+This script loads EEG data from a feather file, performs Independent
+Component Analysis (ICA) to identify and remove artifacts, and saves the
+cleaned data to a new file in FIF format.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python ica.py infile outfile plotfile [--artifacts ARTIFACTS] [--inspect]
+    ```
+
+    Example:
+    ```
+    python ica.py truncated_data.feather cleaned_epo.fif ica_components.png
+    --artifacts 1,2,3 --inspect
+    ```
+
+Options:
+    infile (str): Path to the input file contains truncated data.
+    outfile (str): Path to save the cleaned data.
+    plotfile (str): Path to save the ICA component plots.
+    --artifacts (str, optional): Comma-separated list of integer artifacts
+        to remove. Default is None.
+    --inspect (bool, optional): Flag to inspect individual components for
+        artifacts. Default is False.
+
+Files:
+    infile: The input file contains truncated data in the feather format.
+    outfile: The output file where the cleaned EEG data will be saved in
+        FIF format.
+    plotfile: The output file where the ICA component plots will be saved
+        in png format.
+
+Functions:
+    main(infile, outfile, plotfile, artifacts, inspection):
+        Main function to load, process, and save EEG data using ICA.
 """
 
 import argparse
@@ -21,20 +54,24 @@ logger = configure_logger(os.path.basename(__file__))
 
 
 def main(
-        infile: str,
-        outfile: str,
-        plotfile: str,
-        artifacts: str,
-        inspection: bool):
+    infile: str, outfile: str, plotfile: str, artifacts: str, inspection: bool
+):
     """
-    Main function to load, process, and save EEG data using ICA.
+    Load, process, and save EEG data using ICA.
+
+    This function reads EEG data from a feather file, performs ICA to identify
+    and remove artifacts, and saves the cleaned data to a new file
+    in FIF format. Optionally, it can save plots of the ICA components
+    and allow inspection of individual components for artifact identification.
 
     Args:
-        infile (str): Name of the file to load.
-        outfile (str): Name of the file to save the denoised data.
-        plotfile (str): Name of the file to save the ICA component plots.
-        artifacts (str): Comma-separated list of integer artifacts to remove.
-        inspection (bool): Flag to inspect individual components for artifacts.
+        infile (str): Path to the input file contains trruncated data.
+        outfile (str): Path to the output file where the cleaned data saved.
+        plotfile (str): Path to save the ICA component plots.
+        artifacts (str, optional): Comma-separated list of integer artifacts
+            to remove. Default is None.
+        inspection (bool, optional): Flag to inspect individual components for
+            artifacts. Default is False.
 
     Returns:
         None
@@ -43,7 +80,7 @@ def main(
         FileNotFoundError: If the input file does not exist.
         TypeError: If the input parameters are not of the expected types.
         ValueError: If the output directory does not exist or if the artifacts
-          list is not a comma-separated list of integers.
+            list is not a comma-separated list of integers.
     """
     # Validate input types
     if not isinstance(infile, str):
@@ -67,9 +104,11 @@ def main(
             f"{type(artifacts).__name__}"
         )
     if artifacts is not None and not all(
-            x.isdigit() for x in artifacts.split(",")):
+        x.isdigit() for x in artifacts.split(",")
+    ):
         raise ValueError(
-            "Artifacts must be a comma-separated list of integers")
+            "Artifacts must be a comma-separated list of integers"
+        )
     if not isinstance(inspection, bool):
         raise TypeError(
             f"Expected 'inspection' to be of type bool, but got "
@@ -128,9 +167,8 @@ def main(
 
     # create mne object
     info = mne.create_info(
-        ch_names=list(channels),
-        sfreq=sfreq,
-        ch_types="eeg")
+        ch_names=list(channels), sfreq=sfreq, ch_types="eeg"
+    )
 
     # set montage, MDB uses 10-20
     montage = mne.channels.make_standard_montage("standard_1020")
@@ -139,9 +177,8 @@ def main(
     # Create an events array for MNE,
     # each event starts at the next multiple of the epoch length
     event_ids = {
-        str(code): idx for idx,
-        code in enumerate(
-            event_codes.values())}
+        str(code): idx for idx, code in enumerate(event_codes.values())
+    }
     events_array = np.array(
         [
             [idx * target_length, 0, event_ids[str(event_codes[event])]]
@@ -158,11 +195,8 @@ def main(
     )
 
     ica = ICA(
-        n_components=min(
-            len(channels),
-            20),
-        random_state=97,
-        max_iter=800)
+        n_components=min(len(channels), 20), random_state=97, max_iter=800
+    )
     ica.fit(epochs)
 
     # Save the ICA component plots as PNG files - only show them
@@ -185,9 +219,7 @@ def main(
         ica.exclude = identified_artifacts
     elif artifacts is not None:
         additional_artifacts = [int(x) for x in artifacts.split(",")]
-        logger.info(
-            "Loaded additional artifacts: %s",
-            additional_artifacts)
+        logger.info("Loaded additional artifacts: %s", additional_artifacts)
         ica.exclude = additional_artifacts
 
     # Apply the ICA solution to remove the identified artifacts

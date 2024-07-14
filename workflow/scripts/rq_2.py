@@ -1,10 +1,34 @@
 """
-This script perform analysis on EEG signals from channels O1 and O2.
-"""
+The script reads EEG epochs data, extracts the signals from the O1 and O2
+channels, computes the average signal across epochs, and plots the comparison
+between these two channels.
 
-# How do the EEG signals from channels O1 and O2 differ during
-# various cognitive tasks, and what do these differences reveal about
-# lateralized brain activity in the occipital lobe?
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python rq_2.py infile outfile [--show]
+    ```
+
+    Example:
+    ```
+    python rq_2.py denoised_epo.fif rq_2.png --show
+    ```
+
+Options:
+    infile (str): Path to the input file containing the denoised data.
+    outfile (str): Path to save the output plot.
+    --show (bool, optional): Whether to display the plot. Default is False.
+
+Files:
+    infile: The input file contains denoised data in the FIF format.
+    outfile: The output file where the plot will be saved in the PNG format.
+
+Functions:
+    main(infile, outfile, show=False):
+        Performs the main functionality of the script based on provided
+        options.
+"""
 
 import argparse
 import os
@@ -24,7 +48,12 @@ def main(infile: str, outfile: str, show: bool = False):
     """
     Perform analysis on EEG signals from channels O1 and O2.
 
-    Parameters:
+    This function reads EEG data from an input file, extracts the signals from
+    channels O1 and O2, computes the average signals across epochs, plots the
+    comparison, and saves the plot to an output file. Optionally, it can
+    display the plot.
+
+    Args:
         infile (str): Path to the input file containing the epochs data.
         outfile (str): Path to save the output plot.
         show (bool, optional): Whether to display the plot. Defaults to False.
@@ -41,15 +70,18 @@ def main(infile: str, outfile: str, show: bool = False):
     if not isinstance(infile, str):
         raise TypeError(
             f"Expected 'infile' to be of type str, but got "
-            f"{type(infile).__name__}")
+            f"{type(infile).__name__}"
+        )
     if not isinstance(outfile, str):
         raise TypeError(
             f"Expected 'outfile' to be of type str, but got "
-            f"{type(outfile).__name__}")
+            f"{type(outfile).__name__}"
+        )
     if not isinstance(show, bool):
         raise TypeError(
             f"Expected 'show' to be of type bool, but got "
-            f"{type(show).__name__}")
+            f"{type(show).__name__}"
+        )
 
     # Validate input file
     in_path = get_path(infile)
@@ -97,17 +129,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "infile",
         type=str,
-        help="name of the file to load",
+        help="Path to the input file containing the epochs data.",
     )
     parser.add_argument(
         "outfile",
         type=str,
-        help="name of the file to save the filtered data",
+        help="Path to save the output plot.",
     )
     parser.add_argument(
         "--show",
         action="store_true",
-        help="whether to display the plot",
+        help="Whether to display the plot.",
     )
 
     args = parser.parse_args()

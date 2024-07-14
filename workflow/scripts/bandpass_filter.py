@@ -1,6 +1,33 @@
 """
 This script loads EEG data from a feather file, applies a bandpass filter
 to the signals, and saves the filtered data to a new feather file.
+
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python bandpass_filter.py infile outfile
+    ```
+
+    Example:
+    ```
+    python bandpass_filter.py filtered_data.feather bandpassed_data.feather
+    ```
+
+Options:
+    infile (str): Path to the input file containing the converted data.
+    outfile (str): Path to the output file where the data is saved.
+
+Files:
+    infile: The input file contains the filtered data in the feather format.
+    outfile: The output file where the bandpass filter will be saved in
+        feather format.
+
+Functions:
+    main(infile, outfile):
+        Loads, filters, and saves EEG signal data.
+    bandpass_filter(data, fs, lowcut=1.0, highcut=40.0, order=5):
+        Applies a bandpass filter to the given data.
 """
 
 import argparse
@@ -21,15 +48,23 @@ def bandpass_filter(data, fs, lowcut=1.0, highcut=60.0, order=5):
     """
     Applies a bandpass filter to the given data.
 
+    This function applies a Butterworth bandpass filter to the input data.
+    The bandpass filter allows frequencies within a specified range to
+    pass through while attenuating frequencies outside that range.
+
     Args:
         data (array-like): The input signal data to filter.
+        fs (float): The sampling frequency of the data.
         lowcut (float): The low cutoff frequency of the filter.
         highcut (float): The high cutoff frequency of the filter.
-        fs (float): The sampling frequency of the data.
         order (int, optional): The order of the filter. Default is 5.
 
     Returns:
         array-like: The filtered signal.
+
+    Raises:
+        ValueError: If the lowcut or highcut frequencies are not
+        within the valid range.
     """
     nyquist = 0.5 * fs
     low = lowcut / nyquist
@@ -41,11 +76,15 @@ def bandpass_filter(data, fs, lowcut=1.0, highcut=60.0, order=5):
 
 def main(infile: str, outfile: str):
     """
-    Main function to load, filter, and save EEG signal data.
+    load, filter, and save EEG signal data.
+
+    This function reads EEG signal data from the specified input file,
+    applies a bandpass filter to the data, and saves the filtered data
+    to the specified output file.
 
     Args:
-        infile (str): The path to the input file containing the raw EEG data.
-        outfile (str): The path to the file where output data will be saved.
+        infile (str): Path to the input file containing the converted data.
+        outfile (str): Path to the file where output data will be saved.
 
     Returns:
         None
@@ -79,13 +118,11 @@ def main(infile: str, outfile: str):
 
     if "size" not in df.columns:
         raise ValueError(
-            "DF must contain a 'size' column representing sampling rate.")
+            "DF must contain a 'size' column representing sampling rate."
+        )
 
     df["signal"] = df.apply(
-        lambda row: bandpass_filter(
-            np.array(
-                row["signal"]),
-            row["size"]),
+        lambda row: bandpass_filter(np.array(row["signal"]), row["size"]),
         axis=1,
     )
 

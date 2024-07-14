@@ -1,10 +1,34 @@
 """
-This script generates a plot of kurtosis values for selected channels.
-"""
+The script reads feature data from a specified file, generates a plot of
+kurtosis values for selected channels, and saves the plot.
 
-# 5. How do the kurtosis values of EEG signals vary across different epochs
-# for channels FC6, F4, and F8, and what do these variations reveal about
-# the underlying neural dynamics?
+Usage:
+    Run the script from the command line with the following options:
+
+    ```
+    python rq_5.py infile outfile [--channels CHANNELS] [--show]
+    ```
+
+    Example:
+    ```
+    python rq_5.py features.npy rq_5.png --channels FC6 F4 F8 --show
+    ```
+
+Options:
+    infile (str): Path to the input file containing extracted features.
+    outfile (str): Path to save the generated plot.
+    --channels (list of str, optional): List of channels to plot kurtosis
+       values. Default: ["FC6", "F4", "F8"]
+    --show (bool, optional): Whether to display the plot. Default: False
+
+Files:
+    infile: The input file containing extracted features in the NPY format.
+    outfile: The output file where the plot will be saved in the PNG format.
+
+Functions:
+    main(infile, outfile, channels, show=False):
+        Generates and saves a plot of kurtosis values for selected channels.
+"""
 
 import argparse
 import os
@@ -23,10 +47,16 @@ def main(infile: str, outfile: str, channels: list[str], show: bool = False):
     """
     Generate a plot of kurtosis values for selected channels.
 
-    Parameters:
-        infile (str): The path to the input file containing extracted features.
-        outfile (str): The path to save the generated plot.
-        channels (list): A list of channel names to plot kurtosis values for.
+    This function reads feature data from an input file, calculates
+    the kurtosis values for the specified channels, generates a plot of
+    these kurtosis values, and saves the plot to the specified output file.
+    Optionally, it can display the plot.
+
+    Args:
+        infile (str): Path to the input file containing extracted features.
+        outfile (str): Path to save the generated plot.
+        channels (list of str, optional): A list of channel names to plot
+           kurtosis values for.Default: ["FC6", "F4", "F8"]
         show (bool, optional): Whether to display the plot. Defaults to False.
 
     Returns:
@@ -113,7 +143,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--channels",
-        type=list,
+        type=str,
         nargs="+",
         choices=[
             "AF3",
